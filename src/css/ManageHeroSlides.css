@@ -1,0 +1,466 @@
+/* Manage Hero Slides Page */
+
+:root {
+  --bg: #faf9f6;
+  --surface: rgba(255, 255, 255, 0.85) (--card-bg);
+  --card: rgba(255, 255, 255, 0.65);
+  --text: #3b2f2f;
+  --muted: #6e6259;
+
+  --primary-400: #bfa57a;
+  --primary-500: #6f4e37;
+  --primary-600: #5a3e2b;
+  --accent-500: #bfa57a;
+  --accent-600: #5a3e2b;
+  --warn: #a14a3b;
+  --success: #7a8f6a;
+  --info: #8b857e;
+  --danger: #a14a3b;
+
+  --ring: rgba(194, 162, 108, 0.35) (--ring);
+  --shadow:
+    0 10px 30px rgba(111, 78, 55, 0.12), 0 2px 8px rgba(111, 78, 55, 0.08);
+
+  --gradient: linear-gradient(
+    135deg,
+    var(--primary-400) 0%,
+    var(--accent-500) 100%
+  );
+  --gradient-soft: linear-gradient(
+    180deg,
+    rgba(194, 162, 108, 0.12),
+    rgba(111, 78, 55, 0.08)
+  );
+}
+.manage-hero-slides {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #faf9f6 0%, #f0f9ff 100%);
+  padding: 2rem;
+  direction: rtl;
+  font-family: "Cairo", sans-serif;
+}
+
+.mhs-header {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.mhs-header h1 {
+  font-size: 2rem;
+  color: #1f2937;
+  margin: 0;
+}
+
+.mhs-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Cairo", sans-serif;
+  font-size: 1rem;
+}
+
+.mhs-btn.primary {
+  background: linear-gradient(135deg, #bfa57a, #5a3e2b);
+  color: white;
+  box-shadow: 0 4px 12px rgba(222, 170, 155, 0.3);
+}
+
+.mhs-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(222, 170, 155, 0.4);
+}
+
+.mhs-btn.edit {
+  background: linear-gradient(
+    135deg,
+    var(--primary-400) 0%,
+    var(--accent-500) 100%
+  );
+  color: white;
+}
+
+.mhs-btn.edit:hover {
+  background: linear-gradient(135deg, #f5f1eb, #ede6d8);
+  color: #6e6259;
+}
+
+.mhs-btn.delete {
+  background: linear-gradient(135deg, #f5f1eb, #ede6d8);
+  color: #6e6259;
+}
+
+.mhs-btn.delete:hover {
+  box-shadow: 0 10px 24px rgba(185, 135, 123, 0.2);
+}
+
+.mhs-btn.cancel {
+  background: #6b7280;
+  color: white;
+}
+
+.mhs-btn.cancel:hover {
+  background: #4b5563;
+}
+
+/* Loading */
+.mhs-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f4f6;
+  border-radius: 50%;
+  border-top: 4px solid #bfa57a;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Slides Grid */
+.mhs-slides-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.mhs-slide-card {
+  background: white;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.mhs-slide-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.mhs-slide-image {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+.mhs-slide-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mhs-no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 1.2rem;
+}
+
+.mhs-inactive-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.mhs-slide-content {
+  padding: 1.5rem;
+}
+
+.mhs-slide-content h3 {
+  font-size: 1.25rem;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.mhs-slide-content p {
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.mhs-slide-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.mhs-order,
+.mhs-button-text {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background: #f3f4f6;
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.mhs-slide-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.mhs-slide-actions .mhs-btn {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* Empty State */
+.mhs-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+/* Modal */
+.mhs-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.mhs-modal {
+  background: white;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.mhs-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mhs-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #1f2937;
+}
+
+.mhs-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0.5rem;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.mhs-close-btn:hover {
+  color: #1f2937;
+}
+
+/* Form */
+.mhs-form {
+  padding: 1.5rem;
+}
+
+/* Color Picker */
+.color-picker-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mhs-color-picker {
+  width: 60px !important;
+  height: 40px;
+  cursor: pointer;
+  border-width: 0;
+  background-color: transparent;
+}
+
+.mhs-color-input {
+  width: 120px !important;
+  font-family: monospace;
+  text-transform: uppercase;
+  text-align: center;
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.mhs-color-input.error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.mhs-color-error {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  text-align: right;
+}
+
+.mhs-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.mhs-form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.mhs-form-group input[type="text"],
+.mhs-form-group input[type="number"],
+.mhs-form-group textarea,
+.mhs-form-group input[type="file"],
+.mhs-form-group select,
+.mhs-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  font-family: "Cairo", sans-serif;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  background-color: white;
+}
+
+.mhs-form-group input[type="text"]:focus,
+.mhs-form-group input[type="number"]:focus,
+.mhs-form-group textarea:focus,
+.mhs-form-group select:focus,
+.mhs-select:focus {
+  outline: none;
+  border-color: #bfa57a;
+  box-shadow: 0 0 0 3px rgba(194, 162, 108, 0.12);
+}
+
+.mhs-form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.mhs-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.mhs-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  transition: background 0.2s ease;
+}
+
+.mhs-checkbox-label:hover {
+  background: #f9fafb;
+}
+
+.mhs-checkbox-label input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+.mhs-image-preview {
+  margin-top: 1rem;
+  overflow: hidden;
+  max-height: 300px;
+}
+
+.mhs-image-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mhs-form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.mhs-form-actions .mhs-btn {
+  flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .manage-hero-slides {
+    padding: 1rem;
+  }
+
+  .mhs-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mhs-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .mhs-slides-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mhs-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .mhs-modal {
+    margin: 1rem;
+  }
+}

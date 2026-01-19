@@ -1,0 +1,534 @@
+/* Modern Beauty Shop Contact Page Styles */
+
+:root {
+  --primary-color: #bfa57a;
+  --secondary-color: #6f4e37;
+  --accent-color: #5a3e2b;
+  --success-color: #7a8f6a;
+  --error-color: #a14a3b;
+  --warning-color: #c2a26c;
+  --dark-color: #3b2f2f;
+  --light-color: #ffffff;
+  --gray-color: #6e6259;
+  --light-gray: #ffffff;
+  --border-color: #e4ddd3;
+  --whatsapp-color: #25d366;
+  --instagram-color: #e4405f;
+  --facebook-color: #1877f2;
+  --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.2);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --contact-max-width: 1200px;
+}
+
+/* Arabic Font Support */
+@import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700&display=swap");
+
+/* Contact Page */
+.bp-contact-page {
+  /* min-height: 100vh; */
+  min-height: calc(
+    100vh - 225px
+  ); /* Subtracting approximate header/footer height */
+  background: linear-gradient(135deg, #faf9f6 0%, #ffffff 100%);
+  padding: 2rem 0;
+  font-family: "Tajawal", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  direction: rtl;
+}
+
+.bp-contact-container {
+  max-width: var(--contact-max-width);
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Contact Header */
+.bp-contact-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.bp-contact-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  -webkit-background-clip: text;
+
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.bp-contact-subtitle {
+  color: var(--gray-color);
+  font-size: 1.1rem;
+  font-weight: 400;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Contact Content Layout */
+.bp-contact-content {
+  max-width: 800px;
+  margin: 0 auto;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+/* Contact Info Section */
+.bp-contact-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+/* Contact Cards */
+.bp-contact-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bp-contact-card {
+  background: var(--light-color);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-light);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.bp-contact-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(222, 170, 155, 0.05),
+    rgba(191, 146, 144, 0.05)
+  );
+  opacity: 0;
+  transition: var(--transition);
+  z-index: 0;
+}
+
+.bp-contact-card:hover::before {
+  opacity: 1;
+}
+
+.bp-contact-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-medium);
+  border-color: var(--primary-color);
+}
+
+.bp-contact-card.whatsapp:hover {
+  border-color: var(--whatsapp-color);
+}
+
+.bp-contact-card.instagram:hover {
+  border-color: var(--instagram-color);
+}
+
+.bp-contact-card.facebook:hover {
+  border-color: var(--facebook-color);
+}
+
+.bp-contact-card-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  transition: var(--transition);
+}
+
+/* Instagram / contact icon image inside the icon container */
+.bp-contact-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Facebook icon styling */
+.bp-contact-card.facebook .bp-contact-card-icon {
+  color: var(--facebook-color);
+  font-size: 2.5rem;
+}
+
+.bp-contact-card:hover .bp-contact-card-icon {
+  transform: scale(1.1);
+}
+
+.bp-contact-card-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.bp-contact-card-content h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dark-color);
+  margin: 0 0 0.25rem 0;
+  transition: var(--transition);
+}
+
+.bp-contact-card-content p {
+  font-size: 0.85rem;
+  color: var(--gray-color);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+  transition: var(--transition);
+}
+
+.bp-contact-link-text {
+  color: var(--primary-color);
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: var(--transition);
+  display: inline-block;
+  position: relative;
+}
+
+.bp-contact-link-text::after {
+  content: "→";
+  margin-right: 0.5rem;
+  opacity: 0;
+  transform: translateX(-5px);
+  transition: var(--transition);
+}
+
+.bp-contact-card:hover .bp-contact-link-text::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.bp-contact-card:hover .bp-contact-link-text {
+  color: var(--secondary-color);
+}
+
+.bp-contact-card:active {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-light);
+}
+
+.bp-contact-card:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Remove old link styles since cards are now clickable */
+.bp-contact-link {
+  display: none;
+}
+
+/* Business Hours */
+.bp-contact-business-hours {
+  background: var(--light-color);
+  padding: 2rem;
+  box-shadow: var(--shadow-light);
+  margin-bottom: 2rem;
+}
+
+.bp-contact-business-hours h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--dark-color);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.bp-contact-hours-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bp-contact-hour-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--light-gray);
+  border: 2px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.bp-contact-hour-item:hover {
+  border-color: var(--primary-color);
+  background: rgba(222, 170, 155, 0.05);
+}
+
+.bp-contact-day {
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+.bp-contact-hours {
+  color: var(--gray-color);
+  font-weight: 500;
+}
+
+/* Quick Actions */
+.bp-contact-quick-actions {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  padding: 2rem;
+  box-shadow: var(--shadow-medium);
+  margin-bottom: 2rem;
+}
+
+.bp-contact-quick-actions h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--light-color);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.bp-contact-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bp-contact-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+  box-shadow: var(--shadow-light);
+  font-size: 0.95rem;
+}
+
+.bp-contact-whatsapp-btn {
+  background: var(--whatsapp-color);
+  color: var(--light-color);
+}
+
+.bp-contact-call-btn {
+  background: var(--accent-color);
+  color: var(--dark-color);
+}
+
+.bp-contact-products-btn {
+  background: var(--light-color);
+  color: var(--primary-color);
+}
+
+.bp-contact-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+.bp-contact-whatsapp-btn:hover {
+  background: #128c7e;
+}
+
+.bp-contact-call-btn:hover {
+  background: #c2a26c;
+}
+
+.bp-contact-products-btn:hover {
+  background: #ffffff;
+  color: var(--secondary-color);
+}
+
+/* Service Notice */
+.bp-contact-service-notice {
+  background: var(--light-color);
+  padding: 2rem;
+  box-shadow: var(--shadow-light);
+  border: 2px solid rgba(222, 170, 155, 0.2);
+}
+
+.bp-contact-service-notice h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--dark-color);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bp-contact-service-notice ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bp-contact-service-notice li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  color: var(--gray-color);
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.bp-contact-service-notice li::before {
+  content: "💡";
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .bp-contact-content {
+    margin-top: 15vh;
+  }
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .bp-contact-page {
+    padding: 1rem 0;
+  }
+
+  .bp-contact-container {
+    padding: 0 0.5rem;
+  }
+
+  .bp-contact-title {
+    font-size: 2rem;
+  }
+
+  .bp-contact-subtitle {
+    font-size: 1rem;
+  }
+
+  .bp-contact-business-hours,
+  .bp-contact-quick-actions,
+  .bp-contact-service-notice {
+    padding: 1.5rem;
+  }
+
+  .bp-contact-card {
+    padding: 1.25rem;
+    min-height: 140px;
+    justify-content: center;
+  }
+
+  .bp-contact-card-icon {
+    margin-bottom: 0.5rem;
+  }
+
+  .bp-contact-link-text::after {
+    margin-right: 0;
+    margin-left: 0.5rem;
+  }
+
+  .bp-contact-hour-item {
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
+  }
+
+  .bp-contact-action-buttons {
+    gap: 0.5rem;
+  }
+
+  .bp-contact-action-btn {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .bp-contact-title {
+    font-size: 1.75rem;
+  }
+
+  .bp-contact-business-hours,
+  .bp-contact-quick-actions,
+  .bp-contact-service-notice {
+    padding: 1rem;
+  }
+
+  .bp-contact-card {
+    padding: 1rem;
+  }
+
+  .bp-contact-card-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.5rem;
+  }
+
+  .bp-contact-service-notice li {
+    font-size: 0.85rem;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

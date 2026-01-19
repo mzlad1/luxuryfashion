@@ -1,0 +1,270 @@
+/* PromotionalBanner.css - Promotional Banner Component Styles */
+
+.promotional-banner {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  margin: 2rem 0;
+}
+
+.promotional-banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.promotional-banner-content {
+  text-align: center;
+  color: var(--white);
+  width: 100%;
+  max-width: 900px;
+  position: relative;
+  z-index: 2;
+}
+
+.promotional-banner-headline {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.promotional-banner-subheading {
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  font-weight: 400;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+  line-height: 1.6;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.promotional-banner-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.promotional-banner-btn {
+  min-height: 44px;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.promotional-banner-btn-primary {
+  font-family: var(--font-serif);
+  background-color: var(--navbar-primary);
+  color: var(--white);
+  border-color: var(--navbar-primary);
+  box-shadow: 0 4px 12px rgba(184, 146, 31, 0.3);
+}
+
+.promotional-banner-btn-primary:hover {
+  background-color: var(--navbar-primary);
+  border-color: var(--navbar-primary)3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(184, 146, 31, 0.4);
+}
+
+.promotional-banner-btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(184, 146, 31, 0.3);
+}
+
+.promotional-banner-btn-secondary {
+  font-family: var(--font-serif);
+  background-color: transparent;
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.promotional-banner-btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+.promotional-banner-btn-secondary:active {
+  transform: translateY(0);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Shimmer effect for primary button */
+.promotional-banner-btn-primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+}
+
+.promotional-banner-btn-primary:hover::after {
+  animation: shimmer 0.8s ease forwards;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -120%;
+  }
+  100% {
+    left: 140%;
+  }
+}
+
+/* Focus states for accessibility */
+.promotional-banner:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.promotional-banner-btn:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .promotional-banner {
+    height: 320px;
+    margin: 1.5rem 0;
+  }
+
+  .promotional-banner-overlay {
+    padding: 1.5rem;
+  }
+
+  .promotional-banner-headline {
+    font-size: 1.125rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .promotional-banner-subheading {
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .promotional-banner-actions {
+    gap: 0.75rem;
+  }
+
+  .promotional-banner-btn {
+    padding: 11px 20px;
+    font-size: 0.9rem;
+    min-width: 110px;
+  }
+}
+
+@media (max-width: 480px) {
+  .promotional-banner {
+    height: 200px;
+    margin: 1rem 0;
+  }
+
+  .promotional-banner-overlay {
+    padding: 1rem;
+  }
+
+  .promotional-banner-headline {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .promotional-banner-subheading {
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .promotional-banner-actions {
+    flex-direction: row;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .promotional-banner-btn {
+    width: auto;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    min-width: 100px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .promotional-banner-overlay {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.75) 50%,
+      rgba(0, 0, 0, 0.85) 100%
+    );
+  }
+
+  .promotional-banner-btn-secondary {
+    border-width: 3px;
+    border-color: var(--white);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .promotional-banner,
+  .promotional-banner-btn {
+    transition: none !important;
+  }
+
+  .promotional-banner:hover {
+    transform: none !important;
+  }
+
+  .promotional-banner-btn:hover {
+    transform: none !important;
+  }
+
+  .promotional-banner-btn-primary::after {
+    display: none;
+  }
+}

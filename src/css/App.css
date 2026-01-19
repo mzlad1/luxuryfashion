@@ -1,0 +1,18 @@
+@font-face {
+  font-family: "Brando";
+  src: url("../../public/Brando.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Brando", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #faf9f6 0%, #ffffff 100%);
+}

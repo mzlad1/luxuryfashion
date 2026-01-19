@@ -195,10 +195,10 @@ function Navbar() {
         </div>
 
         <div className="nav-right">
-          {/* Show page name beside logo on <= 768px */}
+          {/* Show page name beside logo on <= 768px
           <h1 className="nav-current-page-name">
             {getPageName(location.pathname)}
-          </h1>
+          </h1> */}
 
           {/* Mobile Cart Button - Only show for non-admin users */}
           {isAdmin === false && (

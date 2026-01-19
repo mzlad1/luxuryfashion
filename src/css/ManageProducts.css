@@ -1743,7 +1743,8 @@
 
 .mp-variant-inputs {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: center;
   gap: 4px;
   align-items: center;
 }

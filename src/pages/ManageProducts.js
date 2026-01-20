@@ -919,9 +919,19 @@ function ManageProducts() {
             case "hasVariants":
               return product.hasVariants === true;
             case "lowStock":
+              // For variant products, check if any variant has low stock (1-5)
+              if (product.hasVariants && product.variants) {
+                return product.variants.some(
+                  (v) => (v.stock || 0) > 0 && (v.stock || 0) <= 5,
+                );
+              }
               const stock = product.stock || 0;
               return stock > 0 && stock <= 5;
             case "outOfStock":
+              // For variant products, check if ALL variants are out of stock
+              if (product.hasVariants && product.variants) {
+                return product.variants.every((v) => (v.stock || 0) === 0);
+              }
               return (product.stock || 0) === 0;
             default:
               return false;
@@ -933,7 +943,17 @@ function ManageProducts() {
     // Filter by stock status
     if (stockFilter) {
       filtered = filtered.filter((product) => {
-        const stock = product.stock || 0;
+        // For variant products, calculate total stock from all variants
+        let stock;
+        if (product.hasVariants && product.variants) {
+          stock = product.variants.reduce(
+            (sum, v) => sum + (parseInt(v.stock) || 0),
+            0,
+          );
+        } else {
+          stock = product.stock || 0;
+        }
+
         switch (stockFilter) {
           case "in-stock":
             return stock > 5;

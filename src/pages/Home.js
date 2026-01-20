@@ -21,6 +21,8 @@ function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [bannerData, setBannerData] = useState(null);
+  const [loadingBanner, setLoadingBanner] = useState(true);
 
   const navigate = useNavigate();
 
@@ -285,6 +287,51 @@ function Home() {
   useEffect(() => {
     const interval = setInterval(checkExpiredDiscounts, 5 * 60 * 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Fetch promotional banner
+  useEffect(() => {
+    async function fetchBanner() {
+      setLoadingBanner(true);
+      try {
+        const bannerSnapshot = await getDocs(
+          collection(db, "promotionalBanner"),
+        );
+        if (!bannerSnapshot.empty) {
+          const banner = bannerSnapshot.docs[0].data();
+          setBannerData(banner);
+        } else {
+          // Set default banner data
+          setBannerData({
+            backgroundImage:
+              "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            headline: "عروض حصرية على جميع القطع في المتجر",
+            subheading: "وفري حتى 30% على قطع مختارة لفترة محدودة",
+            primaryButtonText: "تسوقي الآن",
+            secondaryButtonText: "اعرفي المزيد",
+            primaryButtonAction: "/products",
+            secondaryButtonAction: "/contact",
+            isActive: true,
+          });
+        }
+      } catch (error) {
+        // Set default banner on error
+        setBannerData({
+          backgroundImage:
+            "https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          headline: "عروض حصرية على جميع القطع في المتجر",
+          subheading: "وفري حتى 30% على قطع مختارة لفترة محدودة",
+          primaryButtonText: "تسوقي الآن",
+          secondaryButtonText: "اعرفي المزيد",
+          primaryButtonAction: "/products",
+          secondaryButtonAction: "/contact",
+          isActive: true,
+        });
+      } finally {
+        setLoadingBanner(false);
+      }
+    }
+    fetchBanner();
   }, []);
 
   // Fetch brands
@@ -628,19 +675,21 @@ function Home() {
         </section>
 
         {/* Promotional Banner */}
-        <section className="promotional-banner-section">
-          <div className="promo-container">
-            <PromotionalBanner
-              backgroundImage="https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              headline="عروض حصرية على جميع القطع في المتجر"
-              subheading="وفري حتى 30% على قطع مختارة لفترة محدودة"
-              primaryButtonText="تسوقي الآن"
-              secondaryButtonText="اعرفي المزيد"
-              primaryButtonAction="/products"
-              secondaryButtonAction="/contact"
-            />
-          </div>
-        </section>
+        {bannerData && bannerData.isActive && (
+          <section className="promotional-banner-section">
+            <div className="promo-container">
+              <PromotionalBanner
+                backgroundImage={bannerData.backgroundImage}
+                headline={bannerData.headline}
+                subheading={bannerData.subheading}
+                primaryButtonText={bannerData.primaryButtonText}
+                secondaryButtonText={bannerData.secondaryButtonText}
+                primaryButtonAction={bannerData.primaryButtonAction}
+                secondaryButtonAction={bannerData.secondaryButtonAction}
+              />
+            </div>
+          </section>
+        )}
 
         {/* Brands Section */}
         <section className="brands-section">

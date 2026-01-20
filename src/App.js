@@ -12,9 +12,11 @@ import ManageProducts from "./pages/ManageProducts";
 import ManageCategories from "./pages/ManageCategories";
 import ManageBrands from "./pages/ManageBrands";
 import ManageHeroSlides from "./pages/ManageHeroSlides";
+import ManagePromotionalBanner from "./pages/ManagePromotionalBanner";
 import Orders from "./pages/Orders";
 import FeedbackManager from "./pages/FeedbackManager";
 import DiscountManager from "./pages/DiscountManager";
+import CouponManager from "./pages/CouponManager";
 import Statistics from "./pages/Statistics";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
@@ -94,6 +96,14 @@ function App() {
             }
           />
           <Route
+            path="/admin/coupons"
+            element={
+              <ProtectedRoute>
+                <CouponManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/admin/statistics"
             element={
               <ProtectedRoute>
@@ -106,6 +116,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ManageHeroSlides />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/promotional-banner"
+            element={
+              <ProtectedRoute>
+                <ManagePromotionalBanner />
               </ProtectedRoute>
             }
           />

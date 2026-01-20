@@ -333,6 +333,12 @@ function AdminDashboard() {
                   تطبيق خصومات على المنتجات والفئات
                 </span>
               </Link>
+              <Link to="/admin/coupons" className="admin-dash-tile">
+                <span className="tile-title">الكوبونات</span>
+                <span className="tile-sub">
+                  إنشاء وإدارة كوبونات الخصم
+                </span>
+              </Link>
               <Link to="/admin/statistics" className="admin-dash-tile">
                 <span className="tile-title">إحصائيات الموقع</span>
                 <span className="tile-sub">
@@ -343,6 +349,12 @@ function AdminDashboard() {
                 <span className="tile-title">شرائح الصفحة الرئيسية</span>
                 <span className="tile-sub">
                   إدارة الشرائح المتحركة في الصفحة الرئيسية
+                </span>
+              </Link>
+              <Link to="/admin/promotional-banner" className="admin-dash-tile">
+                <span className="tile-title">البانر الترويجي</span>
+                <span className="tile-sub">
+                  إدارة البانر الترويجي في الصفحة الرئيسية
                 </span>
               </Link>
             </div>

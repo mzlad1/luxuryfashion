@@ -761,6 +761,16 @@ function Orders() {
                             </span>
                           </div>
                         )}
+                        {order.coupon && (
+                          <div className="ord-delivery-item ord-coupon-item">
+                            <span className="ord-delivery-label">
+                              كوبون الخصم ({order.coupon.code}):
+                            </span>
+                            <span className="ord-delivery-value ord-coupon-discount">
+                              -{order.coupon.couponDiscount.toFixed(2)} شيكل
+                            </span>
+                          </div>
+                        )}
                         <div className="ord-delivery-item ord-delivery-total">
                           <span className="ord-delivery-label">
                             الإجمالي النهائي:

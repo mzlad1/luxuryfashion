@@ -11,6 +11,7 @@ import {
   doc,
   updateDoc,
   getDoc,
+  getDocs,
   runTransaction,
 } from "firebase/firestore";
 import Footer from "../components/Footer";
@@ -47,6 +48,12 @@ function Cart() {
   const [selectedDelivery, setSelectedDelivery] = useState("");
   const [showInvoicePreview, setShowInvoicePreview] = useState(false);
 
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponError, setCouponError] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+
   const deliveryOptions = [
     { id: "westbank", name: "الضفة الغربية", price: 20 },
     { id: "jerusalem", name: "القدس", price: 30 },
@@ -64,6 +71,96 @@ function Cart() {
     const isValid = emailRegex.test(emailValue.trim());
     setEmailValid(isValid);
     return isValid;
+  };
+
+  // Apply coupon
+  const applyCoupon = async () => {
+    if (!couponCode || couponCode.trim() === "") {
+      setCouponError("يرجى إدخال رمز الكوبون");
+      return;
+    }
+
+    setCouponLoading(true);
+    setCouponError("");
+
+    try {
+      const couponsSnapshot = await getDocs(collection(db, "coupons"));
+      let foundCoupon = null;
+
+      couponsSnapshot.forEach((doc) => {
+        const couponData = doc.data();
+        if (couponData.code === couponCode.toUpperCase().trim()) {
+          foundCoupon = { id: doc.id, ...couponData };
+        }
+      });
+
+      if (!foundCoupon) {
+        setCouponError("رمز الكوبون غير صحيح");
+        setCouponLoading(false);
+        return;
+      }
+
+      // Check if coupon is active
+      if (!foundCoupon.isActive) {
+        setCouponError("هذا الكوبون غير نشط");
+        setCouponLoading(false);
+        return;
+      }
+
+      // Check if coupon is expired
+      if (foundCoupon.expiresAt) {
+        const expiryDate = new Date(foundCoupon.expiresAt.seconds * 1000);
+        if (expiryDate < new Date()) {
+          setCouponError("هذا الكوبون منتهي الصلاحية");
+          setCouponLoading(false);
+          return;
+        }
+      }
+
+      // Check usage limit
+      if (foundCoupon.usageLimit) {
+        const usedCount = foundCoupon.usedCount || 0;
+        if (usedCount >= foundCoupon.usageLimit) {
+          setCouponError("تم استنفاد هذا الكوبون");
+          setCouponLoading(false);
+          return;
+        }
+      }
+
+      // Check minimum purchase
+      if (foundCoupon.minPurchase && subtotal < foundCoupon.minPurchase) {
+        setCouponError(
+          `الحد الأدنى للشراء هو ${foundCoupon.minPurchase} شيكل`
+        );
+        setCouponLoading(false);
+        return;
+      }
+
+      // Check if coupon can be applied to discounted products
+      if (!foundCoupon.allowOnDiscounted) {
+        const hasDiscountedItems = cartItems.some((item) => item.hasDiscount);
+        if (hasDiscountedItems) {
+          setCouponError("لا يمكن تطبيق هذا الكوبون على منتجات مخفضة");
+          setCouponLoading(false);
+          return;
+        }
+      }
+
+      // Apply coupon
+      setAppliedCoupon(foundCoupon);
+      setCouponError("");
+    } catch (error) {
+      setCouponError("حدث خطأ في تطبيق الكوبون");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  // Remove coupon
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
   };
 
   // Send order confirmation email
@@ -126,6 +223,8 @@ function Cart() {
         deliveryOption: orderData.deliveryOption || "N/A",
         deliveryFee: orderData.deliveryFee || 0,
         subtotal: orderData.subtotal || 0,
+        couponCode: orderData.coupon ? orderData.coupon.code : "لا يوجد",
+        couponDiscount: orderData.coupon ? orderData.coupon.couponDiscount : 0,
         finalTotal: orderData.total || 0,
         // Add cost object for template
         cost: {
@@ -172,7 +271,25 @@ function Cart() {
   }, 0);
 
   const subtotal = totalPrice;
-  const finalTotal = subtotal + deliveryFee;
+  
+  // Calculate coupon discount
+  let couponDiscount = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.discountType === "percentage") {
+      couponDiscount = (subtotal * appliedCoupon.discountValue) / 100;
+      // Apply max discount limit if set
+      if (appliedCoupon.maxDiscount && couponDiscount > appliedCoupon.maxDiscount) {
+        couponDiscount = appliedCoupon.maxDiscount;
+      }
+    } else {
+      // Fixed discount
+      couponDiscount = appliedCoupon.discountValue;
+    }
+    // Ensure discount doesn't exceed subtotal
+    couponDiscount = Math.min(couponDiscount, subtotal);
+  }
+  
+  const finalTotal = subtotal - couponDiscount + deliveryFee;
 
   // Check stock availability before checkout
   const checkStockAvailability = async () => {
@@ -404,6 +521,14 @@ function Cart() {
           deliveryOption:
             deliveryOptions.find((option) => option.id === selectedDelivery)
               ?.name || "",
+          coupon: appliedCoupon
+            ? {
+                code: appliedCoupon.code,
+                discountType: appliedCoupon.discountType,
+                discountValue: appliedCoupon.discountValue,
+                couponDiscount: couponDiscount,
+              }
+            : null,
           total: finalTotal,
           status: "قيد الانتظار",
           createdAt: Timestamp.now(),
@@ -416,6 +541,15 @@ function Cart() {
         stockChecks.forEach(({ ref, updateData }) => {
           transaction.update(ref, updateData);
         });
+
+        // Update coupon usage count
+        if (appliedCoupon) {
+          const couponRef = doc(db, "coupons", appliedCoupon.id);
+          const currentUsedCount = appliedCoupon.usedCount || 0;
+          transaction.update(couponRef, {
+            usedCount: currentUsedCount + 1,
+          });
+        }
 
         return { id: orderRef.id, ...orderData };
       });
@@ -442,6 +576,9 @@ function Cart() {
       setEmail("");
       setPhone("");
       setAddress("");
+      setAppliedCoupon(null);
+      setCouponCode("");
+      setCouponError("");
     } catch (error) {
       setError(error.message || "حدث خطأ أثناء معالجة الطلب");
     } finally {
@@ -956,6 +1093,54 @@ function Cart() {
                   </div>
                 </div>
 
+                {/* Coupon Section */}
+                <div className="ct-coupon-section">
+                  <h3>كوبون الخصم</h3>
+                  {!appliedCoupon ? (
+                    <div className="ct-coupon-input-group">
+                      <input
+                        type="text"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        placeholder="أدخل رمز الكوبون"
+                        className="ct-coupon-input"
+                        disabled={couponLoading}
+                      />
+                      <button
+                        type="button"
+                        onClick={applyCoupon}
+                        className="ct-apply-coupon-btn"
+                        disabled={couponLoading || !couponCode.trim()}
+                      >
+                        {couponLoading ? "جاري التحقق..." : "تطبيق"}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="ct-applied-coupon">
+                      <div className="ct-applied-coupon-info">
+                        <span className="ct-applied-coupon-code">
+                          {appliedCoupon.code}
+                        </span>
+                        <span className="ct-applied-coupon-discount">
+                          خصم: {couponDiscount.toFixed(2)} شيكل
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={removeCoupon}
+                        className="ct-remove-coupon-btn"
+                      >
+                        إزالة
+                      </button>
+                    </div>
+                  )}
+                  {couponError && (
+                    <p className="ct-coupon-error">
+                      <i className="fas fa-exclamation-triangle"></i> {couponError}
+                    </p>
+                  )}
+                </div>
+
                 {/* Delivery Options */}
                 <div className="ct-delivery-section">
                   <h3>خيارات التوصيل</h3>
@@ -989,15 +1174,21 @@ function Cart() {
                   <h3>ملخص الفاتورة</h3>
                   <div className="ct-invoice-summary-row">
                     <span>المجموع الفرعي:</span>
-                    <span>{subtotal} شيكل</span>
+                    <span>{subtotal.toFixed(2)} شيكل</span>
                   </div>
+                  {appliedCoupon && (
+                    <div className="ct-invoice-summary-row ct-invoice-discount">
+                      <span>خصم الكوبون ({appliedCoupon.code}):</span>
+                      <span>-{couponDiscount.toFixed(2)} شيكل</span>
+                    </div>
+                  )}
                   <div className="ct-invoice-summary-row">
                     <span>رسوم التوصيل:</span>
                     <span>{deliveryFee} شيكل</span>
                   </div>
                   <div className="ct-invoice-summary-row ct-invoice-total">
                     <span>الإجمالي النهائي:</span>
-                    <span>{finalTotal} شيكل</span>
+                    <span>{finalTotal.toFixed(2)} شيكل</span>
                   </div>
                 </div>
 

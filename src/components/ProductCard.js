@@ -89,6 +89,11 @@ function ProductCard({ product }) {
       badges.push({ text: "جديد", type: "new" });
     }
 
+    // Add discount badge if product has discount
+    if (product.hasDiscount && product.discountName) {
+      badges.push({ text: product.discountName, type: "discount" });
+    }
+
     return badges;
   };
 
@@ -169,7 +174,6 @@ function ProductCard({ product }) {
         {product.hasDiscount && timeLeft && (
           <div className="pc-countdown-overlay">
             <div className="pc-countdown-timer-overlay">
-              <span className="pc-timer-label-overlay">ينتهي الخصم في:</span>
               <div className="pc-timer-display-overlay">
                 {timeLeft.days > 0 && (
                   <span className="pc-timer-unit-overlay">
@@ -228,26 +232,49 @@ function ProductCard({ product }) {
 
       <div className="pc-price-container">
         {product.hasVariants ? (
-          <div className="pc-price pc-price--variants">
-            {(() => {
-              const prices = product.variants?.map(
-                (v) => parseFloat(v.price) || 0,
-              ) || [0];
-              const minPrice = Math.min(...prices);
-
-              // Always show only the minimum price for variant products
-              return `${minPrice} شيكل`;
-            })()}
-          </div>
-        ) : product.hasDiscount && product.originalPrice ? (
           <>
-            <p className="pc-price pc-price--discounted">
-              {product.price} شيكل
-            </p>
-            <p className="pc-price pc-price--original">
-              {product.originalPrice} شيكل
-            </p>
+            {product.hasDiscount ? (
+              <div className="pc-price-wrapper">
+                <span className="pc-price pc-price--discounted">
+                  {(() => {
+                    const prices = product.variants?.map(
+                      (v) => parseFloat(v.price) || 0,
+                    ) || [0];
+                    const minPrice = Math.min(...prices);
+                    return `${minPrice} شيكل`;
+                  })()}
+                </span>
+                <span className="pc-price pc-price--original">
+                  {(() => {
+                    const originalPrices = product.variants?.map(
+                      (v) => parseFloat(v.originalPrice || v.price) || 0,
+                    ) || [0];
+                    const minOriginalPrice = Math.min(...originalPrices);
+                    return `${minOriginalPrice} شيكل`;
+                  })()}
+                </span>
+              </div>
+            ) : (
+              <div className="pc-price pc-price--variants">
+                {(() => {
+                  const prices = product.variants?.map(
+                    (v) => parseFloat(v.price) || 0,
+                  ) || [0];
+                  const minPrice = Math.min(...prices);
+                  return `${minPrice} شيكل`;
+                })()}
+              </div>
+            )}
           </>
+        ) : product.hasDiscount && product.originalPrice ? (
+          <div className="pc-price-wrapper">
+            <span className="pc-price pc-price--discounted">
+              {product.price} شيكل
+            </span>
+            <span className="pc-price pc-price--original">
+              {product.originalPrice} شيكل
+            </span>
+          </div>
         ) : (
           <p className="pc-price">{product.price} شيكل</p>
         )}

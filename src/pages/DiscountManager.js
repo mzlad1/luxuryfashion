@@ -68,7 +68,7 @@ function DiscountManager() {
         const categoriesSnapshot = await getDocs(collection(db, "categories"));
         const categoriesList = [];
         categoriesSnapshot.forEach((doc) => {
-          categoriesList.push(doc.data().name);
+          categoriesList.push({ id: doc.id, ...doc.data() });
         });
         setCategories(categoriesList);
       } catch (error) {
@@ -76,7 +76,7 @@ function DiscountManager() {
         const uniqueCategories = [
           ...new Set(productsList.map((p) => p.category).filter(Boolean)),
         ];
-        setCategories(uniqueCategories);
+        setCategories(uniqueCategories.map(cat => ({ name: cat })));
       }
 
       // Fetch brands from the brands collection
@@ -84,7 +84,7 @@ function DiscountManager() {
         const brandsSnapshot = await getDocs(collection(db, "brands"));
         const brandsList = [];
         brandsSnapshot.forEach((doc) => {
-          brandsList.push(doc.data().name);
+          brandsList.push({ id: doc.id, ...doc.data() });
         });
         setBrands(brandsList);
       } catch (error) {
@@ -92,7 +92,7 @@ function DiscountManager() {
         const uniqueBrands = [
           ...new Set(productsList.map((p) => p.brand).filter(Boolean)),
         ];
-        setBrands(uniqueBrands);
+        setBrands(uniqueBrands.map(brand => ({ name: brand })));
       }
     } catch (error) {
       alert("حدث خطأ في تحميل البيانات");
@@ -629,9 +629,17 @@ function DiscountManager() {
         return filteredProducts.slice(startIndex, endIndex);
 
       case "category":
-        return categories.map((cat) => ({ id: cat, name: cat }));
+        return categories.map((cat) => ({
+          id: cat.name,
+          name: cat.name,
+          images: cat.imageUrl ? [cat.imageUrl] : [],
+        }));
       case "brand":
-        return brands.map((brand) => ({ id: brand, name: brand }));
+        return brands.map((brand) => ({
+          id: brand.name,
+          name: brand.name,
+          images: brand.logo ? [brand.logo] : [],
+        }));
       default:
         return [];
     }

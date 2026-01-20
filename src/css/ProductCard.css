@@ -82,6 +82,11 @@
   background-color: #7a8f6a;
 }
 
+.pc-badge--discount {
+  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  color: white;
+}
+
 /* Countdown Timer Overlay */
 .pc-countdown-overlay {
   position: absolute;
@@ -188,6 +193,15 @@
   color: #9a9188;
   text-decoration: line-through;
   margin-bottom: 8px;
+}
+
+/* Price Wrapper - Display inline with wrapping */
+.pc-price-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
 }
 
 /* Savings Info */

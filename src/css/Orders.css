@@ -1,3 +1,4 @@
+
 /* Optional Arabic-friendly fonts */
 @import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700&family=Poppins:wght@400;600&display=swap");
 
@@ -751,7 +752,6 @@
 }
 
 .ord-delivery-info h4::before {
-  content: "🚚";
   font-size: 1.1rem;
 }
 
@@ -800,6 +800,25 @@
 .ord-delivery-total .ord-delivery-value {
   font-size: 1.1rem;
   color: #0984e3;
+}
+
+/* Coupon Item Styles */
+.ord-coupon-item {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  padding: 0.75rem 1rem !important;
+  border: 1px solid #28a745 !important;
+  margin: 0.5rem 0;
+}
+
+.ord-coupon-item .ord-delivery-label {
+  color: #155724;
+  font-weight: 600;
+}
+
+.ord-coupon-discount {
+  color: #28a745 !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
 }
 
 .ord-items .ord-items-table {

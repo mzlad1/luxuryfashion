@@ -262,6 +262,10 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(185, 135, 123, 0.1);
+  display: flex;
+  flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .dm-item-card:hover {

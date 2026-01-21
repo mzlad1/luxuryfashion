@@ -322,7 +322,6 @@
   padding: 10px 16px;
   background: linear-gradient(135deg, #ffffff 0%, #faf9f6 100%);
   border: 2px solid #ede6d8;
-  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.9rem;
@@ -382,7 +381,6 @@
   padding: 12px 14px;
   background: linear-gradient(135deg, #ffffff 0%, #faf9f6 100%);
   border: 2px solid #ede6d8;
-  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.938rem;
@@ -428,7 +426,6 @@
   border: none;
   color: inherit;
   cursor: pointer;
-  border-radius: 4px;
   transition: all 0.2s ease;
   font-size: 0.875rem;
 }
@@ -451,7 +448,6 @@
   padding: 8px;
   background: rgba(191, 165, 122, 0.05);
   border-right: 3px solid #BFA57A;
-  border-radius: 0 4px 4px 0;
   animation: slideDown 0.3s ease-out;
 }
 
@@ -473,7 +469,6 @@
   padding: 10px 12px;
   background: white;
   border: 1px solid #ede6d8;
-  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.875rem;
@@ -562,7 +557,6 @@
   margin-top: 8px;
   background: linear-gradient(135deg, #f5f1eb 0%, #ede6d8 100%);
   border: 2px dashed rgba(191, 165, 122, 0.3);
-  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.875rem;
@@ -611,7 +605,6 @@
   padding: 10px 16px;
   background: linear-gradient(135deg, #ffffff 0%, #faf9f6 100%);
   border: 2px solid #ede6d8;
-  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.9rem;

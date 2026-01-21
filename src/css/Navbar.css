@@ -288,7 +288,7 @@ body {
 }
 
 .admin-link:hover {
-  background: var(--navbar-admin-hover);
+  background: var(--navbar-primary-hover);
   color: white;
 }
 

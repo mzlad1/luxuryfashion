@@ -2916,7 +2916,6 @@
   padding: 12px;
   background-color: rgba(191, 165, 122, 0.05);
   border-right: 3px solid #BFA57A;
-  border-radius: 4px;
 }
 
 .mp-subcategory-label {
@@ -2935,7 +2934,6 @@
   padding: 8px 12px;
   background-color: white;
   border: 1px solid var(--border);
-  border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.15s ease;

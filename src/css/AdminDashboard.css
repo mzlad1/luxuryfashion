@@ -55,7 +55,6 @@
 .admin-dash-btn {
   padding: 10px 20px;
   border: none;
-  border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
@@ -105,10 +104,12 @@
 /* Status Indicator */
 .admin-dash-status {
   max-width: 1400px;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
   margin: 0 auto 24px;
   padding: 12px 16px;
   background-color: var(--bg-primary);
-  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -165,7 +166,6 @@
 .admin-dash-card.stat {
   background-color: var(--bg-primary);
   padding: 24px;
-  border-radius: 12px;
   border: 1px solid var(--border);
   transition: all 0.2s ease;
   position: relative;
@@ -204,7 +204,6 @@
   margin: 0 auto;
   background-color: var(--bg-primary);
   padding: 32px;
-  border-radius: 12px;
   border: 1px solid var(--border);
 }
 
@@ -234,7 +233,6 @@
   padding: 20px;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: 8px;
   text-decoration: none;
   transition: all 0.15s ease;
 }
@@ -299,7 +297,6 @@
   gap: 16px;
   padding: 48px;
   background-color: var(--bg-primary);
-  border-radius: 12px;
   max-width: 600px;
   margin: 0 auto;
   border: 1px solid var(--border);

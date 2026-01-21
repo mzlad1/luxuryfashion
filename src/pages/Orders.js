@@ -706,13 +706,7 @@ function Orders() {
                     </p>
                     <p>
                       <strong>
-                        <i className="fas fa-envelope"></i> البريد:
-                      </strong>{" "}
-                      {order.customerEmail}
-                    </p>
-                    <p>
-                      <strong>
-                        <i className="fas fa-phone"></i> الهاتف:
+                        <i className="fas fa-whatsapp"></i> الواتساب:
                       </strong>{" "}
                       {order.customerPhone}
                     </p>
@@ -885,6 +879,34 @@ function Orders() {
                     </div>
 
                     <div className="ord-action-buttons">
+                      <button
+                        className="ord-action-btn ord-whatsapp-btn"
+                        onClick={() => {
+                          const message = `مرحباً ${order.customerName}،\n\n` +
+                            `تأكيد الطلب #${order.id}\n` +
+                            `━━━━━━━━━━━━━━━\n\n` +
+                            `المنتجات:\n` +
+                            order.items.map((item, index) => 
+                              `${index + 1}. ${item.name}${item.selectedVariant ? ` (${item.selectedVariant.size} - ${item.selectedVariant.color})` : ''}\n` +
+                              `   الكمية: ${item.quantity}\n` +
+                              `   السعر: ${item.selectedVariant?.price || item.price} شيكل\n`
+                            ).join('\n') +
+                            `\n━━━━━━━━━━━━━━━\n` +
+                            `المجموع الفرعي: ${order.subtotal} شيكل\n` +
+                            `رسوم التوصيل: ${order.deliveryFee} شيكل\n` +
+                            (order.coupon ? `خصم الكوبون (${order.coupon.code}): -${order.coupon.couponDiscount.toFixed(2)} شيكل\n` : '') +
+                            `الإجمالي: ${order.total} شيكل\n\n` +
+                            `التوصيل: ${order.deliveryOption}\n` +
+                            `العنوان: ${order.customerAddress}\n\n` +
+                            `الحالة: ${order.status}\n\n` +
+                            `شكراً لك! 💚`;
+                          
+                          const whatsappUrl = `https://wa.me/${order.customerPhone.replace(/\+/g, '')}?text=${encodeURIComponent(message)}`;
+                          window.open(whatsappUrl, '_blank');
+                        }}
+                      >
+                        <i className="fab fa-whatsapp"></i> تأكيد عبر واتساب
+                      </button>
                       <button
                         className="ord-action-btn ord-delete-btn"
                         onClick={() => handleDeleteOrder(order.id)}

@@ -1062,7 +1062,7 @@ function ProductDetail() {
                       <span>
                         <i className="fas fa-lock"></i>
                       </span>
-                      المديرون لا يمكنهم التسوق
+                      أنت أدمن ولا يمكنك التسوق
                     </>
                   ) : addingToCart ? (
                     <>
@@ -1118,9 +1118,9 @@ function ProductDetail() {
                       <i className="fas fa-info-circle"></i>
                     </span>
                     <div className="pd-notice-text">
-                      <strong>ملاحظة للمدير:</strong>
+                      <strong>ملاحظة للأدمن:</strong>
                       <p>
-                        أنت مسجل دخول كمدير. لا يمكن للمدراء إضافة منتجات إلى
+                        أنت مسجل دخول كأدمن. لا يمكن للأدمن إضافة منتجات إلى
                         السلة. يمكنك إدارة المنتجات من{" "}
                         <button
                           onClick={() => navigate("/admin/dashboard")}

@@ -303,6 +303,359 @@
   border-color: var(--primary-500);
   box-shadow: 0 0 0 3px var(--ring);
 }
+
+/* Category Chips Filter */
+.pr-categories-filter {
+  margin-bottom: 24px;
+}
+
+.pr-category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pr-category-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #faf9f6 100%);
+  border: 2px solid #ede6d8;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.pr-category-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-400);
+  box-shadow: 0 4px 12px rgba(191, 165, 122, 0.2);
+}
+
+.pr-category-chip.active {
+  background: linear-gradient(135deg, #BFA57A 0%, #a08960 100%);
+  border-color: var(--primary-400);
+  color: white;
+  box-shadow: 0 4px 12px rgba(191, 165, 122, 0.3);
+}
+
+.pr-category-chip.active:hover {
+  box-shadow: 0 6px 16px rgba(191, 165, 122, 0.4);
+}
+
+.pr-chip-icon {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pr-chip-text {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Category Accordion , each row have 2 categories */
+.pr-category-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-wrap: wrap;
+  
+}
+
+.pr-category-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.pr-category-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #ffffff 0%, #faf9f6 100%);
+  border: 2px solid #ede6d8;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: right;
+  position: relative;
+}
+
+.pr-category-item:hover {
+  border-color: var(--primary-400);
+  box-shadow: 0 2px 8px rgba(191, 165, 122, 0.15);
+  transform: translateX(-2px);
+}
+
+.pr-category-item.active {
+  background: linear-gradient(135deg, #BFA57A 0%, #a08960 100%);
+  border-color: var(--primary-400);
+  color: white;
+  box-shadow: 0 4px 12px rgba(191, 165, 122, 0.3);
+}
+
+.pr-category-icon {
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+}
+
+.pr-category-name {
+  flex: 1;
+  text-align: right;
+}
+
+.pr-category-expand {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.pr-category-expand:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.pr-category-item.active .pr-category-expand:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Subcategories List */
+.pr-subcategories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+  margin-right: 20px;
+  padding: 8px;
+  background: rgba(191, 165, 122, 0.05);
+  border-right: 3px solid #BFA57A;
+  border-radius: 0 4px 4px 0;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pr-subcategory-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: white;
+  border: 1px solid #ede6d8;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+  text-align: right;
+}
+
+.pr-subcategory-item:hover {
+  border-color: var(--primary-400);
+  background: rgba(191, 165, 122, 0.05);
+  transform: translateX(-2px);
+}
+
+.pr-subcategory-item.active {
+  background: linear-gradient(135deg, rgba(191, 165, 122, 0.2) 0%, rgba(160, 137, 96, 0.2) 100%);
+  border-color: var(--primary-400);
+  font-weight: 600;
+  color: var(--primary-600);
+}
+
+.pr-subcategory-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-400);
+  flex-shrink: 0;
+}
+
+.pr-subcategory-item.active .pr-subcategory-dot {
+  background: var(--primary-600);
+  box-shadow: 0 0 0 3px rgba(191, 165, 122, 0.3);
+}
+
+.pr-subcategory-name {
+  flex: 1;
+}
+
+/* Subcategory Active Filter Tag */
+.pr-filter-tag-subcategory {
+  background: linear-gradient(135deg, rgba(191, 165, 122, 0.2) 0%, rgba(160, 137, 96, 0.15) 100%);
+  border-color: var(--primary-400);
+}
+
+/* Responsive Category Accordion */
+@media (max-width: 768px) {
+  .pr-category-item {
+    padding: 10px 12px;
+    font-size: 0.875rem;
+  }
+
+  .pr-category-icon {
+    font-size: 1rem;
+  }
+
+  .pr-subcategories-list {
+    margin-right: 16px;
+    padding: 6px;
+  }
+
+  .pr-subcategory-item {
+    padding: 8px 10px;
+    font-size: 0.813rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pr-category-item {
+    padding: 10px;
+    font-size: 0.813rem;
+  }
+
+  .pr-subcategories-list {
+    margin-right: 12px;
+  }
+}
+
+/* Show More Categories Button */
+.pr-show-more-categories {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, #f5f1eb 0%, #ede6d8 100%);
+  border: 2px dashed rgba(191, 165, 122, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.pr-show-more-categories:hover {
+  background: linear-gradient(135deg, #ede6d8 0%, #e0d3c8 100%);
+  border-color: var(--primary-400);
+  border-style: solid;
+  box-shadow: 0 2px 8px rgba(191, 165, 122, 0.15);
+}
+
+.pr-show-more-categories i {
+  font-size: 0.875rem;
+  transition: transform 0.3s ease;
+}
+
+.pr-show-more-categories:hover i {
+  transform: translateY(2px);
+}
+
+@media (max-width: 768px) {
+  .pr-show-more-categories {
+    padding: 10px;
+    font-size: 0.813rem;
+  }
+}
+
+/* Brand Chips Filter */
+.pr-brands-filter {
+  margin-bottom: 24px;
+}
+
+.pr-brand-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pr-brand-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #faf9f6 100%);
+  border: 2px solid #ede6d8;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.pr-brand-chip:hover {
+  transform: translateY(-2px);
+  border-color: #8B7355;
+  box-shadow: 0 4px 12px rgba(139, 115, 85, 0.2);
+}
+
+.pr-brand-chip.active {
+  background: linear-gradient(135deg, #8B7355 0%, #6f5943 100%);
+  border-color: #8B7355;
+  color: white;
+  box-shadow: 0 4px 12px rgba(139, 115, 85, 0.3);
+}
+
+.pr-brand-chip.active:hover {
+  box-shadow: 0 6px 16px rgba(139, 115, 85, 0.4);
+}
+
+/* Responsive Brand Chips */
+@media (max-width: 768px) {
+  .pr-brand-chips {
+    gap: 8px;
+  }
+
+  .pr-brand-chip {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pr-brand-chip {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: calc(50% - 4px);
+  }
+}
 .pr-checkbox-wrapper {
   display: flex;
   align-items: center;

@@ -15,10 +15,14 @@ function Products() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [showOnlyOnSale, setShowOnlyOnSale] = useState(false);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
+  const [expandedCategories, setExpandedCategories] = useState(new Set());
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [categoriesToShow] = useState(5); // Show 5 categories initially
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8); // 8 products per page
   const [loading, setLoading] = useState(true);
@@ -34,7 +38,7 @@ function Products() {
         // Check cache first
         const cachedCategories = CacheManager.get(CACHE_KEYS.CATEGORIES);
         if (cachedCategories) {
-          setCategories(cachedCategories.map((cat) => cat.name));
+          setCategories(cachedCategories);
           return;
         }
 
@@ -42,13 +46,17 @@ function Products() {
         const data = [];
         snapshot.forEach((doc) => data.push({ id: doc.id, ...doc.data() }));
 
-        // Cache the full data for other pages
+        // Cache the full data
         CacheManager.set(CACHE_KEYS.CATEGORIES, data, 10 * 60 * 1000); // 10 minutes
 
-        setCategories(data.map((cat) => cat.name));
+        setCategories(data);
       } catch (error) {
         // بيانات تجريبية في حال عدم القدرة على جلب البيانات
-        setCategories(["الجسم", "الوجه", "الشعر"]);
+        setCategories([
+          { id: "1", name: "الجسم", subcategories: [] },
+          { id: "2", name: "الوجه", subcategories: [] },
+          { id: "3", name: "الشعر", subcategories: [] }
+        ]);
       }
     }
     fetchCategories();
@@ -201,10 +209,15 @@ function Products() {
       );
     }
 
-    // تصفية حسب التصنيف
-    if (selectedCategory) {
+    // تصفية حسب الفئة الفرعية (له الأولوية)
+    if (selectedSubcategory) {
       updated = updated.filter((item) =>
-        item.categories.includes(selectedCategory),
+        item.subcategories && item.subcategories.includes(selectedSubcategory),
+      );
+    } else if (selectedCategory) {
+      // تصفية حسب الفئة الرئيسية فقط إذا لم يتم اختيار فئة فرعية
+      updated = updated.filter((item) =>
+        item.categories && item.categories.includes(selectedCategory),
       );
     }
 
@@ -236,6 +249,7 @@ function Products() {
     searchTerm,
     sortOrder,
     selectedCategory,
+    selectedSubcategory,
     selectedBrand,
     showOnlyOnSale,
   ]);
@@ -252,9 +266,17 @@ function Products() {
   useEffect(() => {
     const categoryFromURL = searchParams.get("category");
     if (categoryFromURL) {
-      setSelectedCategory(decodeURIComponent(categoryFromURL));
+      const decodedCategory = decodeURIComponent(categoryFromURL);
+      setSelectedCategory(decodedCategory);
+      // Auto-expand if it has subcategories
+      const category = categories.find(c => c.name === decodedCategory);
+      if (category && category.subcategories && category.subcategories.length > 0) {
+        const newExpanded = new Set(expandedCategories);
+        newExpanded.add(decodedCategory);
+        setExpandedCategories(newExpanded);
+      }
     }
-  }, [searchParams]);
+  }, [searchParams, categories]);
 
   // حساب الصفحات
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -274,10 +296,43 @@ function Products() {
     setSearchTerm("");
     setSortOrder("");
     setSelectedCategory("");
+    setSelectedSubcategory("");
     setSelectedBrand("");
     setShowOnlyOnSale(false);
     // Clear URL parameters
     setSearchParams({});
+  };
+
+  const toggleCategory = (categoryName) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryName)) {
+      newExpanded.delete(categoryName);
+    } else {
+      newExpanded.add(categoryName);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
+  const handleCategoryClick = (categoryName) => {
+    if (selectedCategory === categoryName) {
+      setSelectedCategory("");
+      setSelectedSubcategory("");
+    } else {
+      setSelectedCategory(categoryName);
+      setSelectedSubcategory("");
+      // Auto-expand when selecting
+      const newExpanded = new Set(expandedCategories);
+      newExpanded.add(categoryName);
+      setExpandedCategories(newExpanded);
+    }
+  };
+
+  const handleSubcategoryClick = (subcategoryName) => {
+    if (selectedSubcategory === subcategoryName) {
+      setSelectedSubcategory("");
+    } else {
+      setSelectedSubcategory(subcategoryName);
+    }
   };
 
   // مكون الهيكل العظمي للتحميل
@@ -346,6 +401,7 @@ function Products() {
           {(searchTerm ||
             sortOrder ||
             selectedCategory ||
+            selectedSubcategory ||
             selectedBrand ||
             showOnlyOnSale) && (
             <div className="pr-active-filters">
@@ -365,7 +421,17 @@ function Products() {
                   <span className="pr-filter-tag">
                     <i className="fas fa-tag"></i>
                     {selectedCategory}
-                    <button onClick={() => setSelectedCategory("")}>×</button>
+                    <button onClick={() => {
+                      setSelectedCategory("");
+                      setSelectedSubcategory("");
+                    }}>×</button>
+                  </span>
+                )}
+                {selectedSubcategory && (
+                  <span className="pr-filter-tag pr-filter-tag-subcategory">
+                    <i className="fas fa-arrow-left"></i>
+                    {selectedSubcategory}
+                    <button onClick={() => setSelectedSubcategory("")}>×</button>
                   </span>
                 )}
                 {selectedBrand && (
@@ -419,46 +485,129 @@ function Products() {
                 </select>
               </div>
 
-              <div className="pr-filter-group">
-                <label htmlFor="category-select" className="pr-filter-label">
+              <div className="pr-categories-filter">
+                <label className="pr-filter-label">
                   <i className="fas fa-th-large"></i>
-                  الفئة
+                  الفئات
                 </label>
-                <select
-                  id="category-select"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="pr-filter-select"
-                  aria-label="تصفية حسب الفئة"
-                >
-                  <option value="">كل الفئات</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
+                <div className="pr-category-accordion">
+                  <button
+                    className={`pr-category-item ${!selectedCategory && !selectedSubcategory ? "active" : ""}`}
+                    onClick={() => handleCategoryClick("")}
+                  >
+                    <span className="pr-category-icon">
+                      <i className="fas fa-th"></i>
+                    </span>
+                    <span className="pr-category-name">الكل</span>
+                  </button>
+                  {(showAllCategories ? categories : categories.slice(0, categoriesToShow)).map((cat) => {
+                    const catName = cat.name;
+                    const hasSubcategories = cat.subcategories && cat.subcategories.length > 0;
+                    const isExpanded = expandedCategories.has(catName);
+                    const isCategorySelected = selectedCategory === catName;
+
+                    return (
+                      <div key={catName} className="pr-category-wrapper">
+                        <button
+                          className={`pr-category-item ${isCategorySelected && !selectedSubcategory ? "active" : ""}`}
+                          onClick={() => handleCategoryClick(catName)}
+                        >
+                          <span className="pr-category-icon">
+                            {catName === "الوجه" ? (
+                              <i className="fas fa-face-smile"></i>
+                            ) : catName === "الشعر" ? (
+                              <i className="fas fa-scissors"></i>
+                            ) : catName === "الجسم" ? (
+                              <i className="fas fa-pump-soap"></i>
+                            ) : (
+                              <i className="fas fa-tag"></i>
+                            )}
+                          </span>
+                          <span className="pr-category-name">{catName}</span>
+                          {hasSubcategories && (
+                            <button
+                              className="pr-category-expand"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleCategory(catName);
+                              }}
+                            >
+                              <i className={`fas fa-chevron-${isExpanded ? 'up' : 'down'}`}></i>
+                            </button>
+                          )}
+                        </button>
+                        {hasSubcategories && isExpanded && (
+                          <div className="pr-subcategories-list">
+                            {cat.subcategories.map((sub) => (
+                              <button
+                                key={sub}
+                                className={`pr-subcategory-item ${selectedSubcategory === sub ? "active" : ""}`}
+                                onClick={() => {
+                                  // Select parent category if not selected
+                                  if (selectedCategory !== catName) {
+                                    setSelectedCategory(catName);
+                                  }
+                                  handleSubcategoryClick(sub);
+                                }}
+                              >
+                                <span className="pr-subcategory-dot"></span>
+                                <span className="pr-subcategory-name">{sub}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {categories.length > categoriesToShow && (
+                  <button
+                    className="pr-show-more-categories"
+                    onClick={() => setShowAllCategories(!showAllCategories)}
+                  >
+                    {showAllCategories ? (
+                      <>
+                        <i className="fas fa-chevron-up"></i>
+                        <span>عرض أقل</span>
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-chevron-down"></i>
+                        <span>عرض المزيد ({categories.length - categoriesToShow})</span>
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
 
-              <div className="pr-filter-group">
-                <label htmlFor="brand-select" className="pr-filter-label">
+              <div className="pr-brands-filter">
+                <label className="pr-filter-label">
                   <i className="fas fa-award"></i>
-                  العلامة التجارية
+                  العلامات التجارية
                 </label>
-                <select
-                  id="brand-select"
-                  value={selectedBrand}
-                  onChange={(e) => setSelectedBrand(e.target.value)}
-                  className="pr-filter-select"
-                  aria-label="تصفية حسب العلامة التجارية"
-                >
-                  <option value="">كل العلامات التجارية</option>
+                <div className="pr-brand-chips">
+                  <button
+                    className={`pr-brand-chip ${!selectedBrand ? "active" : ""}`}
+                    onClick={() => setSelectedBrand("")}
+                  >
+                    <span className="pr-chip-icon">
+                      <i className="fas fa-th"></i>
+                    </span>
+                    <span className="pr-chip-text">الكل</span>
+                  </button>
                   {brands.map((brand) => (
-                    <option key={brand} value={brand}>
-                      {brand}
-                    </option>
+                    <button
+                      key={brand}
+                      className={`pr-brand-chip ${selectedBrand === brand ? "active" : ""}`}
+                      onClick={() => setSelectedBrand(brand)}
+                    >
+                      <span className="pr-chip-icon">
+                        <i className="fas fa-award"></i>
+                      </span>
+                      <span className="pr-chip-text">{brand}</span>
+                    </button>
                   ))}
-                </select>
+                </div>
               </div>
 
               <div className="pr-filter-group">
@@ -494,16 +643,7 @@ function Products() {
 
             {/* Products Content */}
             <div className="pr-content">
-              {!loading && (
-                <div className="pr-results-info">
-                  <span className="pr-count">
-                    <i className="fas fa-box"></i>
-                    عرض {indexOfFirstItem + 1}-
-                    {Math.min(indexOfLastItem, filteredProducts.length)} من{" "}
-                    {filteredProducts.length} منتج
-                  </span>
-                </div>
-              )}
+             
 
               {loading ? (
                 <LoadingSkeleton />

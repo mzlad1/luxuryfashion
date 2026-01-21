@@ -27,7 +27,6 @@ function Cart() {
   const [isAdmin, setIsAdmin] = useState(false);
   const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [orderId, setOrderId] = useState("");
@@ -39,10 +38,7 @@ function Cart() {
   const [showStockModal, setShowStockModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showImageModal, setShowImageModal] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [emailLoading, setEmailLoading] = useState(false);
-  const [emailError, setEmailError] = useState("");
-  const [emailValid, setEmailValid] = useState(true);
+  const [phoneValid, setPhoneValid] = useState(true);
 
   // Delivery options
   const [selectedDelivery, setSelectedDelivery] = useState("");
@@ -421,18 +417,22 @@ function Cart() {
     setError("");
   };
 
+  const validatePhone = (phoneValue) => {
+  const phoneRegex = /^(?:\+970|\+972)\d{9}$/;
+  const isValid = phoneRegex.test(phoneValue.trim());
+  setPhoneValid(isValid);
+  return isValid;
+};
+
   // التعامل مع إرسال الطلب وتحديث المخزون
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (cartItems.length === 0) return;
 
-    // Validate email format if provided
-    if (email && email.trim() !== "") {
-      if (!validateEmail(email)) {
-        setError("يرجى إدخال بريد إلكتروني صحيح أو ترك الحقل فارغاً");
-        setLoading(false);
-        return;
-      }
+    // Validate phone format
+    if (!validatePhone(phone)) {
+      setError("يرجى إدخال رقم واتساب صحيح بالصيغة: +970XXXXXXXXX أو +972XXXXXXXXX");
+      return;
     }
 
     setLoading(true);
@@ -512,7 +512,6 @@ function Cart() {
         // If all stock checks pass, create the order
         const orderData = {
           customerName: name,
-          customerEmail: email,
           customerPhone: phone,
           customerAddress: address,
           items: cartItems,
@@ -559,21 +558,8 @@ function Cart() {
       setShowCheckout(false);
       setSelectedDelivery(""); // Reset delivery selection
 
-      // Send order confirmation email
-      const emailResult = await sendOrderConfirmationEmail(result);
-      if (emailResult) {
-        if (result.customerEmail && result.customerEmail.trim() !== "") {
-          setEmailSent(true);
-        } else {
-          setEmailSent(false);
-        }
-      } else {
-        setEmailSent(false);
-      }
-
       clearCart();
       setName("");
-      setEmail("");
       setPhone("");
       setAddress("");
       setAppliedCoupon(null);
@@ -623,7 +609,7 @@ function Cart() {
                 <i className="fas fa-lock"></i>
               </span>
               <span>
-                المديرون لا يمكنهم الوصول لصفحة السلة. سيتم توجيهك للوحة
+                أنت أدمن ولا يمكنك الوصول لصفحة السلة. سيتم توجيهك للوحة
                 التحكم...
               </span>
             </div>
@@ -928,34 +914,9 @@ function Cart() {
                 {copied ? "تم النسخ" : "نسخ"}
               </button>
             </p>
-            {emailLoading && (
-              <p className="ct-email-loading">
-                <i className="fas fa-envelope"></i> جاري إرسال تأكيد الطلب...
-              </p>
-            )}
-            {emailSent && email && email.trim() !== "" && (
-              <p className="ct-email-sent">
-                <i className="fas fa-check-circle"></i> تم إرسال تأكيد الطلب إلى
-                بريدك الإلكتروني
-              </p>
-            )}
-            {!emailSent && email && email.trim() !== "" && (
-              <p className="ct-email-not-sent">
-                <i className="fas fa-info-circle"></i> لم يتم إرسال تأكيد الطلب
-                عبر البريد الإلكتروني
-              </p>
-            )}
-            {!emailSent && (!email || email.trim() === "") && (
-              <p className="ct-email-not-provided">
-                <i className="fas fa-info-circle"></i> لم يتم إرسال تأكيد الطلب
-                عبر البريد الإلكتروني (لم يتم توفير بريد إلكتروني)
-              </p>
-            )}
-            {emailError && (
-              <p className="ct-email-error">
-                <i className="fas fa-exclamation-triangle"></i> {emailError}
-              </p>
-            )}
+            <p className="ct-whatsapp-confirmation">
+              <i className="fas fa-phone"></i> سنتواصل معك عبر الواتساب لتأكيد الطلب
+            </p>
           </div>
         )}
 
@@ -1253,54 +1214,44 @@ function Cart() {
                   <input
                     type="text"
                     value={name}
+                    placeholder="أدخل الاسم الكامل"
                     required
                     onChange={(e) => setName(e.target.value)}
                   />
                 </div>
                 <div className="ct-form-group">
-                  <label>
-                    البريد الإلكتروني:{" "}
-                    <span className="ct-optional">(اختياري)</span>
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    placeholder="إذا كنت لا تريد إرسال تفاصيل الطلب عبر البريد الإلكتروني، اترك هذا الحقل فارغاً"
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      validateEmail(e.target.value);
-                    }}
-                    className={
-                      email && email.trim() !== "" && !emailValid
-                        ? "ct-input-invalid"
-                        : ""
-                    }
-                  />
-                  <small className="ct-email-note">
-                    إذا لم تملأ هذا الحقل، لن نرسل لك تأكيد الطلب عبر البريد
-                    الإلكتروني
-                  </small>
-                  {email && email.trim() !== "" && !emailValid && (
-                    <small className="ct-email-error-note">
-                      <i className="fas fa-exclamation-triangle"></i> يرجى إدخال
-                      بريد إلكتروني صحيح
-                    </small>
-                  )}
-                </div>
-                <div className="ct-form-group">
-                  <label>رقم الهاتف:</label>
+                  <label>رقم الواتساب:</label>
                   <input
                     type="tel"
                     value={phone}
                     required
-                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+970594659371 أو +972594659371"
+                    onChange={(e) => {
+                      setPhone(e.target.value);
+                      validatePhone(e.target.value);
+                    }}
+                    className={
+                      phone && !phoneValid
+                        ? "ct-input-invalid"
+                        : ""
+                    }
+                    dir="ltr"
                   />
+                  <small className="ct-phone-note">
+                    <i className="fas fa-phone"></i> يرجى إدخال رقم الواتساب بالصيغة التالية: +970XXXXXXXXX أو +972XXXXXXXXX
+                  </small>
+                  {phone && !phoneValid && (
+                    <small className="ct-phone-error-note">
+                      <i className="fas fa-exclamation-triangle"></i> يرجى إدخال رقم واتساب صحيح يبدأ بـ +970 أو +972 متبوعاً بـ 9 أرقام
+                    </small>
+                  )}
                 </div>
                 <div className="ct-form-group">
                   <label>العنوان:</label>
                   <textarea
                     value={address}
                     required
+                    placeholder="أدخل العنوان"
                     onChange={(e) => setAddress(e.target.value)}
                   />
                 </div>
@@ -1310,7 +1261,7 @@ function Cart() {
                   disabled={
                     loading ||
                     cartItems.length === 0 ||
-                    (email && email.trim() !== "" && !emailValid)
+                    (phone && !phoneValid)
                   }
                 >
                   {loading ? "... جاري الإرسال" : "إرسال الطلب"}

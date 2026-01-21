@@ -945,6 +945,13 @@
   background: linear-gradient(135deg, #d7b5a8, #5a3e2b);
   box-shadow: 0 10px 24px rgba(185, 135, 123, 0.22);
 }
+.ord-whatsapp-btn {
+  background: linear-gradient(135deg, #25D366, #20BA5A);
+  box-shadow: 0 10px 24px rgba(37, 211, 102, 0.3);
+}
+.ord-whatsapp-btn:hover {
+  box-shadow: 0 12px 28px rgba(37, 211, 102, 0.4);
+}
 .ord-delete-btn {
   background: linear-gradient(135deg, #a14a3b, #a14a3b);
   box-shadow: 0 10px 24px rgba(255, 107, 107, 0.22);

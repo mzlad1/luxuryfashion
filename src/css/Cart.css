@@ -1874,3 +1874,43 @@
     font-size: 0.9rem;
   }
 }
+
+/* Phone/WhatsApp Styles */
+.ct-phone-note {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.85em;
+  line-height: 1.4;
+}
+
+.ct-phone-note i {
+  color: #25D366;
+  margin-left: 4px;
+}
+
+.ct-phone-error-note {
+  display: block;
+  margin-top: 6px;
+  color: var(--warn);
+  font-size: 0.85em;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.ct-whatsapp-confirmation {
+  color: #4deb87;
+  padding: 0.75rem;
+  margin: 0.75rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  
+}
+
+.ct-whatsapp-confirmation i {
+  font-size: 1.3rem;
+}

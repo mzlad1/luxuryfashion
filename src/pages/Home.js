@@ -448,6 +448,17 @@ function Home() {
     navigate(`/products?brand=${encodeURIComponent(brandName)}`);
   };
 
+  // Get product count for a category
+  const getCategoryProductCount = (categoryName) => {
+    // Get products from cache or return 0
+    const cachedProducts = CacheManager.get(CACHE_KEYS.PRODUCTS);
+    if (!cachedProducts) return 0;
+    
+    return cachedProducts.filter((product) =>
+      product.categories?.includes(categoryName)
+    ).length;
+  };
+
   return (
     <>
       <Navbar />
@@ -600,6 +611,9 @@ function Home() {
                             )}
                           </span>
                         </div>
+                        <span className="category-count-badge">
+                          {getCategoryProductCount(category.name)}
+                        </span>
                       </div>
                       <h3 className="category-name">{category.name}</h3>
                     </div>

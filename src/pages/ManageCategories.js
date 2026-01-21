@@ -28,6 +28,8 @@ function ManageCategories() {
   const [formName, setFormName] = useState("");
   const [formImage, setFormImage] = useState(null);
   const [formImagePreview, setFormImagePreview] = useState("");
+  const [formSubcategories, setFormSubcategories] = useState([]);
+  const [newSubcategory, setNewSubcategory] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -106,6 +108,7 @@ function ManageCategories() {
     setFormName(cat.name);
     setFormImage(null);
     setFormImagePreview(cat.imageUrl || "");
+    setFormSubcategories(cat.subcategories || []);
     setEditingId(cat.id);
     setShowForm(true);
   };
@@ -114,8 +117,21 @@ function ManageCategories() {
     setFormName("");
     setFormImage(null);
     setFormImagePreview("");
+    setFormSubcategories([]);
+    setNewSubcategory("");
     setEditingId(null);
     setShowForm(false);
+  };
+
+  const addSubcategory = () => {
+    if (newSubcategory.trim()) {
+      setFormSubcategories([...formSubcategories, newSubcategory.trim()]);
+      setNewSubcategory("");
+    }
+  };
+
+  const removeSubcategory = (index) => {
+    setFormSubcategories(formSubcategories.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -129,7 +145,10 @@ function ManageCategories() {
       if (editingId) {
         // Editing existing category
         const docRef = doc(db, "categories", editingId);
-        const updateData = { name: formName };
+        const updateData = { 
+          name: formName,
+          subcategories: formSubcategories
+        };
 
         // Handle image update
         if (formImage) {
@@ -154,6 +173,7 @@ function ManageCategories() {
         const docRef = await addDoc(collection(db, "categories"), {
           name: formName,
           imageUrl: "",
+          subcategories: formSubcategories,
         });
 
         let imageUrl = "";
@@ -165,7 +185,7 @@ function ManageCategories() {
 
         updatedCategories = [
           ...categories,
-          { id: docRef.id, name: formName, imageUrl },
+          { id: docRef.id, name: formName, imageUrl, subcategories: formSubcategories },
         ];
       }
 
@@ -181,6 +201,8 @@ function ManageCategories() {
       setFormName("");
       setFormImage(null);
       setFormImagePreview("");
+      setFormSubcategories([]);
+      setNewSubcategory("");
       setEditingId(null);
       setShowForm(false);
     } catch (error) {
@@ -333,6 +355,55 @@ function ManageCategories() {
               </div>
             </div>
 
+            <div className="mc-form-group">
+              <label>الفئات الفرعية (اختياري):</label>
+              <div className="mc-subcategories-section">
+                <div className="mc-subcategory-input-group">
+                  <input
+                    type="text"
+                    value={newSubcategory}
+                    onChange={(e) => setNewSubcategory(e.target.value)}
+                    placeholder="مثال: قمصان، بناطيل، جاكيتات..."
+                    className="mc-subcategory-input"
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addSubcategory();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={addSubcategory}
+                    className="mc-add-subcategory-btn"
+                    disabled={!newSubcategory.trim()}
+                  >
+                    + إضافة
+                  </button>
+                </div>
+
+                {formSubcategories.length > 0 && (
+                  <div className="mc-subcategories-list">
+                    {formSubcategories.map((sub, index) => (
+                      <div key={index} className="mc-subcategory-item">
+                        <span className="mc-subcategory-name">{sub}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeSubcategory(index)}
+                          className="mc-remove-subcategory-btn"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <small className="mc-subcategory-hint">
+                  <i className="fas fa-lightbulb"></i> الفئات الفرعية تساعد في تنظيم المنتجات بشكل أفضل
+                </small>
+              </div>
+            </div>
+
             <button type="submit" className="mc-save-btn" disabled={loading}>
               {loading ? "جاري الحفظ..." : editingId ? "تحديث" : "إضافة"}
             </button>
@@ -351,6 +422,7 @@ function ManageCategories() {
             <tr>
               <th>الصورة</th>
               <th>اسم الفئة</th>
+              <th>الفئات الفرعية</th>
               <th>إجراءات</th>
             </tr>
           </thead>
@@ -369,6 +441,19 @@ function ManageCategories() {
                   )}
                 </td>
                 <td data-label="اسم الفئة">{cat.name}</td>
+                <td data-label="الفئات الفرعية">
+                  {cat.subcategories && cat.subcategories.length > 0 ? (
+                    <div className="mc-subcategories-display">
+                      {cat.subcategories.map((sub, index) => (
+                        <span key={index} className="mc-subcategory-tag">
+                          {sub}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="mc-no-subcategories">لا توجد</span>
+                  )}
+                </td>
                 <td data-label="إجراءات">
                   <button
                     className="mc-edit-btn"

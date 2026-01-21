@@ -35,6 +35,7 @@ function ManageProducts() {
     howToUse: "",
     images: [],
     categories: [],
+    subcategories: [],
     brand: "",
     stock: "",
     isNew: false,
@@ -408,26 +409,50 @@ function ManageProducts() {
           return {
             ...prev,
             categories: prev.categories.filter((c) => c !== "بدون فئة"),
+            subcategories: prev.subcategories,
           };
         } else {
           // Select only "None" option (clear other selections)
-          return { ...prev, categories: ["بدون فئة"] };
+          return { ...prev, categories: ["بدون فئة"], subcategories: [] };
         }
       }
 
       // Handle regular categories
       const isSelected = prev.categories.includes(catName);
       let newCategories;
+      let newSubcategories = [...prev.subcategories];
 
       if (isSelected) {
         newCategories = prev.categories.filter((c) => c !== catName);
+        // Remove subcategories of this category
+        const category = categories.find((c) => c.name === catName);
+        if (category && category.subcategories) {
+          newSubcategories = newSubcategories.filter(
+            (sub) => !category.subcategories.includes(sub)
+          );
+        }
       } else {
         // Remove "None" option when selecting a regular category
         newCategories = prev.categories.filter((c) => c !== "بدون فئة");
         newCategories = [...newCategories, catName];
       }
 
-      return { ...prev, categories: newCategories };
+      return { ...prev, categories: newCategories, subcategories: newSubcategories };
+    });
+  };
+
+  const handleSubcategoryToggle = (subcategoryName) => {
+    setFormData((prev) => {
+      const isSelected = prev.subcategories.includes(subcategoryName);
+      let newSubcategories;
+
+      if (isSelected) {
+        newSubcategories = prev.subcategories.filter((s) => s !== subcategoryName);
+      } else {
+        newSubcategories = [...prev.subcategories, subcategoryName];
+      }
+
+      return { ...prev, subcategories: newSubcategories };
     });
   };
 
@@ -593,6 +618,7 @@ function ManageProducts() {
         howToUse: formData.howToUse || "",
         images: finalImageUrls,
         categories: formData.categories,
+        subcategories: formData.subcategories || [],
         brand: formData.brand,
         isNew: formData.isNew || false,
         onDemand: formData.onDemand || false,
@@ -684,6 +710,7 @@ function ManageProducts() {
         howToUse: "",
         images: [],
         categories: [],
+        subcategories: [],
         brand: "",
         stock: "",
         isNew: false,
@@ -716,6 +743,7 @@ function ManageProducts() {
       howToUse: product.howToUse || "",
       images: [], // Empty array since we manage existing images separately
       categories: product.categories || [],
+      subcategories: product.subcategories || [],
       brand: product.brand || "",
       stock: product.hasVariants ? "" : product.stock || 0,
       isNew: product.isNew || false,
@@ -784,6 +812,7 @@ function ManageProducts() {
       howToUse: "",
       images: [],
       categories: [],
+      subcategories: [],
       brand: "",
       stock: "",
       isNew: false,
@@ -1945,19 +1974,41 @@ function ManageProducts() {
                   بدون فئة
                 </label>
                 {categories.map((cat) => (
-                  <label key={cat.id} className="mp-category">
-                    <input
-                      type="checkbox"
-                      checked={formData.categories.includes(cat.name)}
-                      onChange={() => handleCategoryToggle(cat.name)}
-                      disabled={formData.categories.includes("بدون فئة")}
-                    />
-                    {cat.name}
-                  </label>
+                  <div key={cat.id} className="mp-category-group">
+                    <label className="mp-category">
+                      <input
+                        type="checkbox"
+                        checked={formData.categories.includes(cat.name)}
+                        onChange={() => handleCategoryToggle(cat.name)}
+                        disabled={formData.categories.includes("بدون فئة")}
+                      />
+                      {cat.name}
+                    </label>
+                    {/* Show subcategories if category is selected */}
+                    {formData.categories.includes(cat.name) &&
+                      cat.subcategories &&
+                      cat.subcategories.length > 0 && (
+                        <div className="mp-subcategories">
+                          <span className="mp-subcategory-label">
+                            الفئات الفرعية:
+                          </span>
+                          {cat.subcategories.map((sub, index) => (
+                            <label key={index} className="mp-subcategory">
+                              <input
+                                type="checkbox"
+                                checked={formData.subcategories.includes(sub)}
+                                onChange={() => handleSubcategoryToggle(sub)}
+                              />
+                              {sub}
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                  </div>
                 ))}
               </div>
               <small className="mp-category-note">
-                اختر "بدون فئة" أو اختر فئة أو أكثر من الفئات المتاحة
+                اختر "بدون فئة" أو اختر فئة أو أكثر من الفئات المتاحة. يمكنك أيضاً اختيار الفئات الفرعية
               </small>
             </div>
 

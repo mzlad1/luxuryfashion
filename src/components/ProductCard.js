@@ -290,7 +290,7 @@ function ProductCard({ product }) {
         }
         title={
           isAdmin
-            ? "المديرون لا يمكنهم التسوق"
+            ? "أنت أدمن ولا يمكنك التسوق"
             : addingToCart
               ? "جاري الإضافة..."
               : "أضف للسلة"
@@ -299,7 +299,7 @@ function ProductCard({ product }) {
         {isAdmin ? (
           <>
             <i className="fas fa-lock"></i>
-            <span>محظور للمديرين</span>
+            <span>أنت أدمن</span>
           </>
         ) : addingToCart ? (
           <>

@@ -43,15 +43,7 @@
       transparent 60%
     ),
     linear-gradient(180deg, transparent 0%, rgba(250, 248, 247, 0.95) 100%);
-  font-family:
-    "Tajawal",
-    "Poppins",
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    Arial,
-    sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .ft-footer::before {

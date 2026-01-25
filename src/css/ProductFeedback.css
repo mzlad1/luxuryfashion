@@ -21,7 +21,7 @@
   font-weight: 700;
   color: #3b2f2f;
   margin: 0;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .pf-add-button {
@@ -32,7 +32,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .pf-add-button:hover {
@@ -78,7 +78,7 @@
   color: #3b2f2f;
   font-size: 0.9rem;
   line-height: 1.4;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .pf-form-group label {
@@ -86,7 +86,7 @@
   margin-bottom: 8px;
   font-weight: 600;
   color: #3b2f2f;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 /* Rating Styles */
@@ -234,7 +234,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
   font-size: 16px;
 }
 
@@ -260,7 +260,7 @@
   padding: 40px 20px;
   color: #6e6259;
   font-style: italic;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .pf-feedback-item {
@@ -320,20 +320,20 @@
 .pf-feedback-name {
   font-weight: 700;
   color: #3b2f2f;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .pf-feedback-date {
   font-size: 0.85rem;
   color: #6e6259;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .pf-feedback-comment {
   color: #3b2f2f;
   line-height: 1.6;
   margin-bottom: 15px;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
   white-space: pre-wrap;
   word-wrap: break-word;
 }

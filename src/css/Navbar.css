@@ -267,8 +267,10 @@ body {
   padding: 8px 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   position: relative;
+  width: 44px;
+  height: 44px;
 }
 
 .cart-link:hover {
@@ -277,13 +279,16 @@ body {
 }
 
 .cart-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
   background: #ff5252;
   color: white;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  padding: 2px 6px;
-  min-width: 18px;
-  height: 18px;
+  padding: 2px 5px;
+  min-width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;

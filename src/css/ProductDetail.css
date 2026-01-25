@@ -27,7 +27,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #faf9f6 0%, #ffffff 100%);
   padding: 2rem 0;
-  font-family: "Tajawal", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Cairo", sans-serif;
   direction: rtl;
 }
 
@@ -2076,7 +2076,7 @@
   color: var(--gray-color);
   font-size: 1rem;
   font-weight: 600;
-  font-family: "Tajawal", sans-serif;
+  font-family: "Cairo", sans-serif;
   cursor: pointer;
   transition: var(--transition);
   position: relative;

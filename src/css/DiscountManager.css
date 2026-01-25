@@ -5,7 +5,7 @@
   margin: 0 auto;
   padding: 20px;
   direction: rtl;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
   background: linear-gradient(135deg, #faf9f6 0%, #ede6d8 100%);
   min-height: 100vh;
 }
@@ -71,7 +71,7 @@
   font-size: 1rem;
   background: rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .dm-form-group select:focus,
@@ -133,7 +133,7 @@
   font-size: 1rem;
   background: rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .dm-search-input:focus {
@@ -167,7 +167,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .dm-page-btn:hover:not(:disabled) {
@@ -205,7 +205,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
   font-size: 0.9rem;
 }
 
@@ -369,7 +369,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
   margin-top: 20px;
 }
 
@@ -492,7 +492,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .dm-remove-btn:hover:not(:disabled) {
@@ -654,7 +654,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
   font-size: 0.9rem;
 }
 
@@ -684,7 +684,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
   font-size: 0.9rem;
   display: flex;
   align-items: center;
@@ -736,7 +736,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .dm-edit-btn:hover {
@@ -796,7 +796,7 @@
   font-size: 0.9rem;
   background: rgba(255, 255, 255, 0.9);
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
 }
 
 .dm-edit-form-group input:focus {
@@ -819,7 +819,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
   min-width: 120px;
 }
 
@@ -842,7 +842,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
-  font-family: "Tajawal", Arial, sans-serif;
+  font-family: "Cairo", sans-serif;
   min-width: 120px;
 }
 

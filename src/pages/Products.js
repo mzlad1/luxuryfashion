@@ -55,7 +55,7 @@ function Products() {
         setCategories([
           { id: "1", name: "الجسم", subcategories: [] },
           { id: "2", name: "الوجه", subcategories: [] },
-          { id: "3", name: "الشعر", subcategories: [] }
+          { id: "3", name: "الشعر", subcategories: [] },
         ]);
       }
     }
@@ -211,14 +211,37 @@ function Products() {
 
     // تصفية حسب الفئة الفرعية (له الأولوية)
     if (selectedSubcategory) {
-      updated = updated.filter((item) =>
-        item.subcategories && item.subcategories.includes(selectedSubcategory),
-      );
+      updated = updated.filter((item) => {
+        // Handle both old format (subcategories array) and new format (subcategoryIds array)
+        const subcategoryIds = item.subcategoryIds || [];
+        const oldSubcategories = item.subcategories || [];
+
+        // Check new format: subcategoryId format is "categoryId_subcategoryName"
+        const matchesNewFormat = subcategoryIds.some((subId) =>
+          subId.endsWith(`_${selectedSubcategory}`),
+        );
+
+        // Check old format
+        const matchesOldFormat = oldSubcategories.includes(selectedSubcategory);
+
+        return matchesNewFormat || matchesOldFormat;
+      });
     } else if (selectedCategory) {
       // تصفية حسب الفئة الرئيسية فقط إذا لم يتم اختيار فئة فرعية
-      updated = updated.filter((item) =>
-        item.categories && item.categories.includes(selectedCategory),
-      );
+      updated = updated.filter((item) => {
+        // Handle both old format (categories array with names) and new format (categoryIds array)
+        const categoryIds = item.categoryIds || [];
+        const oldCategories = item.categories || [];
+
+        // Find category ID from name for new format
+        const category = categories.find((c) => c.name === selectedCategory);
+        const matchesNewFormat = category && categoryIds.includes(category.id);
+
+        // Check old format
+        const matchesOldFormat = oldCategories.includes(selectedCategory);
+
+        return matchesNewFormat || matchesOldFormat;
+      });
     }
 
     // تصفية حسب العلامة التجارية
@@ -269,8 +292,12 @@ function Products() {
       const decodedCategory = decodeURIComponent(categoryFromURL);
       setSelectedCategory(decodedCategory);
       // Auto-expand if it has subcategories
-      const category = categories.find(c => c.name === decodedCategory);
-      if (category && category.subcategories && category.subcategories.length > 0) {
+      const category = categories.find((c) => c.name === decodedCategory);
+      if (
+        category &&
+        category.subcategories &&
+        category.subcategories.length > 0
+      ) {
         const newExpanded = new Set(expandedCategories);
         newExpanded.add(decodedCategory);
         setExpandedCategories(newExpanded);
@@ -355,6 +382,15 @@ function Products() {
   return (
     <>
       <Navbar />
+      {/* Hero Section */}
+      <section className="products-hero">
+        <div className="products-hero-overlay"></div>
+        <div className="products-hero-content">
+          <h1 className="products-hero-title">منتجاتنا</h1>
+          <p className="products-hero-subtitle">اكتشفي مجموعتنا الفاخرة</p>
+        </div>
+      </section>
+
       <div className="products-page">
         <div className="pr-container">
           {error && (
@@ -421,17 +457,23 @@ function Products() {
                   <span className="pr-filter-tag">
                     <i className="fas fa-tag"></i>
                     {selectedCategory}
-                    <button onClick={() => {
-                      setSelectedCategory("");
-                      setSelectedSubcategory("");
-                    }}>×</button>
+                    <button
+                      onClick={() => {
+                        setSelectedCategory("");
+                        setSelectedSubcategory("");
+                      }}
+                    >
+                      ×
+                    </button>
                   </span>
                 )}
                 {selectedSubcategory && (
                   <span className="pr-filter-tag pr-filter-tag-subcategory">
                     <i className="fas fa-arrow-left"></i>
                     {selectedSubcategory}
-                    <button onClick={() => setSelectedSubcategory("")}>×</button>
+                    <button onClick={() => setSelectedSubcategory("")}>
+                      ×
+                    </button>
                   </span>
                 )}
                 {selectedBrand && (
@@ -500,9 +542,13 @@ function Products() {
                     </span>
                     <span className="pr-category-name">الكل</span>
                   </button>
-                  {(showAllCategories ? categories : categories.slice(0, categoriesToShow)).map((cat) => {
+                  {(showAllCategories
+                    ? categories
+                    : categories.slice(0, categoriesToShow)
+                  ).map((cat) => {
                     const catName = cat.name;
-                    const hasSubcategories = cat.subcategories && cat.subcategories.length > 0;
+                    const hasSubcategories =
+                      cat.subcategories && cat.subcategories.length > 0;
                     const isExpanded = expandedCategories.has(catName);
                     const isCategorySelected = selectedCategory === catName;
 
@@ -532,7 +578,9 @@ function Products() {
                                 toggleCategory(catName);
                               }}
                             >
-                              <i className={`fas fa-chevron-${isExpanded ? 'up' : 'down'}`}></i>
+                              <i
+                                className={`fas fa-chevron-${isExpanded ? "up" : "down"}`}
+                              ></i>
                             </button>
                           )}
                         </button>
@@ -551,7 +599,9 @@ function Products() {
                                 }}
                               >
                                 <span className="pr-subcategory-dot"></span>
-                                <span className="pr-subcategory-name">{sub}</span>
+                                <span className="pr-subcategory-name">
+                                  {sub}
+                                </span>
                               </button>
                             ))}
                           </div>
@@ -573,7 +623,9 @@ function Products() {
                     ) : (
                       <>
                         <i className="fas fa-chevron-down"></i>
-                        <span>عرض المزيد ({categories.length - categoriesToShow})</span>
+                        <span>
+                          عرض المزيد ({categories.length - categoriesToShow})
+                        </span>
                       </>
                     )}
                   </button>
@@ -643,8 +695,6 @@ function Products() {
 
             {/* Products Content */}
             <div className="pr-content">
-             
-
               {loading ? (
                 <LoadingSkeleton />
               ) : filteredProducts.length === 0 ? (

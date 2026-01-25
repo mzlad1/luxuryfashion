@@ -454,10 +454,19 @@ function Home() {
     // Get products from cache or return 0
     const cachedProducts = CacheManager.get(CACHE_KEYS.PRODUCTS);
     if (!cachedProducts) return 0;
-    
-    return cachedProducts.filter((product) =>
-      product.categories?.includes(categoryName)
-    ).length;
+
+    // Find the category ID from the name
+    const category = categories.find((cat) => cat.name === categoryName);
+    if (!category) return 0;
+
+    return cachedProducts.filter((product) => {
+      // Check new format (categoryIds)
+      if (product.categoryIds && product.categoryIds.length > 0) {
+        return product.categoryIds.includes(category.id);
+      }
+      // Fallback to old format (categories)
+      return product.categories?.includes(categoryName);
+    }).length;
   };
 
   return (
@@ -554,6 +563,73 @@ function Home() {
               <p>لا توجد شرائح معروضة حالياً</p>
             </div>
           )}
+        </section>
+
+        {/* Brands Section */}
+        <section className="brands-section">
+          <div className="section-container">
+            {/* <div className="section-header">
+              <h2 className="section-title">العلامات التجارية</h2>
+            </div> */}
+
+            {loadingBrands ? (
+              <div className="brands-loading">
+                <div className="brands-loading-grid">
+                  {[...Array(6)].map((_, index) => (
+                    <div key={index} className="brand-skeleton">
+                      <div className="skeleton-brand-logo"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : brands.length > 0 ? (
+              <Marquee
+                gradient={true}
+                gradientColor={[250, 248, 245]}
+                gradientWidth={50}
+                speed={40}
+                pauseOnHover={true}
+                direction="left"
+                style={{ direction: "ltr" }}
+                className="brands-marquee"
+              >
+                {brands.map((brand) => (
+                  <div
+                    key={brand.id}
+                    className="brand-marquee-item"
+                    onClick={() => handleBrandClick(brand.name)}
+                  >
+                    <div className="brand-marquee-card">
+                      {brand.logo ? (
+                        <img
+                          src={brand.logo}
+                          alt={brand.name}
+                          className="brand-marquee-logo"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                            e.target.nextSibling.style.display = "flex";
+                          }}
+                        />
+                      ) : (
+                        <div className="brand-marquee-fallback">
+                          <span className="brand-marquee-icon">
+                            {brand.icon || <i className="fas fa-tag"></i>}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </Marquee>
+            ) : (
+              <div className="no-brands-message">
+                <div className="no-brands-icon">
+                  <i className="fas fa-tag"></i>
+                </div>
+                <h3>لا توجد علامات تجارية</h3>
+              </div>
+            )}
+          </div>
         </section>
 
         {/* Categories Section */}
@@ -705,73 +781,6 @@ function Home() {
             </div>
           </section>
         )}
-
-        {/* Brands Section */}
-        <section className="brands-section">
-          <div className="section-container">
-            <div className="section-header">
-              <h2 className="section-title">العلامات التجارية</h2>
-            </div>
-
-            {loadingBrands ? (
-              <div className="brands-loading">
-                <div className="brands-loading-grid">
-                  {[...Array(6)].map((_, index) => (
-                    <div key={index} className="brand-skeleton">
-                      <div className="skeleton-brand-logo"></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : brands.length > 0 ? (
-              <Marquee
-  gradient={true}
-  gradientColor={[250, 248, 245]}
-  gradientWidth={50}
-  speed={40}
-  pauseOnHover={true}
-    direction="left"
-  style={{ direction: "ltr" }}
-  className="brands-marquee"
->
-                {brands.map((brand) => (
-                  <div
-                    key={brand.id}
-                    className="brand-marquee-item"
-                    onClick={() => handleBrandClick(brand.name)}
-                  >
-                    <div className="brand-marquee-card">
-                      {brand.logo ? (
-                        <img
-                          src={brand.logo}
-                          alt={brand.name}
-                          className="brand-marquee-logo"
-                          onError={(e) => {
-                            e.target.style.display = "none";
-                            e.target.nextSibling.style.display = "flex";
-                          }}
-                        />
-                      ) : (
-                        <div className="brand-marquee-fallback">
-                          <span className="brand-marquee-icon">
-                            {brand.icon || <i className="fas fa-tag"></i>}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </Marquee>
-            ) : (
-              <div className="no-brands-message">
-                <div className="no-brands-icon">
-                  <i className="fas fa-tag"></i>
-                </div>
-                <h3>لا توجد علامات تجارية</h3>
-              </div>
-            )}
-          </div>
-        </section>
 
         <Footer />
       </div>

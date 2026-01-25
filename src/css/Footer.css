@@ -187,6 +187,7 @@
   font-weight: 600;
   font-size: 0.95rem;
   transition: all 0.3s ease;
+  width: 50%;
 }
 
 .ft-social-link:hover {

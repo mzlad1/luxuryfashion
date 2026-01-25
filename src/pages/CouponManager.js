@@ -70,7 +70,9 @@ function CouponManager() {
       // Validate code format (uppercase, no spaces)
       const code = formData.code.toUpperCase().trim();
       if (!/^[A-Z0-9]+$/.test(code)) {
-        toast.error("رمز الكوبون يجب أن يحتوي على حروف إنجليزية كبيرة وأرقام فقط");
+        toast.error(
+          "رمز الكوبون يجب أن يحتوي على حروف إنجليزية كبيرة وأرقام فقط",
+        );
         setSaving(false);
         return;
       }
@@ -114,6 +116,10 @@ function CouponManager() {
       await fetchCoupons();
       resetForm();
       setShowForm(false);
+
+      toast.success(
+        editingCoupon ? "تم تحديث الكوبون بنجاح" : "تم إضافة الكوبون بنجاح",
+      );
     } catch (error) {
       toast.error("حدث خطأ في حفظ الكوبون");
     } finally {
@@ -141,11 +147,61 @@ function CouponManager() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("هل تريد حذف هذا الكوبون؟")) return;
+    const confirmDelete = await new Promise((resolve) => {
+      const toastId = toast(
+        (t) => (
+          <div style={{ textAlign: "center" }}>
+            <p style={{ marginBottom: "15px", fontWeight: "bold" }}>
+              هل تريد حذف هذا الكوبون؟
+            </p>
+            <div
+              style={{ display: "flex", gap: "10px", justifyContent: "center" }}
+            >
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(true);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                حذف
+              </button>
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(false);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#6b7280",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        ),
+        { duration: Infinity },
+      );
+    });
+    if (!confirmDelete) return;
 
     try {
       await deleteDoc(doc(db, "coupons", id));
       await fetchCoupons();
+
+      toast.success("تم حذف الكوبون بنجاح");
     } catch (error) {
       toast.error("حدث خطأ في حذف الكوبون");
     }
@@ -207,10 +263,7 @@ function CouponManager() {
         {/* Add Coupon Button */}
         {!showForm && (
           <div className="cm-add-section">
-            <button
-              className="cm-add-button"
-              onClick={() => setShowForm(true)}
-            >
+            <button className="cm-add-button" onClick={() => setShowForm(true)}>
               + إضافة كوبون جديد
             </button>
           </div>
@@ -262,7 +315,9 @@ function CouponManager() {
                   required
                   min="0"
                   step={formData.discountType === "percentage" ? "1" : "0.01"}
-                  max={formData.discountType === "percentage" ? "100" : undefined}
+                  max={
+                    formData.discountType === "percentage" ? "100" : undefined
+                  }
                   placeholder={
                     formData.discountType === "percentage"
                       ? "مثال: 25"
@@ -344,7 +399,9 @@ function CouponManager() {
                   checked={formData.allowOnDiscounted}
                   onChange={handleChange}
                 />
-                <span>السماح بتطبيق الكوبون على المنتجات التي لديها خصم مسبق</span>
+                <span>
+                  السماح بتطبيق الكوبون على المنتجات التي لديها خصم مسبق
+                </span>
               </label>
             </div>
 
@@ -361,11 +418,7 @@ function CouponManager() {
             </div>
 
             <div className="cm-form-actions">
-              <button
-                type="submit"
-                className="cm-save-btn"
-                disabled={saving}
-              >
+              <button type="submit" className="cm-save-btn" disabled={saving}>
                 {saving ? "جاري الحفظ..." : editingCoupon ? "تحديث" : "إضافة"}
               </button>
               <button
@@ -416,20 +469,21 @@ function CouponManager() {
                           </span>
                         )}
                         {usageLimitReached && (
-                          <span className="cm-badge cm-badge-used">
-                            مستهلك
-                          </span>
+                          <span className="cm-badge cm-badge-used">مستهلك</span>
                         )}
-                        {!isExpired && !usageLimitReached && coupon.isActive && (
-                          <span className="cm-badge cm-badge-active">نشط</span>
-                        )}
+                        {!isExpired &&
+                          !usageLimitReached &&
+                          coupon.isActive && (
+                            <span className="cm-badge cm-badge-active">
+                              نشط
+                            </span>
+                          )}
                       </div>
                     </div>
 
                     <div className="cm-coupon-details">
                       <p className="cm-coupon-discount">
-                        <strong>الخصم:</strong>{" "}
-                        {coupon.discountValue}
+                        <strong>الخصم:</strong> {coupon.discountValue}
                         {coupon.discountType === "percentage" ? "%" : " شيكل"}
                       </p>
 
@@ -502,4 +556,3 @@ function CouponManager() {
 }
 
 export default CouponManager;
-

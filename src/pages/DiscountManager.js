@@ -77,7 +77,7 @@ function DiscountManager() {
         const uniqueCategories = [
           ...new Set(productsList.map((p) => p.category).filter(Boolean)),
         ];
-        setCategories(uniqueCategories.map(cat => ({ name: cat })));
+        setCategories(uniqueCategories.map((cat) => ({ name: cat })));
       }
 
       // Fetch brands from the brands collection
@@ -93,7 +93,7 @@ function DiscountManager() {
         const uniqueBrands = [
           ...new Set(productsList.map((p) => p.brand).filter(Boolean)),
         ];
-        setBrands(uniqueBrands.map(brand => ({ name: brand })));
+        setBrands(uniqueBrands.map((brand) => ({ name: brand })));
       }
     } catch (error) {
       toast.error("حدث خطأ في تحميل البيانات");
@@ -845,13 +845,58 @@ function DiscountManager() {
   }, []);
 
   const removeAllDiscounts = async () => {
-    if (
-      !window.confirm(
-        `هل أنت متأكد من إزالة جميع الخصومات؟ (${totalDiscountedProducts} منتج)`,
-      )
-    ) {
-      return;
-    }
+    const confirmDelete = await new Promise((resolve) => {
+      const toastId = toast(
+        (t) => (
+          <div style={{ textAlign: "center" }}>
+            <p style={{ marginBottom: "15px", fontWeight: "bold" }}>
+              هل أنت متأكد من إزالة جميع الخصومات؟
+            </p>
+            <p style={{ marginBottom: "15px", color: "#6b7280" }}>
+              ({totalDiscountedProducts} منتج)
+            </p>
+            <div
+              style={{ display: "flex", gap: "10px", justifyContent: "center" }}
+            >
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(true);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                إزالة
+              </button>
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(false);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#6b7280",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        ),
+        { duration: Infinity },
+      );
+    });
+    if (!confirmDelete) return;
 
     setUpdating(true);
     try {

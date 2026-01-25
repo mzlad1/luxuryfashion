@@ -1,315 +1,190 @@
-import React, { useState, useEffect } from "react";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
-import { db } from "../firebase";
+import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../css/About.css";
 
-// صفحة من نحن
-function About() {
-  const values = [
-    {
-      icon: <i className="fas fa-sparkles"></i>,
-      title: "الجودة العالية",
-      description:
-        "نختار منتجاتنا بعناية فائقة لضمان أعلى معايير الجودة والفعالية",
-    },
-    {
-      icon: <i className="fas fa-leaf"></i>,
-      title: "المكونات الطبيعية",
-      description: "منتجاتنا خالية من المواد الكيميائية الضارة والمواد المصنعة",
-    },
-    {
-      icon: <i className="fas fa-heart"></i>,
-      title: "خدمة العملاء",
-      description: "نقدم استشارات مجانية ودعم مستمر لجميع عملائنا",
-    },
-    {
-      icon: <i className="fas fa-truck"></i>,
-      title: "التوصيل السريع",
-      description: "نوصل منتجاتك بسرعة وأمان إلى باب منزلك",
-    },
-    {
-      icon: <i className="fas fa-dollar-sign"></i>,
-      title: "أسعار منافسة",
-      description: "نوفر أفضل المنتجات بأسعار عادلة ومناسبة للجميع",
-    },
-    {
-      icon: <i className="fas fa-bullseye"></i>,
-      title: "التخصص",
-      description: "فريق متخصص في مجال التجميل والعناية بالبشرة",
-    },
-  ];
-
-  const achievements = [
-    {
-      number: "5000+",
-      label: "عميل راضٍ",
-      icon: <i className="fas fa-users"></i>,
-    },
-    {
-      number: "200+",
-      label: "منتج متميز",
-      icon: <i className="fas fa-box"></i>,
-    },
-    {
-      number: "3",
-      label: "سنوات خبرة",
-      icon: <i className="fas fa-calendar-alt"></i>,
-    },
-    {
-      number: "24/7",
-      label: "دعم العملاء",
-      icon: <i className="fas fa-headset"></i>,
-    },
-  ];
-
-  const [featuredFeedbacks, setFeaturedFeedbacks] = useState([]);
-  const [loadingFeedbacks, setLoadingFeedbacks] = useState(true);
-
-  // Fetch featured feedbacks
-  useEffect(() => {
-    const fetchFeaturedFeedbacks = async () => {
-      try {
-        const q = query(
-          collection(db, "feedbacks"),
-          where("status", "==", "approved"),
-          where("isFeatured", "==", true),
-          orderBy("createdAt", "desc"),
-        );
-        const querySnapshot = await getDocs(q);
-        const feedbacks = [];
-        querySnapshot.forEach((doc) => {
-          feedbacks.push({ id: doc.id, ...doc.data() });
-        });
-        setFeaturedFeedbacks(feedbacks);
-      } catch (error) {
-        // Fallback to empty array
-        setFeaturedFeedbacks([]);
-      } finally {
-        setLoadingFeedbacks(false);
-      }
-    };
-
-    fetchFeaturedFeedbacks();
-  }, []);
-
-  const milestones = [
-    {
-      year: "2022",
-      title: "البداية",
-      description: "تأسيس المتجر برؤية تقديم أفضل منتجات التجميل",
-    },
-    {
-      year: "2023",
-      title: "التوسع",
-      description: "إضافة مئات المنتجات الجديدة وتطوير الموقع الإلكتروني",
-    },
-    {
-      year: "2024",
-      title: "النجاح",
-      description: "وصولنا لآلاف العملاء الراضين عبر فلسطين",
-    },
-    {
-      year: "2026",
-      title: "المستقبل",
-      description: "خطط للتوسع وإضافة خطوط منتجات جديدة",
-    },
-  ];
-
+const About = () => {
   return (
     <>
       <Navbar />
-      <div className="bp-about-page">
-        <div className="bp-about-container">
-          {/* Our Story Section */}
-          <div className="bp-about-story-section">
-            <div className="bp-about-section-header">
-              <h2>قصتنا</h2>
-            </div>
+      <div className="about-page">
+        {/* Hero Section */}
+        <section className="about-hero">
+          <div className="about-hero-overlay"></div>
+          <div className="about-hero-content">
+            <h1 className="about-hero-title">من نحن</h1>
+            <p className="about-hero-subtitle">رحلة من الشغف إلى التميز</p>
+          </div>
+        </section>
 
-            <div className="bp-about-story-content">
-              <div className="bp-about-story-text">
-                <div className="bp-about-story-paragraph">
-                  <h2>
-                    <i className="fas fa-star"></i> مين احنا
-                  </h2>
-                  <h3>
-                    <p>
-                      لاكجري هي وجهتكِ للأناقة والفخامة في عالم الإكسسوارات
-                      والملابس. نختار بعناية أرقى وأفخم الموديلات لنقدّم لكِ
-                      تصاميم عصرية تواكب أحدث صيحات الموضة وتناسب كل الأذواق.
-                      <br />
-                      <br />
-                      نحرص في لاكجري على الجودة، الذوق الراقي، والتفاصيل التي
-                      تصنع الفرق، لتجدي كل ما يكمّل إطلالتكِ بأسلوب مميّز
-                      وفريد.! <i className="fas fa-ranking-star"></i>
-                      <br />
-                      <br />
-                      في موقعنا رح تلاقي منتجات مجربة و مختارة بعناية رح تساعدك
-                      تبرزي أناقتك!<i className="fas fa-heart"></i>
-                    </p>
-                  </h3>
+        {/* Main Content */}
+        <div className="about-container">
+          {/* Story Section */}
+          <section className="about-section">
+            <div className="about-content-grid">
+              <div className="about-text-block">
+                <h2 className="about-section-title">قصتنا</h2>
+                <div className="about-divider"></div>
+                <p className="about-paragraph">
+                  لاكجري هي وجهتكِ للأناقة والفخامة في عالم الإكسسوارات
+                  والملابس. نختار بعناية أرقى وأفخم الموديلات لنقدّم لكِ تصاميم
+                  عصرية تواكب أحدث صيحات الموضة وتناسب كل الأذواق.
+                </p>
+                <p className="about-paragraph">
+                  نحرص في لاكجري على الجودة، الذوق الراقي، والتفاصيل التي تصنع
+                  الفرق، لتجدي كل ما يكمّل إطلالتكِ بأسلوب مميّز وفريد.
+                </p>
+                <p className="about-paragraph">
+                  في موقعنا رح تلاقي منتجات مجربة ومختارة بعناية رح تساعدك تبرزي
+                  أناقتك وتخليكي دايماً في الصدارة.
+                </p>
+              </div>
+              <div className="about-image-block">
+                <div className="about-image-wrapper">
+                  <img
+                    src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800"
+                    alt="قصتنا"
+                    className="about-image"
+                  />
                 </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Key Features Section */}
-          <div className="bp-about-features-section">
-            <div className="bp-about-section-header">
-              <h2>مميزاتنا الأساسية</h2>
-              <p>ثلاثة أسباب تجعل عملائنا يختاروننا</p>
+          {/* Vision Section */}
+          <section className="about-section about-section-alt">
+            <div className="about-content-grid about-content-grid-reverse">
+              <div className="about-image-block">
+                <div className="about-image-wrapper">
+                  <img
+                    src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800"
+                    alt="رؤيتنا"
+                    className="about-image"
+                  />
+                </div>
+              </div>
+              <div className="about-text-block">
+                <h2 className="about-section-title">رؤيتنا</h2>
+                <div className="about-divider"></div>
+                <p className="about-paragraph">
+                  نسعى لأن نكون الخيار الأول في عالم الموضة الفاخرة والإكسسوارات
+                  الراقية، من خلال تقديم قطع استثنائية تلبي أعلى معايير الجودة
+                  والأناقة.
+                </p>
+                <p className="about-paragraph">
+                  رؤيتنا هي إعادة تعريف تجربة التسوق للملابس والإكسسوارات،
+                  وجعلها ليست مجرد شراء قطعة، بل تجربة فاخرة تمنحك الثقة والتميز
+                  في كل إطلالة.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Values Section */}
+          <section className="about-section">
+            <div className="about-values-header">
+              <h2 className="about-section-title about-section-title-center">
+                قيمنا
+              </h2>
+              <div className="about-divider about-divider-center"></div>
+              <p className="about-values-subtitle">
+                المبادئ التي نؤمن بها ونعمل من خلالها
+              </p>
             </div>
 
-            <div className="bp-about-features-grid">
-              <div className="bp-about-feature-card bp-about-feature-quality">
-                <div className="bp-about-feature-icon">
+            <div className="about-values-grid">
+              <div className="about-value-card">
+                <div className="about-value-icon">
+                  <i className="fas fa-gem"></i>
+                </div>
+                <h3 className="about-value-title">الجودة</h3>
+                <p className="about-value-text">
+                  نختار قطعنا بعناية فائقة لضمان أعلى معايير الجودة والفخامة
+                </p>
+              </div>
+
+              <div className="about-value-card">
+                <div className="about-value-icon">
+                  <i className="fas fa-shield-alt"></i>
+                </div>
+                <h3 className="about-value-title">الثقة</h3>
+                <p className="about-value-text">
+                  نبني علاقات طويلة الأمد مع عملائنا من خلال الشفافية والمصداقية
+                </p>
+              </div>
+
+              <div className="about-value-card">
+                <div className="about-value-icon">
+                  <i className="fas fa-award"></i>
+                </div>
+                <h3 className="about-value-title">التميز</h3>
+                <p className="about-value-text">
+                  نسعى دائماً لتقديم تجربة استثنائية تفوق توقعات عملائنا
+                </p>
+              </div>
+
+              <div className="about-value-card">
+                <div className="about-value-icon">
                   <i className="fas fa-star"></i>
                 </div>
-                <h3 className="bp-about-feature-title">الجودة العالية</h3>
-                <p className="bp-about-feature-description">
-                  نختار منتجاتنا بعناية فائقة من أفضل العلامات التجارية
-                  العالمية. كل منتج يخضع لاختبارات الجودة لضمان الفعالية
-                  والأمان. نؤمن بأن الجودة هي الأساس الذي نبني عليه ثقة عملائنا.
+                <h3 className="about-value-title">الأناقة</h3>
+                <p className="about-value-text">
+                  نقدم قطع عصرية تواكب أحدث صيحات الموضة بأسلوب راقي
                 </p>
-                <div className="bp-about-feature-benefits">
-                  <span className="bp-about-feature-benefit">
-                    <i className="fas fa-check"></i> منتجات معتمدة
-                  </span>
-                  <span className="bp-about-feature-benefit">
-                    <i className="fas fa-check"></i> مكونات آمنة
-                  </span>
-                  <span className="bp-about-feature-benefit">
-                    <i className="fas fa-check"></i> نتائج مضمونة
-                  </span>
-                </div>
-              </div>
-
-              <div className="bp-about-feature-card bp-about-feature-delivery">
-                <div className="bp-about-feature-icon">
-                  <i className="fas fa-truck"></i>
-                </div>
-                <h3 className="bp-about-feature-title">التوصيل السريع</h3>
-                <p className="bp-about-feature-description">
-                  نضمن وصول منتجاتك بسرعة وأمان إلى باب منزلك. نقدم خيارات توصيل
-                  مرنة تناسب جميع احتياجاتك، مع تتبع مباشر لطلبك من لحظة التأكيد
-                  حتى الوصول.
-                </p>
-                <div className="bp-about-feature-benefits">
-                  <span className="bp-about-feature-benefit">
-                    <i className="fas fa-check"></i> توصيل سريع
-                  </span>
-                  <span className="bp-about-feature-benefit">
-                    <i className="fas fa-check"></i> تغليف آمن
-                  </span>
-                </div>
-              </div>
-
-              <div className="bp-about-feature-card bp-about-feature-service">
-                <div className="bp-about-feature-icon">
-                  <i className="fas fa-heart"></i>
-                </div>
-                <h3 className="bp-about-feature-title">خدمة العملاء</h3>
-                <p className="bp-about-feature-description">
-                  فريق خدمة العملاء لدينا متاح على مدار الساعة لمساعدتك. نقدم
-                  نصائح شخصية لاختيار المنتجات المناسبة، مع ضمان رضاك التام عن
-                  تجربتك معنا.
-                </p>
-                <div className="bp-about-feature-benefits">
-                  <span className="bp-about-feature-benefit">
-                    <i className="fas fa-check"></i> دعم 24/7
-                  </span>
-                  <span className="bp-about-feature-benefit">
-                    <i className="fas fa-check"></i> ضمان الرضا
-                  </span>
-                  <span className="bp-about-feature-benefit">
-                    <i className="fas fa-check"></i> المتابعة مع العملاء
-                  </span>
-                </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Testimonials Section */}
-          <div className="bp-about-testimonials-section">
-            <div className="bp-about-section-header">
-              <h2>
-                <i className="fas fa-comments"></i> ماذا يقول عملاؤنا
-              </h2>
-              <p>تجارب حقيقية من عملائنا الكرام</p>
-            </div>
-
-            <div className="bp-about-testimonials-grid">
-              {loadingFeedbacks ? (
-                <div className="bp-about-loading">
-                  جاري تحميل التقييمات المميزة...
-                </div>
-              ) : featuredFeedbacks.length > 0 ? (
-                featuredFeedbacks.map((feedback) => (
-                  <div key={feedback.id} className="bp-about-testimonial-card">
-                    <div className="bp-about-testimonial-header">
-                      <div className="bp-about-customer-avatar">
-                        <i className="fas fa-user"></i>
-                      </div>
-                      <div className="bp-about-customer-info">
-                        <h4 className="bp-about-customer-name">
-                          {feedback.name}
-                        </h4>
-                        <div className="bp-about-rating">
-                          {feedback.rating &&
-                            [...Array(feedback.rating)].map((_, r) => (
-                              <span key={r} className="bp-about-star">
-                                <i className="fas fa-star"></i>
-                              </span>
-                            ))}
-                        </div>
-                      </div>
-                    </div>
-                    <p className="bp-about-testimonial-text">
-                      "{feedback.comment}"
-                    </p>
+          {/* Promise Section */}
+          <section className="about-section about-section-alt">
+            <div className="about-promise">
+              <div className="about-promise-content">
+                <h2 className="about-section-title about-section-title-center">
+                  وعدنا لك
+                </h2>
+                <div className="about-divider about-divider-center"></div>
+                <p className="about-promise-text">
+                  نعدك بتقديم قطع ملابس وإكسسوارات فاخرة مختارة بعناية، وخدمة
+                  عملاء متميزة، وتجربة تسوق سلسة وممتعة. رضاك هو هدفنا الأول،
+                  وأناقتك هي نجاحنا.
+                </p>
+                <div className="about-promise-stats">
+                  <div className="about-stat">
+                    <span className="about-stat-number">1000+</span>
+                    <span className="about-stat-label">عميل سعيد</span>
                   </div>
-                ))
-              ) : (
-                <div className="bp-about-no-feedbacks">
-                  <p>لا توجد تقييمات مميزة حالياً</p>
-                  <p>
-                    سيتم عرض التقييمات المميزة هنا بعد إضافتها من قبل الإدارة
-                  </p>
+                  <div className="about-stat">
+                    <span className="about-stat-number">500+</span>
+                    <span className="about-stat-label">قطعة فاخرة</span>
+                  </div>
+                  <div className="about-stat">
+                    <span className="about-stat-number">100%</span>
+                    <span className="about-stat-label">جودة مضمونة</span>
+                  </div>
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* Call to Action */}
-          <div className="bp-about-cta-section">
-            <div className="bp-about-cta-content">
-              <h2>
-                <i className="fas fa-shopping-bag"></i> بلشي رحلتك مع لاكجري
-              </h2>
-              <p>تواصلي معنا حتى نساعدك</p>
-              <div className="bp-about-cta-buttons">
-                <a href="/products" className="bp-about-cta-btn primary">
-                  <span>
-                    <i className="fas fa-box"></i>
-                  </span>
-                  تصفحي المنتجات
-                </a>
-                <a href="/contact" className="bp-about-cta-btn secondary">
-                  <span>
-                    <i className="fas fa-phone"></i>
-                  </span>
-                  تواصلي معنا
-                </a>
               </div>
             </div>
-          </div>
+          </section>
+
+          {/* Contact CTA */}
+          <section className="about-section">
+            <div className="about-cta">
+              <h2 className="about-cta-title">لديك سؤال؟</h2>
+              <p className="about-cta-text">
+                فريقنا جاهز دائماً للإجابة على استفساراتك ومساعدتك في اختيار
+                المنتج المثالي
+              </p>
+              <a href="/contact" className="about-cta-button">
+                <i className="fas fa-envelope"></i>
+                <span>تواصل معنا</span>
+              </a>
+            </div>
+          </section>
         </div>
       </div>
       <Footer />
     </>
   );
-}
+};
 
 export default About;

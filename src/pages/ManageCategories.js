@@ -20,6 +20,7 @@ import { CacheManager, CACHE_KEYS } from "../utils/cache";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
+import toast from "react-hot-toast";
 
 // صفحة إدارة الفئات
 function ManageCategories() {
@@ -54,7 +55,6 @@ function ManageCategories() {
 
         // Cache for 10 minutes
         CacheManager.set(CACHE_KEYS.CATEGORIES, data, 10 * 60 * 1000);
-
       } catch (error) {
         // بيانات تجريبية
         setCategories([
@@ -100,8 +100,7 @@ function ManageCategories() {
     try {
       const imageRef = ref(storage, imageUrl);
       await deleteObject(imageRef);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleEdit = (cat) => {
@@ -145,15 +144,16 @@ function ManageCategories() {
       if (editingId) {
         // Editing existing category
         const docRef = doc(db, "categories", editingId);
-        const updateData = { 
+        const oldCategory = categories.find((c) => c.id === editingId);
+
+        const updateData = {
           name: formName,
-          subcategories: formSubcategories
+          subcategories: formSubcategories,
         };
 
         // Handle image update
         if (formImage) {
           // Delete old image if exists
-          const oldCategory = categories.find((c) => c.id === editingId);
           if (oldCategory?.imageUrl) {
             await deleteImageFromStorage(oldCategory.imageUrl);
           }
@@ -166,7 +166,7 @@ function ManageCategories() {
         await updateDoc(docRef, updateData);
 
         updatedCategories = categories.map((c) =>
-          c.id === editingId ? { ...c, ...updateData } : c
+          c.id === editingId ? { ...c, ...updateData } : c,
         );
       } else {
         // Adding new category
@@ -185,7 +185,12 @@ function ManageCategories() {
 
         updatedCategories = [
           ...categories,
-          { id: docRef.id, name: formName, imageUrl, subcategories: formSubcategories },
+          {
+            id: docRef.id,
+            name: formName,
+            imageUrl,
+            subcategories: formSubcategories,
+          },
         ];
       }
 
@@ -195,7 +200,7 @@ function ManageCategories() {
       CacheManager.set(
         CACHE_KEYS.CATEGORIES,
         updatedCategories,
-        10 * 60 * 1000
+        10 * 60 * 1000,
       );
 
       setFormName("");
@@ -205,14 +210,67 @@ function ManageCategories() {
       setNewSubcategory("");
       setEditingId(null);
       setShowForm(false);
+
+      toast.success(
+        editingId ? "تم تحديث الفئة بنجاح" : "تم إضافة الفئة بنجاح",
+      );
     } catch (error) {
+      toast.error("حدث خطأ. يرجى المحاولة مرة أخرى.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("هل تريد حذف هذه الفئة؟")) return;
+    const confirmDelete = await new Promise((resolve) => {
+      const toastId = toast(
+        (t) => (
+          <div style={{ textAlign: "center" }}>
+            <p style={{ marginBottom: "15px", fontWeight: "bold" }}>
+              هل تريد حذف هذه الفئة؟
+            </p>
+            <div
+              style={{ display: "flex", gap: "10px", justifyContent: "center" }}
+            >
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(true);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                حذف
+              </button>
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(false);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#6b7280",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        ),
+        { duration: Infinity },
+      );
+    });
+    if (!confirmDelete) return;
     try {
       // Delete image from storage if exists
       const category = categories.find((c) => c.id === id);
@@ -228,16 +286,19 @@ function ManageCategories() {
       CacheManager.set(
         CACHE_KEYS.CATEGORIES,
         updatedCategories,
-        10 * 60 * 1000
+        10 * 60 * 1000,
       );
+
+      toast.success("تم حذف الفئة بنجاح");
     } catch (error) {
+      toast.error("حدث خطأ أثناء الحذف");
     }
   };
 
   // Filter categories based on search term
   const filteredCategories = searchTerm
     ? categories.filter((category) =>
-        category.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        category.name?.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     : categories;
 
@@ -246,7 +307,7 @@ function ManageCategories() {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentCategories = filteredCategories.slice(
     indexOfFirstItem,
-    indexOfLastItem
+    indexOfLastItem,
   );
   const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
 
@@ -399,7 +460,8 @@ function ManageCategories() {
                   </div>
                 )}
                 <small className="mc-subcategory-hint">
-                  <i className="fas fa-lightbulb"></i> الفئات الفرعية تساعد في تنظيم المنتجات بشكل أفضل
+                  <i className="fas fa-lightbulb"></i> الفئات الفرعية تساعد في
+                  تنظيم المنتجات بشكل أفضل
                 </small>
               </div>
             </div>

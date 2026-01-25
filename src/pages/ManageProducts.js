@@ -35,8 +35,8 @@ function ManageProducts() {
     description: "",
     howToUse: "",
     images: [],
-    categories: [],
-    subcategories: [],
+    categoryIds: [],
+    subcategoryIds: [],
     brand: "",
     stock: "",
     isNew: false,
@@ -401,59 +401,68 @@ function ManageProducts() {
   };
 
   // التعامل مع تحديد الفئات (متعدد)
-  const handleCategoryToggle = (catName) => {
+  const handleCategoryToggle = (catId) => {
     setFormData((prev) => {
       // Handle "None" option
-      if (catName === "بدون فئة") {
-        if (prev.categories.includes("بدون فئة")) {
+      if (catId === "none") {
+        if (prev.categoryIds.includes("none")) {
           // Remove "None" option
           return {
             ...prev,
-            categories: prev.categories.filter((c) => c !== "بدون فئة"),
-            subcategories: prev.subcategories,
+            categoryIds: prev.categoryIds.filter((c) => c !== "none"),
+            subcategoryIds: prev.subcategoryIds,
           };
         } else {
           // Select only "None" option (clear other selections)
-          return { ...prev, categories: ["بدون فئة"], subcategories: [] };
+          return { ...prev, categoryIds: ["none"], subcategoryIds: [] };
         }
       }
 
       // Handle regular categories
-      const isSelected = prev.categories.includes(catName);
-      let newCategories;
-      let newSubcategories = [...prev.subcategories];
+      const isSelected = prev.categoryIds.includes(catId);
+      let newCategoryIds;
+      let newSubcategoryIds = [...prev.subcategoryIds];
 
       if (isSelected) {
-        newCategories = prev.categories.filter((c) => c !== catName);
+        newCategoryIds = prev.categoryIds.filter((c) => c !== catId);
         // Remove subcategories of this category
-        const category = categories.find((c) => c.name === catName);
+        const category = categories.find((c) => c.id === catId);
         if (category && category.subcategories) {
-          newSubcategories = newSubcategories.filter(
-            (sub) => !category.subcategories.includes(sub)
+          // Remove subcategory IDs that belong to this category
+          newSubcategoryIds = newSubcategoryIds.filter(
+            (subId) => !subId.startsWith(`${catId}_`),
           );
         }
       } else {
         // Remove "None" option when selecting a regular category
-        newCategories = prev.categories.filter((c) => c !== "بدون فئة");
-        newCategories = [...newCategories, catName];
+        newCategoryIds = prev.categoryIds.filter((c) => c !== "none");
+        newCategoryIds = [...newCategoryIds, catId];
       }
 
-      return { ...prev, categories: newCategories, subcategories: newSubcategories };
+      return {
+        ...prev,
+        categoryIds: newCategoryIds,
+        subcategoryIds: newSubcategoryIds,
+      };
     });
   };
 
-  const handleSubcategoryToggle = (subcategoryName) => {
+  const handleSubcategoryToggle = (categoryId, subcategoryName) => {
     setFormData((prev) => {
-      const isSelected = prev.subcategories.includes(subcategoryName);
-      let newSubcategories;
+      // Create a unique ID for subcategory: categoryId_subcategoryName
+      const subcategoryId = `${categoryId}_${subcategoryName}`;
+      const isSelected = prev.subcategoryIds.includes(subcategoryId);
+      let newSubcategoryIds;
 
       if (isSelected) {
-        newSubcategories = prev.subcategories.filter((s) => s !== subcategoryName);
+        newSubcategoryIds = prev.subcategoryIds.filter(
+          (s) => s !== subcategoryId,
+        );
       } else {
-        newSubcategories = [...prev.subcategories, subcategoryName];
+        newSubcategoryIds = [...prev.subcategoryIds, subcategoryId];
       }
 
-      return { ...prev, subcategories: newSubcategories };
+      return { ...prev, subcategoryIds: newSubcategoryIds };
     });
   };
 
@@ -618,8 +627,8 @@ function ManageProducts() {
         description: formData.description,
         howToUse: formData.howToUse || "",
         images: finalImageUrls,
-        categories: formData.categories,
-        subcategories: formData.subcategories || [],
+        categoryIds: formData.categoryIds,
+        subcategoryIds: formData.subcategoryIds || [],
         brand: formData.brand,
         isNew: formData.isNew || false,
         onDemand: formData.onDemand || false,
@@ -710,8 +719,8 @@ function ManageProducts() {
         description: "",
         howToUse: "",
         images: [],
-        categories: [],
-        subcategories: [],
+        categoryIds: [],
+        subcategoryIds: [],
         brand: "",
         stock: "",
         isNew: false,
@@ -723,6 +732,10 @@ function ManageProducts() {
       });
       setSelectedFiles([]);
       setShowForm(false);
+
+      toast.success(
+        formData.id ? "تم تحديث المنتج بنجاح" : "تم إضافة المنتج بنجاح",
+      );
     } catch (error) {
       toast.error("حدث خطأ في حفظ المنتج. يرجى المحاولة مرة أخرى.");
     } finally {
@@ -732,6 +745,36 @@ function ManageProducts() {
 
   // تعديل منتج
   const handleEdit = (product) => {
+    // Convert old format (names) to new format (IDs) for backward compatibility
+    let categoryIds = product.categoryIds || [];
+    let subcategoryIds = product.subcategoryIds || [];
+
+    // If product has old format (categories as names), convert to IDs
+    if (!product.categoryIds && product.categories) {
+      categoryIds = product.categories
+        .map((catName) => {
+          if (catName === "بدون فئة") return "none";
+          const cat = categories.find((c) => c.name === catName);
+          return cat ? cat.id : null;
+        })
+        .filter(Boolean);
+    }
+
+    // Convert subcategories
+    if (!product.subcategoryIds && product.subcategories) {
+      subcategoryIds = product.subcategories
+        .map((subName) => {
+          // Find which category this subcategory belongs to
+          for (const cat of categories) {
+            if (cat.subcategories && cat.subcategories.includes(subName)) {
+              return `${cat.id}_${subName}`;
+            }
+          }
+          return null;
+        })
+        .filter(Boolean);
+    }
+
     setFormData({
       id: product.id,
       name: product.name,
@@ -743,8 +786,8 @@ function ManageProducts() {
       description: product.description,
       howToUse: product.howToUse || "",
       images: [], // Empty array since we manage existing images separately
-      categories: product.categories || [],
-      subcategories: product.subcategories || [],
+      categoryIds: categoryIds,
+      subcategoryIds: subcategoryIds,
       brand: product.brand || "",
       stock: product.hasVariants ? "" : product.stock || 0,
       isNew: product.isNew || false,
@@ -781,7 +824,55 @@ function ManageProducts() {
 
   // حذف منتج
   const handleDelete = async (id) => {
-    if (!window.confirm("هل تريد حذف هذا المنتج؟")) return;
+    const confirmDelete = await new Promise((resolve) => {
+      const toastId = toast(
+        (t) => (
+          <div style={{ textAlign: "center" }}>
+            <p style={{ marginBottom: "15px", fontWeight: "bold" }}>
+              هل تريد حذف هذا المنتج؟
+            </p>
+            <div
+              style={{ display: "flex", gap: "10px", justifyContent: "center" }}
+            >
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(true);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                حذف
+              </button>
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(false);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#6b7280",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        ),
+        { duration: Infinity },
+      );
+    });
+    if (!confirmDelete) return;
     try {
       const product = products.find((p) => p.id === id);
 
@@ -799,6 +890,8 @@ function ManageProducts() {
 
       // Clear products cache to ensure fresh data on other pages
       clearProductsCache();
+
+      toast.success("تم حذف المنتج بنجاح");
     } catch (error) {
       toast.error("حدث خطأ في حذف المنتج. يرجى المحاولة مرة أخرى.");
     }
@@ -916,9 +1009,14 @@ function ManageProducts() {
 
     // Filter by category
     if (selectedCategory) {
-      filtered = filtered.filter((product) =>
-        product.categories?.includes(selectedCategory),
-      );
+      filtered = filtered.filter((product) => {
+        // Check new format (categoryIds)
+        if (product.categoryIds && product.categoryIds.length > 0) {
+          return product.categoryIds.includes(selectedCategory);
+        }
+        // Fallback to old format (categories as names)
+        return product.categories?.includes(selectedCategory);
+      });
     }
 
     // Filter by brand
@@ -929,18 +1027,32 @@ function ManageProducts() {
     // Filter by price range
     if (priceRange.min !== "" || priceRange.max !== "") {
       filtered = filtered.filter((product) => {
-        const price = parseFloat(product.price) || 0;
         const min = priceRange.min !== "" ? parseFloat(priceRange.min) : 0;
         const max =
           priceRange.max !== "" ? parseFloat(priceRange.max) : Infinity;
+
+        // For variant products, check if any variant price is in range
+        if (
+          product.hasVariants &&
+          product.variants &&
+          product.variants.length > 0
+        ) {
+          return product.variants.some((variant) => {
+            const variantPrice = parseFloat(variant.price) || 0;
+            return variantPrice >= min && variantPrice <= max;
+          });
+        }
+
+        // For regular products, check the product price
+        const price = parseFloat(product.price) || 0;
         return price >= min && price <= max;
       });
     }
 
-    // Filter by badges
+    // Filter by badges (AND logic - product must match ALL selected badges)
     if (selectedBadges.length > 0) {
       filtered = filtered.filter((product) => {
-        return selectedBadges.some((badge) => {
+        return selectedBadges.every((badge) => {
           switch (badge) {
             case "new":
               return product.isNew === true;
@@ -1163,7 +1275,7 @@ function ManageProducts() {
                 >
                   <option value="">كل الفئات</option>
                   {categories.map((cat) => (
-                    <option key={cat.id} value={cat.name}>
+                    <option key={cat.id} value={cat.id}>
                       {cat.name}
                     </option>
                   ))}
@@ -1969,8 +2081,8 @@ function ManageProducts() {
                 <label className="mp-category">
                   <input
                     type="checkbox"
-                    checked={formData.categories.includes("بدون فئة")}
-                    onChange={() => handleCategoryToggle("بدون فئة")}
+                    checked={formData.categoryIds.includes("none")}
+                    onChange={() => handleCategoryToggle("none")}
                   />
                   بدون فئة
                 </label>
@@ -1979,14 +2091,14 @@ function ManageProducts() {
                     <label className="mp-category">
                       <input
                         type="checkbox"
-                        checked={formData.categories.includes(cat.name)}
-                        onChange={() => handleCategoryToggle(cat.name)}
-                        disabled={formData.categories.includes("بدون فئة")}
+                        checked={formData.categoryIds.includes(cat.id)}
+                        onChange={() => handleCategoryToggle(cat.id)}
+                        disabled={formData.categoryIds.includes("none")}
                       />
                       {cat.name}
                     </label>
                     {/* Show subcategories if category is selected */}
-                    {formData.categories.includes(cat.name) &&
+                    {formData.categoryIds.includes(cat.id) &&
                       cat.subcategories &&
                       cat.subcategories.length > 0 && (
                         <div className="mp-subcategories">
@@ -1997,8 +2109,12 @@ function ManageProducts() {
                             <label key={index} className="mp-subcategory">
                               <input
                                 type="checkbox"
-                                checked={formData.subcategories.includes(sub)}
-                                onChange={() => handleSubcategoryToggle(sub)}
+                                checked={formData.subcategoryIds.includes(
+                                  `${cat.id}_${sub}`,
+                                )}
+                                onChange={() =>
+                                  handleSubcategoryToggle(cat.id, sub)
+                                }
                               />
                               {sub}
                             </label>
@@ -2009,7 +2125,8 @@ function ManageProducts() {
                 ))}
               </div>
               <small className="mp-category-note">
-                اختر "بدون فئة" أو اختر فئة أو أكثر من الفئات المتاحة. يمكنك أيضاً اختيار الفئات الفرعية
+                اختر "بدون فئة" أو اختر فئة أو أكثر من الفئات المتاحة. يمكنك
+                أيضاً اختيار الفئات الفرعية
               </small>
             </div>
 
@@ -2183,9 +2300,34 @@ function ManageProducts() {
                   )}
                 </td>
                 <td data-label="الفئات">
-                  {product.categories && product.categories.length > 0
-                    ? product.categories.join(", ")
-                    : "بدون فئة"}
+                  {(() => {
+                    // Handle both old format (categories array) and new format (categoryIds array)
+                    const categoryIds = product.categoryIds || [];
+                    const oldCategories = product.categories || [];
+
+                    if (
+                      categoryIds.includes("none") ||
+                      oldCategories.includes("بدون فئة")
+                    ) {
+                      return "بدون فئة";
+                    }
+
+                    if (categoryIds.length > 0) {
+                      // New format: lookup names from IDs
+                      const categoryNames = categoryIds.map((catId) => {
+                        const cat = categories.find((c) => c.id === catId);
+                        return cat ? cat.name : catId;
+                      });
+                      return categoryNames.join(", ");
+                    }
+
+                    if (oldCategories.length > 0) {
+                      // Old format: use names directly
+                      return oldCategories.join(", ");
+                    }
+
+                    return "بدون فئة";
+                  })()}
                 </td>
                 <td data-label="تاريخ الإنشاء">
                   {product.createdAt ? (

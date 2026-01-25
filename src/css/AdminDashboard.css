@@ -212,6 +212,9 @@
 }
 
 .admin-dash-panel-header h2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 0;
   font-size: 1.5rem;
   color: var(--text-primary);

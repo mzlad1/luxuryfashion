@@ -347,6 +347,8 @@ function Orders() {
       } else if (newStatus === "مرفوض" && oldStatus !== "مرفوض") {
       }
 
+      toast.success("تم تحديث حالة الطلب بنجاح");
+
       // Optionally fetch fresh data after status change
       setTimeout(() => fetchOrders(true), 1000);
     } catch (error) {
@@ -367,7 +369,55 @@ function Orders() {
   };
 
   const handleDeleteOrder = async (orderId) => {
-    if (!window.confirm("هل تريد حذف هذا الطلب؟")) return;
+    const confirmDelete = await new Promise((resolve) => {
+      const toastId = toast(
+        (t) => (
+          <div style={{ textAlign: "center" }}>
+            <p style={{ marginBottom: "15px", fontWeight: "bold" }}>
+              هل تريد حذف هذا الطلب؟
+            </p>
+            <div
+              style={{ display: "flex", gap: "10px", justifyContent: "center" }}
+            >
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(true);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                حذف
+              </button>
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(false);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#6b7280",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        ),
+        { duration: Infinity },
+      );
+    });
+    if (!confirmDelete) return;
 
     try {
       // Find the order to get its items before deletion
@@ -438,6 +488,8 @@ function Orders() {
       // Update cache and stats
       CacheManager.set(CACHE_KEYS.ORDERS, updatedOrders, 30 * 1000);
       calculateStats(updatedOrders);
+
+      toast.success("تم حذف الطلب بنجاح");
 
       // Fetch fresh data after deletion
       setTimeout(() => fetchOrders(true), 1000);
@@ -883,27 +935,33 @@ function Orders() {
                       <button
                         className="ord-action-btn ord-whatsapp-btn"
                         onClick={() => {
-                          const message = `مرحباً ${order.customerName}،\n\n` +
+                          const message =
+                            `مرحباً ${order.customerName}،\n\n` +
                             `تأكيد الطلب #${order.id}\n` +
                             `━━━━━━━━━━━━━━━\n\n` +
                             `المنتجات:\n` +
-                            order.items.map((item, index) => 
-                              `${index + 1}. ${item.name}${item.selectedVariant ? ` (${item.selectedVariant.size} - ${item.selectedVariant.color})` : ''}\n` +
-                              `   الكمية: ${item.quantity}\n` +
-                              `   السعر: ${item.selectedVariant?.price || item.price} شيكل\n`
-                            ).join('\n') +
+                            order.items
+                              .map(
+                                (item, index) =>
+                                  `${index + 1}. ${item.name}${item.selectedVariant ? ` (${item.selectedVariant.size} - ${item.selectedVariant.color})` : ""}\n` +
+                                  `   الكمية: ${item.quantity}\n` +
+                                  `   السعر: ${item.selectedVariant?.price || item.price} شيكل\n`,
+                              )
+                              .join("\n") +
                             `\n━━━━━━━━━━━━━━━\n` +
                             `المجموع الفرعي: ${order.subtotal} شيكل\n` +
                             `رسوم التوصيل: ${order.deliveryFee} شيكل\n` +
-                            (order.coupon ? `خصم الكوبون (${order.coupon.code}): -${order.coupon.couponDiscount.toFixed(2)} شيكل\n` : '') +
+                            (order.coupon
+                              ? `خصم الكوبون (${order.coupon.code}): -${order.coupon.couponDiscount.toFixed(2)} شيكل\n`
+                              : "") +
                             `الإجمالي: ${order.total} شيكل\n\n` +
                             `التوصيل: ${order.deliveryOption}\n` +
                             `العنوان: ${order.customerAddress}\n\n` +
                             `الحالة: ${order.status}\n\n` +
                             `شكراً لك! 💚`;
-                          
-                          const whatsappUrl = `https://wa.me/${order.customerPhone.replace(/\+/g, '')}?text=${encodeURIComponent(message)}`;
-                          window.open(whatsappUrl, '_blank');
+
+                          const whatsappUrl = `https://wa.me/${order.customerPhone.replace(/\+/g, "")}?text=${encodeURIComponent(message)}`;
+                          window.open(whatsappUrl, "_blank");
                         }}
                       >
                         <i className="fab fa-whatsapp"></i> تأكيد عبر واتساب

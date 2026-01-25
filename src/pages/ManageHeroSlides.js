@@ -170,7 +170,9 @@ function ManageHeroSlides() {
       );
 
       if (orderExists) {
-        toast.error(`الترتيب ${orderNumber} مستخدم بالفعل. الرجاء اختيار ترتيب آخر.`);
+        toast.error(
+          `الترتيب ${orderNumber} مستخدم بالفعل. الرجاء اختيار ترتيب آخر.`,
+        );
         setUploading(false);
         return;
       }
@@ -226,9 +228,55 @@ function ManageHeroSlides() {
   };
 
   const handleDelete = async (slide) => {
-    if (!window.confirm("هل أنت متأكد من حذف هذه الشريحة؟")) {
-      return;
-    }
+    const confirmDelete = await new Promise((resolve) => {
+      const toastId = toast(
+        (t) => (
+          <div style={{ textAlign: "center" }}>
+            <p style={{ marginBottom: "15px", fontWeight: "bold" }}>
+              هل أنت متأكد من حذف هذه الشريحة؟
+            </p>
+            <div
+              style={{ display: "flex", gap: "10px", justifyContent: "center" }}
+            >
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(true);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                حذف
+              </button>
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(false);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#6b7280",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        ),
+        { duration: Infinity },
+      );
+    });
+    if (!confirmDelete) return;
 
     try {
       await deleteDoc(doc(db, "heroSlides", slide.id));

@@ -34,12 +34,16 @@ function Contact() {
     <>
       <Navbar />
       <div className="bp-contact-page">
-        <div className="bp-contact-container">
-          {/* Header Section */}
-          <div className="bp-contact-header">
-            <h1 className="bp-contact-title">تواصلي معنا</h1>
+        {/* Hero Section */}
+        <section className="contact-hero">
+          <div className="contact-hero-overlay"></div>
+          <div className="contact-hero-content">
+            <h1 className="contact-hero-title">تواصلي معنا</h1>
+            <p className="contact-hero-subtitle">نحن هنا لخدمتك</p>
           </div>
+        </section>
 
+        <div className="bp-contact-container">
           {/* Contact Content */}
           <div className="bp-contact-content">
             {/* Contact Information */}

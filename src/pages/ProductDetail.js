@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { useCart } from "../contexts/CartContext";
 import { onAuthStateChanged } from "firebase/auth";
@@ -82,6 +82,7 @@ function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [mainImage, setMainImage] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -117,6 +118,23 @@ function ProductDetail() {
       setIsAdmin(!!user);
     });
     return () => unsubscribe();
+  }, []);
+
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "categories"));
+        const categoriesData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
   }, []);
 
   // Auto-select variant when both size and color are selected
@@ -765,7 +783,7 @@ function ProductDetail() {
                         </span>
                       )}
                       {/* Show selected size and color below price */}
-                      <div>
+                      {/* <div>
                         {selectedSize && (
                           <small className="pd-variant-note">
                             الحجم : {selectedSize}
@@ -776,7 +794,7 @@ function ProductDetail() {
                             اللون : {selectedColor}
                           </small>
                         )}
-                      </div>
+                      </div> */}
                       <div className="pd-variants-overview"></div>
                     </div>
                   ) : product.hasDiscount && product.originalPrice ? (
@@ -804,6 +822,32 @@ function ProductDetail() {
                   )}
                 </div>
               </div>
+
+              {/* Categories */}
+              {((product.categoryIds && product.categoryIds.length > 0) ||
+                (product.categories && product.categories.length > 0)) && (
+                <div className="pd-categories">
+                  <h4>الفئات:</h4>
+                  <div className="pd-category-tags">
+                    {product.categoryIds && product.categoryIds.length > 0
+                      ? product.categoryIds.map((catId, index) => {
+                          const category = categories.find(
+                            (c) => c.id === catId,
+                          );
+                          return category ? (
+                            <span key={index} className="pd-category-tag">
+                              {category.name}
+                            </span>
+                          ) : null;
+                        })
+                      : product.categories.map((category, index) => (
+                          <span key={index} className="pd-category-tag">
+                            {category}
+                          </span>
+                        ))}
+                  </div>
+                </div>
+              )}
 
               {/* Variants Selection */}
               {product.hasVariants && (
@@ -941,20 +985,6 @@ function ProductDetail() {
                 <h3>وصف المنتج</h3>
                 <p>{product.description}</p>
               </div> */}
-
-              {/* Categories */}
-              {product.categories && (
-                <div className="pd-categories">
-                  <h4>الفئات:</h4>
-                  <div className="pd-category-tags">
-                    {product.categories.map((category, index) => (
-                      <span key={index} className="pd-category-tag">
-                        {category}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {/* Features */}
               {product.features && (

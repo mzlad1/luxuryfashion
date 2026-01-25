@@ -41,6 +41,7 @@ import "../css/Navbar.css";
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(null); // null = loading, false = not admin, true = admin
+  const [isScrolled, setIsScrolled] = useState(false);
   const { cartItems } = useCart();
   const location = useLocation();
 
@@ -69,6 +70,20 @@ function Navbar() {
     return () => unsubscribe();
   }, []);
 
+  // Handle scroll to make navbar sticky
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // Don't show navbar on admin pages for non-admin users
   if (location.pathname.startsWith("/admin") && !isAdmin) {
     return null;
@@ -80,168 +95,175 @@ function Navbar() {
   }
 
   return (
-    <header className="navbar">
-      <div className="nav-container">
-        {/* Desktop Left Section */}
-        <div className="nav-desktop-left">
-          <a
-            href="https://www.instagram.com/luxury_life_stayle/"
-            className="nav-social-link"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Instagram"
-          >
-            <i className="fab fa-instagram"></i>
-          </a>
-          <a
-            href="https://www.facebook.com/profile.php?id=100087035404500"
-            className="nav-social-link"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Facebook"
-          >
-            <i className="fab fa-facebook-f"></i>
-          </a>
+    <>
+      {/* Top Contact Bar - Always Fixed */}
+      <div className={`top-bar ${isScrolled ? "top-bar-hidden" : ""}`}>
+        <div className="top-bar-container">
+          <div className="top-bar-left">
+            <a
+              href="https://www.instagram.com/luxury_life_stayle/"
+              className="top-bar-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Instagram"
+            >
+              <i className="fab fa-instagram"></i>
+            </a>
+            <a
+              href="https://www.facebook.com/profile.php?id=100087035404500"
+              className="top-bar-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Facebook"
+            >
+              <i className="fab fa-facebook-f"></i>
+            </a>
+          </div>
+          <div className="top-bar-right">
+            <a href="tel:+972592806088" className="top-bar-contact">
+              <i className="fas fa-phone-alt"></i>
+              <span>972592806088+</span>
+            </a>
+          </div>
         </div>
+      </div>
 
-        <Link
-          to="/"
-          className="nav-logo"
-          onClick={closeMenu}
-          aria-label="Luxury Fashion - Home"
-        >
-          <img
-            src="/images/logo.png"
-            alt="Luxury Fashion"
-            className="nav-logo-img"
-          />
-          <span className="nav-logo-text">Luxury Fashion</span>
-        </Link>
-
-        <nav className={`nav-menu ${isMenuOpen ? "nav-menu-active" : ""}`}>
+      {/* Main Navbar - Becomes Sticky on Scroll */}
+      <header className={`navbar ${isScrolled ? "navbar-sticky" : ""}`}>
+        <div className="nav-container">
           <Link
             to="/"
-            className={`nav-link ${isActive("/") ? "nav-link-active" : ""}`}
+            className="nav-logo"
             onClick={closeMenu}
+            aria-label="Luxury Fashion - Home"
           >
-            الرئيسية
-          </Link>
-          <Link
-            to="/products"
-            className={`nav-link ${
-              isActive("/products") ? "nav-link-active" : ""
-            }`}
-            onClick={closeMenu}
-          >
-            المنتجات
-          </Link>
-          <Link
-            to="/about"
-            className={`nav-link ${
-              isActive("/about") ? "nav-link-active" : ""
-            }`}
-            onClick={closeMenu}
-          >
-            من نحن
-          </Link>
-          <Link
-            to="/contact"
-            className={`nav-link ${
-              isActive("/contact") ? "nav-link-active" : ""
-            }`}
-            onClick={closeMenu}
-          >
-            اتصل بنا
+            <img
+              src="/images/logo.png"
+              alt="Luxury Fashion"
+              className="nav-logo-img"
+            />
+            <span className="nav-logo-text">Luxury Fashion</span>
           </Link>
 
-          {/* Only show cart for non-admin users */}
-          {isAdmin === false && (
+          <nav className={`nav-menu ${isMenuOpen ? "nav-menu-active" : ""}`}>
             <Link
-              to="/cart"
-              className={`nav-link cart-link nav-cart-desktop ${
-                isActive("/cart") ? "nav-link-active" : ""
+              to="/"
+              className={`nav-link ${isActive("/") ? "nav-link-active" : ""}`}
+              onClick={closeMenu}
+            >
+              الرئيسية
+            </Link>
+            <Link
+              to="/products"
+              className={`nav-link ${
+                isActive("/products") ? "nav-link-active" : ""
               }`}
               onClick={closeMenu}
             >
-              <span className="cart-icon">
-                <i className="fas fa-shopping-cart"></i>
-              </span>
-              {cartItemsCount > 0 && (
-                <span className="cart-badge">{cartItemsCount}</span>
-              )}
+              المنتجات
             </Link>
-          )}
-
-          {/* Show admin dashboard link for admin users */}
-          {isAdmin === true && (
             <Link
-              to="/admin/dashboard"
-              className={`nav-link admin-link ${
-                location.pathname.startsWith("/admin") ? "nav-link-active" : ""
+              to="/about"
+              className={`nav-link ${
+                isActive("/about") ? "nav-link-active" : ""
               }`}
               onClick={closeMenu}
             >
-              لوحة التحكم
+              من نحن
             </Link>
-          )}
-        </nav>
+            <Link
+              to="/contact"
+              className={`nav-link ${
+                isActive("/contact") ? "nav-link-active" : ""
+              }`}
+              onClick={closeMenu}
+            >
+              اتصل بنا
+            </Link>
 
-        {/* Desktop Right Section */}
-        <div className="nav-desktop-right">
-          <a href="tel:+972592806088" className="nav-contact-link">
-            <i className="fas fa-phone-alt"></i>
-            <span>972592806088+</span>
-          </a>
-        </div>
+            {/* Only show cart for non-admin users */}
+            {isAdmin === false && (
+              <Link
+                to="/cart"
+                className={`nav-link cart-link nav-cart-desktop ${
+                  isActive("/cart") ? "nav-link-active" : ""
+                }`}
+                onClick={closeMenu}
+              >
+                <span className="cart-icon">
+                  <i className="fas fa-shopping-cart"></i>
+                </span>
+                {cartItemsCount > 0 && (
+                  <span className="cart-badge">{cartItemsCount}</span>
+                )}
+              </Link>
+            )}
 
-        <div className="nav-right">
-          {/* Show page name beside logo on <= 768px
+            {/* Show admin dashboard link for admin users */}
+            {isAdmin === true && (
+              <Link
+                to="/admin/dashboard"
+                className={`nav-link admin-link ${
+                  location.pathname.startsWith("/admin")
+                    ? "nav-link-active"
+                    : ""
+                }`}
+                onClick={closeMenu}
+              >
+                لوحة التحكم
+              </Link>
+            )}
+          </nav>
+
+          <div className="nav-right">
+            {/* Show page name beside logo on <= 768px
           <h1 className="nav-current-page-name">
             {getPageName(location.pathname)}
           </h1> */}
 
-          {/* Mobile Cart Button - Only show for non-admin users */}
-          {isAdmin === false && (
-            <Link
-              to="/cart"
-              className="nav-cart-mobile"
-              onClick={closeMenu}
-              aria-label="عربة التسوق"
-            >
-              <span className="nav-cart-icon">
-                <i className="fas fa-shopping-cart"></i>
-              </span>
-              {cartItemsCount > 0 && (
-                <span className="nav-cart-badge">{cartItemsCount}</span>
-              )}
-            </Link>
-          )}
+            {/* Mobile Cart Button - Only show for non-admin users */}
+            {isAdmin === false && (
+              <Link
+                to="/cart"
+                className="nav-cart-mobile"
+                onClick={closeMenu}
+                aria-label="عربة التسوق"
+              >
+                <span className="nav-cart-icon">
+                  <i className="fas fa-shopping-cart"></i>
+                </span>
+                {cartItemsCount > 0 && (
+                  <span className="nav-cart-badge">{cartItemsCount}</span>
+                )}
+              </Link>
+            )}
 
-          <button
-            className="nav-toggle"
-            onClick={toggleMenu}
-            aria-label="Toggle navigation menu"
-            aria-expanded={isMenuOpen}
-          >
-            <span
-              className={`nav-toggle-line ${
-                isMenuOpen ? "nav-toggle-line-1" : ""
-              }`}
-            ></span>
-            <span
-              className={`nav-toggle-line ${
-                isMenuOpen ? "nav-toggle-line-2" : ""
-              }`}
-            ></span>
-            <span
-              className={`nav-toggle-line ${
-                isMenuOpen ? "nav-toggle-line-3" : ""
-              }`}
-            ></span>
-          </button>
+            <button
+              className="nav-toggle"
+              onClick={toggleMenu}
+              aria-label="Toggle navigation menu"
+              aria-expanded={isMenuOpen}
+            >
+              <span
+                className={`nav-toggle-line ${
+                  isMenuOpen ? "nav-toggle-line-1" : ""
+                }`}
+              ></span>
+              <span
+                className={`nav-toggle-line ${
+                  isMenuOpen ? "nav-toggle-line-2" : ""
+                }`}
+              ></span>
+              <span
+                className={`nav-toggle-line ${
+                  isMenuOpen ? "nav-toggle-line-3" : ""
+                }`}
+              ></span>
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }
 

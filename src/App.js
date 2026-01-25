@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
@@ -19,12 +19,32 @@ import FeedbackManager from "./pages/FeedbackManager";
 import DiscountManager from "./pages/DiscountManager";
 import CouponManager from "./pages/CouponManager";
 import Statistics from "./pages/Statistics";
+import VisitorStatistics from "./pages/VisitorStatistics";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
+import { trackVisitor, cleanupInactiveVisitors } from "./utils/visitorTracking";
 import "./css/App.css";
 
 // ملف App.js يحدد مسارات التطبيق
 function App() {
+  // تتبع الزوار عند تحميل التطبيق
+  useEffect(() => {
+    // تسجيل الزيارة
+    trackVisitor();
+
+    // تنظيف الزوار غير النشطين كل 5 دقائق
+    const cleanupInterval = setInterval(
+      () => {
+        cleanupInactiveVisitors();
+      },
+      5 * 60 * 1000,
+    );
+
+    return () => {
+      clearInterval(cleanupInterval);
+    };
+  }, []);
+
   return (
     <div className="App">
       <Toaster
@@ -138,6 +158,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Statistics />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/visitor-statistics"
+            element={
+              <ProtectedRoute>
+                <VisitorStatistics />
               </ProtectedRoute>
             }
           />

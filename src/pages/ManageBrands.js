@@ -14,6 +14,7 @@ import { CacheManager, CACHE_KEYS } from "../utils/cache";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
+import toast from "react-hot-toast";
 
 // صفحة إدارة العلامات التجارية
 function ManageBrands() {
@@ -128,7 +129,14 @@ function ManageBrands() {
         country: "",
       });
       setShowForm(false);
+
+      toast.success(
+        formData.id
+          ? "تم تحديث العلامة التجارية بنجاح"
+          : "تم إضافة العلامة التجارية بنجاح",
+      );
     } catch (error) {
+      toast.error("حدث خطأ. يرجى المحاولة مرة أخرى.");
     } finally {
       setLoading(false);
     }
@@ -147,7 +155,55 @@ function ManageBrands() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("هل تريد حذف هذه العلامة التجارية؟")) return;
+    const confirmDelete = await new Promise((resolve) => {
+      const toastId = toast(
+        (t) => (
+          <div style={{ textAlign: "center" }}>
+            <p style={{ marginBottom: "15px", fontWeight: "bold" }}>
+              هل تريد حذف هذه العلامة التجارية؟
+            </p>
+            <div
+              style={{ display: "flex", gap: "10px", justifyContent: "center" }}
+            >
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(true);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                حذف
+              </button>
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(false);
+                }}
+                style={{
+                  padding: "8px 20px",
+                  background: "#6b7280",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        ),
+        { duration: Infinity },
+      );
+    });
+    if (!confirmDelete) return;
     try {
       await deleteDoc(doc(db, "brands", id));
       const updatedBrands = brands.filter((b) => b.id !== id);
@@ -155,7 +211,11 @@ function ManageBrands() {
 
       // Update cache
       CacheManager.set(CACHE_KEYS.BRANDS, updatedBrands, 10 * 60 * 1000);
-    } catch (error) {}
+
+      toast.success("تم حذف العلامة التجارية بنجاح");
+    } catch (error) {
+      toast.error("حدث خطأ أثناء الحذف");
+    }
   };
 
   const handleCancel = () => {

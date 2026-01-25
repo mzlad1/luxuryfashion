@@ -274,10 +274,6 @@ function AdminDashboard() {
             <div className="stat-label">إجمالي الطلبات</div>
             <div className="stat-value">{kpis.totalOrders}</div>
           </div>
-          <div className="admin-dash-card stat">
-            <div className="stat-label">طلبات منجزة</div>
-            <div className="stat-value">{kpis.completedCount}</div>
-          </div>
 
           <div className="admin-dash-card stat">
             <div className="stat-label">المنتجات</div>
@@ -301,64 +297,67 @@ function AdminDashboard() {
           </div>
         </section>
 
-        
-          <div className="admin-dash-panel">
-            <div className="admin-dash-panel-header">
-              <h2>روابط سريعة</h2>
-            </div>
-            <div className="admin-dash-quick-grid">
-              <Link to={paths.orders} className="admin-dash-tile">
-                <span className="tile-title">الطلبات</span>
-                <span className="tile-sub">عرض وإدارة الطلبات</span>
-              </Link>
-              <Link to={paths.products} className="admin-dash-tile">
-                <span className="tile-title">المنتجات</span>
-                <span className="tile-sub">إدارة منتجات العناية بالشعر</span>
-              </Link>
-              <Link to={paths.brands} className="admin-dash-tile">
-                <span className="tile-title">العلامات التجارية</span>
-                <span className="tile-sub">إدارة العلامات</span>
-              </Link>
-              <Link to={paths.categories} className="admin-dash-tile">
-                <span className="tile-title">الفئات</span>
-                <span className="tile-sub">إدارة الفئات</span>
-              </Link>
-              <Link to="/admin/feedbacks" className="admin-dash-tile">
-                <span className="tile-title">تقييمات العملاء</span>
-                <span className="tile-sub">مراجعة والموافقة على التقييمات</span>
-              </Link>
-              <Link to="/admin/discounts" className="admin-dash-tile">
-                <span className="tile-title">الخصومات</span>
-                <span className="tile-sub">
-                  تطبيق خصومات على المنتجات والفئات
-                </span>
-              </Link>
-              <Link to="/admin/coupons" className="admin-dash-tile">
-                <span className="tile-title">الكوبونات</span>
-                <span className="tile-sub">
-                  إنشاء وإدارة كوبونات الخصم
-                </span>
-              </Link>
-              <Link to="/admin/statistics" className="admin-dash-tile">
-                <span className="tile-title">إحصائيات الموقع</span>
-                <span className="tile-sub">
-                  عرض إحصائيات شاملة عن الموقع والزوار
-                </span>
-              </Link>
-              <Link to="/admin/hero-slides" className="admin-dash-tile">
-                <span className="tile-title">شرائح الصفحة الرئيسية</span>
-                <span className="tile-sub">
-                  إدارة الشرائح المتحركة في الصفحة الرئيسية
-                </span>
-              </Link>
-              <Link to="/admin/promotional-banner" className="admin-dash-tile">
-                <span className="tile-title">البانر الترويجي</span>
-                <span className="tile-sub">
-                  إدارة البانر الترويجي في الصفحة الرئيسية
-                </span>
-              </Link>
-            </div>
+        <div className="admin-dash-panel">
+          <div className="admin-dash-panel-header">
+            <h2>صفحات الأدمن</h2>
           </div>
+          <div className="admin-dash-quick-grid">
+            <Link to={paths.orders} className="admin-dash-tile">
+              <span className="tile-title">الطلبات</span>
+              <span className="tile-sub">عرض وإدارة الطلبات</span>
+            </Link>
+            <Link to={paths.products} className="admin-dash-tile">
+              <span className="tile-title">المنتجات</span>
+              <span className="tile-sub">إدارة منتجات العناية بالشعر</span>
+            </Link>
+            <Link to={paths.brands} className="admin-dash-tile">
+              <span className="tile-title">العلامات التجارية</span>
+              <span className="tile-sub">إدارة العلامات</span>
+            </Link>
+            <Link to={paths.categories} className="admin-dash-tile">
+              <span className="tile-title">الفئات</span>
+              <span className="tile-sub">إدارة الفئات</span>
+            </Link>
+            <Link to="/admin/feedbacks" className="admin-dash-tile">
+              <span className="tile-title">تقييمات العملاء</span>
+              <span className="tile-sub">مراجعة والموافقة على التقييمات</span>
+            </Link>
+            <Link to="/admin/discounts" className="admin-dash-tile">
+              <span className="tile-title">الخصومات</span>
+              <span className="tile-sub">
+                تطبيق خصومات على المنتجات والفئات
+              </span>
+            </Link>
+            <Link to="/admin/coupons" className="admin-dash-tile">
+              <span className="tile-title">الكوبونات</span>
+              <span className="tile-sub">إنشاء وإدارة كوبونات الخصم</span>
+            </Link>
+            <Link to="/admin/statistics" className="admin-dash-tile">
+              <span className="tile-title">إحصائيات الموقع</span>
+              <span className="tile-sub">
+                عرض إحصائيات شاملة عن الموقع والزوار
+              </span>
+            </Link>
+            <Link to="/admin/visitor-statistics" className="admin-dash-tile">
+              <span className="tile-title">إحصائيات الزوار</span>
+              <span className="tile-sub">
+                تتبع عدد الزوار والإحصائيات اللحظية
+              </span>
+            </Link>
+            <Link to="/admin/hero-slides" className="admin-dash-tile">
+              <span className="tile-title">شرائح الصفحة الرئيسية</span>
+              <span className="tile-sub">
+                إدارة الشرائح المتحركة في الصفحة الرئيسية
+              </span>
+            </Link>
+            <Link to="/admin/promotional-banner" className="admin-dash-tile">
+              <span className="tile-title">البانر الترويجي</span>
+              <span className="tile-sub">
+                إدارة البانر الترويجي في الصفحة الرئيسية
+              </span>
+            </Link>
+          </div>
+        </div>
       </div>
     </>
   );

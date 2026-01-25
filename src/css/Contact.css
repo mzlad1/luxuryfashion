@@ -25,14 +25,102 @@
 /* Arabic Font Support */
 @import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700&display=swap");
 
+/* Hero Section */
+.contact-hero {
+  position: relative;
+  height: 45vh;
+  min-height: 350px;
+  max-height: 500px;
+  background: linear-gradient(135deg, #6f4e37 0%, #5a3e2b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.contact-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=1600")
+    center/cover;
+  opacity: 0.15;
+}
+
+.contact-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+}
+
+.contact-hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: white;
+  padding: 0 20px;
+}
+
+.contact-hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+  letter-spacing: 1px;
+}
+
+.contact-hero-subtitle {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin: 0;
+  opacity: 0.95;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .contact-hero {
+    height: 40vh;
+    min-height: 280px;
+    max-height: 400px;
+  }
+
+  .contact-hero-title {
+    font-size: 2.5rem;
+  }
+
+  .contact-hero-subtitle {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-hero {
+    height: 35vh;
+    min-height: 250px;
+  }
+
+  .contact-hero-title {
+    font-size: 2rem;
+  }
+
+  .contact-hero-subtitle {
+    font-size: 1rem;
+  }
+}
+
 /* Contact Page */
 .bp-contact-page {
-  /* min-height: 100vh; */
-  min-height: calc(
-    100vh - 225px
-  ); /* Subtracting approximate header/footer height */
   background: linear-gradient(135deg, #faf9f6 0%, #ffffff 100%);
-  padding: 2rem 0;
   font-family: "Tajawal", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
 }
@@ -40,7 +128,7 @@
 .bp-contact-container {
   max-width: var(--contact-max-width);
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 3rem 1rem 2rem;
 }
 
 /* Contact Header */
@@ -91,7 +179,7 @@
 /* Contact Cards */
 .bp-contact-cards {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 1rem;
 }
 

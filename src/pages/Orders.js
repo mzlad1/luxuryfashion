@@ -14,6 +14,7 @@ import { CacheManager, CACHE_KEYS } from "../utils/cache";
 import { useNavigate, Link } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
+import toast from "react-hot-toast";
 
 // صفحة عرض الطلبات وإدارتها
 function Orders() {
@@ -349,7 +350,7 @@ function Orders() {
       // Optionally fetch fresh data after status change
       setTimeout(() => fetchOrders(true), 1000);
     } catch (error) {
-      alert(`حدث خطأ أثناء تحديث حالة الطلب: ${error.message}`);
+      toast.error(`حدث خطأ أثناء تحديث حالة الطلب: ${error.message}`);
     }
   };
 
@@ -441,7 +442,7 @@ function Orders() {
       // Fetch fresh data after deletion
       setTimeout(() => fetchOrders(true), 1000);
     } catch (error) {
-      alert("حدث خطأ أثناء حذف الطلب. يرجى المحاولة مرة أخرى.");
+      toast.error("حدث خطأ أثناء حذف الطلب. يرجى المحاولة مرة أخرى.");
     }
   };
 

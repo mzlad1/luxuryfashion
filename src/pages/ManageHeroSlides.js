@@ -16,6 +16,7 @@ import {
 import { db, storage } from "../firebase";
 import Navbar from "../components/Navbar";
 import "../css/ManageHeroSlides.css";
+import toast from "react-hot-toast";
 
 function ManageHeroSlides() {
   const [slides, setSlides] = useState([]);
@@ -66,7 +67,7 @@ function ManageHeroSlides() {
       slidesData.sort((a, b) => (a.order || 0) - (b.order || 0));
       setSlides(slidesData);
     } catch (error) {
-      alert("حدث خطأ أثناء تحميل الشرائح");
+      toast.error("حدث خطأ أثناء تحميل الشرائح");
     } finally {
       setLoading(false);
     }
@@ -147,12 +148,12 @@ function ManageHeroSlides() {
 
     // Validate colors before submission
     if (!isValidHexColor(formData.textColor)) {
-      alert("لون النص غير صالح. يجب أن يكون بصيغة #RRGGBB");
+      toast.error("لون النص غير صالح. يجب أن يكون بصيغة #RRGGBB");
       return;
     }
 
     if (!isValidHexColor(formData.buttonColor)) {
-      alert("لون الزر غير صالح. يجب أن يكون بصيغة #RRGGBB");
+      toast.error("لون الزر غير صالح. يجب أن يكون بصيغة #RRGGBB");
       return;
     }
 
@@ -169,7 +170,7 @@ function ManageHeroSlides() {
       );
 
       if (orderExists) {
-        alert(`الترتيب ${orderNumber} مستخدم بالفعل. الرجاء اختيار ترتيب آخر.`);
+        toast.error(`الترتيب ${orderNumber} مستخدم بالفعل. الرجاء اختيار ترتيب آخر.`);
         setUploading(false);
         return;
       }
@@ -191,18 +192,18 @@ function ManageHeroSlides() {
       if (editingSlide) {
         // Update existing slide
         await updateDoc(doc(db, "heroSlides", editingSlide.id), slideData);
-        alert("تم تحديث الشريحة بنجاح");
+        toast.success("تم تحديث الشريحة بنجاح");
       } else {
         // Add new slide
         slideData.createdAt = new Date();
         await addDoc(collection(db, "heroSlides"), slideData);
-        alert("تم إضافة الشريحة بنجاح");
+        toast.success("تم إضافة الشريحة بنجاح");
       }
 
       fetchSlides();
       closeModal();
     } catch (error) {
-      alert("حدث خطأ أثناء حفظ الشريحة");
+      toast.error("حدث خطأ أثناء حفظ الشريحة");
     } finally {
       setUploading(false);
     }
@@ -231,10 +232,10 @@ function ManageHeroSlides() {
 
     try {
       await deleteDoc(doc(db, "heroSlides", slide.id));
-      alert("تم حذف الشريحة بنجاح");
+      toast.success("تم حذف الشريحة بنجاح");
       fetchSlides();
     } catch (error) {
-      alert("حدث خطأ أثناء حذف الشريحة");
+      toast.error("حدث خطأ أثناء حذف الشريحة");
     }
   };
 

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import "../css/ProductCard.css";
+import toast from "react-hot-toast";
 
 // مكون لعرض بطاقة المنتج في صفحة المنتجات
 function ProductCard({ product }) {
@@ -11,6 +13,9 @@ function ProductCard({ product }) {
   const [addingToCart, setAddingToCart] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showVariantModal, setShowVariantModal] = useState(false);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
   const { addToCart } = useCart();
 
   // Check if user is admin
@@ -106,68 +111,359 @@ function ProductCard({ product }) {
 
     if (addingToCart || isAdmin) return;
 
+    // If product has variants, show selection modal
+    if (
+      product.hasVariants &&
+      product.variants &&
+      product.variants.length > 0
+    ) {
+      setShowVariantModal(true);
+      return;
+    }
+
+    // For regular products, add directly
     setAddingToCart(true);
     try {
-      // For variant products, we'll add the first available variant
-      // For regular products, add directly
-      if (
-        product.hasVariants &&
-        product.variants &&
-        product.variants.length > 0
-      ) {
-        // Find first variant with stock
-        const availableVariant = product.variants.find(
-          (v) => (parseInt(v.stock) || 0) > 0,
-        );
-        if (availableVariant) {
-          await addToCart({
-            ...product,
-            selectedVariant: availableVariant,
-            quantity: 1,
-          });
-          // Show success toast
-          setShowToast(true);
-          setTimeout(() => setShowToast(false), 3000);
-        } else {
-          // All variants out of stock
-          alert("جميع الأحجام نفذت من المخزون");
-          return;
-        }
+      if (product.stock > 0 || product.onDemand) {
+        await addToCart({
+          ...product,
+          quantity: 1,
+        });
+        // Show success toast
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
       } else {
-        // Regular product
-        if (product.stock > 0 || product.onDemand) {
-          await addToCart({
-            ...product,
-            quantity: 1,
-          });
-          // Show success toast
-          setShowToast(true);
-          setTimeout(() => setShowToast(false), 3000);
-        } else {
-          alert("المنتج نفذ من المخزون");
-          return;
-        }
+        toast.error("المنتج نفذ من المخزون");
+        return;
       }
     } catch (error) {
-      alert("حدث خطأ أثناء إضافة المنتج للسلة");
+      toast.error("حدث خطأ أثناء إضافة المنتج للسلة");
     } finally {
       setAddingToCart(false);
     }
   };
 
-  return (
-    <Link to={`/products/${product.id}`} className="pc-card pc-card--clickable">
-      {/* Success Toast Notification */}
-      {showToast && (
-        <div className="pc-toast-overlay">
-          <div className="pc-toast">
-            <span className="pc-toast-icon">
-              <i className="fas fa-check-circle"></i>
-            </span>
-            <span className="pc-toast-text">تم إضافة المنتج للسلة!</span>
-          </div>
+  // Get the currently selected variant
+  const getSelectedVariant = () => {
+    if (!selectedSize && !selectedColor) return null;
+    
+    return product.variants.find((v) => {
+      if (product.sizes?.length > 0 && product.colors?.length > 0) {
+        // Both size and color
+        return v.size === selectedSize && v.color === selectedColor;
+      } else if (product.sizes?.length > 0) {
+        // Only size
+        return v.size === selectedSize;
+      } else if (product.colors?.length > 0) {
+        // Only color
+        return v.color === selectedColor;
+      }
+      return false;
+    });
+  };
+
+  // Check if selected variant is in stock
+  const isSelectedVariantInStock = () => {
+    const variant = getSelectedVariant();
+    return variant && (parseInt(variant.stock) || 0) > 0;
+  };
+
+  // Handle adding variant to cart
+  const handleAddVariantToCart = async () => {
+    if (!selectedSize && !selectedColor) {
+      toast.error("يرجى اختيار الحجم أو اللون");
+      return;
+    }
+
+    setAddingToCart(true);
+    try {
+      const selectedVariant = getSelectedVariant();
+
+      if (!selectedVariant) {
+        toast.error("الخيار المحدد غير متوفر");
+        setAddingToCart(false);
+        return;
+      }
+
+      if ((parseInt(selectedVariant.stock) || 0) === 0) {
+        toast.error("هذا الخيار نفذ من المخزون");
+        setAddingToCart(false);
+        return;
+      }
+
+      await addToCart({
+        ...product,
+        selectedVariant: selectedVariant,
+        quantity: 1,
+      });
+
+      // Show success toast
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+
+      // Close modal and reset selections
+      setShowVariantModal(false);
+      setSelectedSize("");
+      setSelectedColor("");
+    } catch (error) {
+      toast.error("حدث خطأ أثناء إضافة المنتج للسلة");
+    } finally {
+      setAddingToCart(false);
+    }
+  };
+
+  // Close modal
+  const closeVariantModal = () => {
+    setShowVariantModal(false);
+    setSelectedSize("");
+    setSelectedColor("");
+  };
+
+  // Prevent body scroll when modal is open and handle Escape key
+  useEffect(() => {
+    if (showVariantModal) {
+      document.body.style.overflow = 'hidden';
+      
+      // Handle Escape key
+      const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+          closeVariantModal();
+        }
+      };
+      
+      document.addEventListener('keydown', handleEscape);
+      
+      return () => {
+        document.body.style.overflow = 'unset';
+        document.removeEventListener('keydown', handleEscape);
+      };
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [showVariantModal]);
+
+  // Render variant modal using Portal to render at document body level
+  const variantModal = showVariantModal ? (
+    <div
+      className="pc-variant-modal-overlay"
+      onClick={closeVariantModal}
+    >
+      <div
+        className="pc-variant-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="pc-variant-modal-header">
+          <h3>اختر المواصفات</h3>
+          <button
+            className="pc-variant-modal-close"
+            onClick={closeVariantModal}
+          >
+            <i className="fas fa-times"></i>
+          </button>
         </div>
-      )}
+
+        <div className="pc-variant-modal-body">
+          {/* Size Selection */}
+          {product.sizes && product.sizes.length > 0 && (
+            <div className="pc-variant-selection-group">
+              <label className="pc-variant-label">الحجم:</label>
+              <div className="pc-variant-options">
+                {product.sizes.map((size) => {
+                  // Check if this size has stock
+                  const hasStock = product.variants.some((v) => {
+                    if (product.colors?.length > 0) {
+                      // If colors exist, check any color with this size
+                      return (
+                        v.size === size && (parseInt(v.stock) || 0) > 0
+                      );
+                    } else {
+                      // No colors, just check size
+                      return (
+                        v.size === size && (parseInt(v.stock) || 0) > 0
+                      );
+                    }
+                  });
+
+                  return (
+                    <button
+                      key={size}
+                      className={`pc-variant-option ${
+                        selectedSize === size ? "selected" : ""
+                      } ${!hasStock ? "disabled" : ""}`}
+                      onClick={() =>
+                        hasStock ? setSelectedSize(size) : null
+                      }
+                      disabled={!hasStock}
+                    >
+                      {size}
+                      {!hasStock && (
+                        <span className="pc-variant-out-of-stock">
+                          نفذت
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Color Selection */}
+          {product.colors && product.colors.length > 0 && (
+            <div className="pc-variant-selection-group">
+              <label className="pc-variant-label">اللون:</label>
+              <div className="pc-variant-options">
+                {product.colors.map((color) => {
+                  // Check if this color has stock
+                  const hasStock = product.variants.some((v) => {
+                    if (product.sizes?.length > 0) {
+                      // If sizes exist, check with selected size or any size
+                      if (selectedSize) {
+                        return (
+                          v.color === color &&
+                          v.size === selectedSize &&
+                          (parseInt(v.stock) || 0) > 0
+                        );
+                      } else {
+                        return (
+                          v.color === color &&
+                          (parseInt(v.stock) || 0) > 0
+                        );
+                      }
+                    } else {
+                      // No sizes, just check color
+                      return (
+                        v.color === color && (parseInt(v.stock) || 0) > 0
+                      );
+                    }
+                  });
+
+                  return (
+                    <button
+                      key={color}
+                      className={`pc-variant-option ${
+                        selectedColor === color ? "selected" : ""
+                      } ${!hasStock ? "disabled" : ""}`}
+                      onClick={() =>
+                        hasStock ? setSelectedColor(color) : null
+                      }
+                      disabled={!hasStock}
+                    >
+                      {color}
+                      {!hasStock && (
+                        <span className="pc-variant-out-of-stock">
+                          نفذت
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Selected variant info */}
+          {((selectedSize && product.sizes?.length > 0) ||
+            (selectedColor && product.colors?.length > 0)) && (
+            <div className="pc-variant-selected-info">
+              {(() => {
+                const variant = product.variants.find((v) => {
+                  if (product.sizes?.length > 0 && product.colors?.length > 0) {
+                    return v.size === selectedSize && v.color === selectedColor;
+                  } else if (product.sizes?.length > 0) {
+                    return v.size === selectedSize;
+                  } else if (product.colors?.length > 0) {
+                    return v.color === selectedColor;
+                  }
+                  return false;
+                });
+
+                if (variant) {
+                  const inStock = (parseInt(variant.stock) || 0) > 0;
+                  return (
+                    <div className="pc-variant-info-content">
+                      <div className="pc-variant-price-section">
+                        <span className="pc-variant-info-label">السعر:</span>
+                        <span className="pc-variant-info-value">
+                          {variant.price} شيكل
+                        </span>
+                      </div>
+                      <div className={`pc-variant-stock-section ${inStock ? 'in-stock' : 'out-of-stock'}`}>
+                        <span className="pc-variant-info-label">الحالة:</span>
+                        <span className="pc-variant-stock-badge">
+                          {inStock ? (
+                            <>
+                              <i className="fas fa-check-circle"></i>
+                              <span>متوفر</span>
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-times-circle"></i>
+                              <span>غير متوفر</span>
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+            </div>
+          )}
+        </div>
+
+        <div className="pc-variant-modal-footer">
+          <button
+            className="pc-variant-cancel-btn"
+            onClick={closeVariantModal}
+          >
+            إلغاء
+          </button>
+          <button
+            className="pc-variant-add-btn"
+            onClick={handleAddVariantToCart}
+            disabled={
+              addingToCart ||
+              (!selectedSize && product.sizes?.length > 0) ||
+              (!selectedColor && product.colors?.length > 0) ||
+              !isSelectedVariantInStock()
+            }
+          >
+            {addingToCart ? (
+              <>
+                <i className="fas fa-hourglass-half"></i>
+                <span>جاري الإضافة...</span>
+              </>
+            ) : (
+              <>
+                <i className="fas fa-shopping-cart"></i>
+                <span>أضف للسلة</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
+  return (
+    <>
+      {/* Render modal at document body level using Portal */}
+      {variantModal && ReactDOM.createPortal(variantModal, document.body)}
+
+      <Link to={`/products/${product.id}`} className="pc-card pc-card--clickable">
+        {/* Success Toast Notification */}
+        {showToast && (
+          <div className="pc-toast-overlay">
+            <div className="pc-toast">
+              <span className="pc-toast-icon">
+                <i className="fas fa-check-circle"></i>
+              </span>
+              <span className="pc-toast-text">تم إضافة المنتج للسلة!</span>
+            </div>
+          </div>
+        )}
 
       <div className="pc-image-container">
         {/* Countdown Timer - Overlay on Image */}
@@ -313,7 +609,8 @@ function ProductCard({ product }) {
           </>
         )}
       </button>
-    </Link>
+      </Link>
+    </>
   );
 }
 

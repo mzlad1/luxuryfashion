@@ -20,6 +20,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { CacheManager, CACHE_KEYS } from "../utils/cache";
+import toast from "react-hot-toast";
 
 // صفحة إدارة المنتجات
 function ManageProducts() {
@@ -467,14 +468,14 @@ function ManageProducts() {
     const totalImages = currentKeptImages + files.length;
 
     if (totalImages > 9) {
-      alert(
+      toast.error(
         `لا يمكن أن يتجاوز إجمالي الصور 9 صور. الصور الحالية: ${currentKeptImages}, الصور الجديدة: ${files.length}, الإجمالي: ${totalImages}`,
       );
       return;
     }
 
     if (files.length > 9) {
-      alert("يمكنك اختيار حد أقصى 9 صور");
+      toast.error("يمكنك اختيار حد أقصى 9 صور");
       return;
     }
 
@@ -485,14 +486,14 @@ function ManageProducts() {
     );
 
     if (invalidFiles.length > 0) {
-      alert("يُسمح فقط بملفات الصور (JPG, PNG, WEBP)");
+      toast.error("يُسمح فقط بملفات الصور (JPG, PNG, WEBP)");
       return;
     }
 
     // Validate file sizes (max 5MB per file)
     const oversizedFiles = files.filter((file) => file.size > 5 * 1024 * 1024);
     if (oversizedFiles.length > 0) {
-      alert("حجم الصورة يجب أن يكون أقل من 5 ميجابايت");
+      toast.error("حجم الصورة يجب أن يكون أقل من 5 ميجابايت");
       return;
     }
 
@@ -584,7 +585,7 @@ function ManageProducts() {
 
         // Validate total image count
         if (finalImageUrls.length > 9) {
-          alert(
+          toast.error(
             "لا يمكن أن يتجاوز إجمالي الصور 9 صور. يرجى حذف بعض الصور أو تقليل عدد الصور الجديدة.",
           );
           setLoading(false);
@@ -604,7 +605,7 @@ function ManageProducts() {
 
         // Validate total image count for new products
         if (finalImageUrls.length > 9) {
-          alert(
+          toast.error(
             "لا يمكن أن يتجاوز إجمالي الصور 9 صور. يرجى تقليل عدد الصور المختارة.",
           );
           setLoading(false);
@@ -723,7 +724,7 @@ function ManageProducts() {
       setSelectedFiles([]);
       setShowForm(false);
     } catch (error) {
-      alert("حدث خطأ في حفظ المنتج. يرجى المحاولة مرة أخرى.");
+      toast.error("حدث خطأ في حفظ المنتج. يرجى المحاولة مرة أخرى.");
     } finally {
       setLoading(false);
     }
@@ -799,7 +800,7 @@ function ManageProducts() {
       // Clear products cache to ensure fresh data on other pages
       clearProductsCache();
     } catch (error) {
-      alert("حدث خطأ في حذف المنتج. يرجى المحاولة مرة أخرى.");
+      toast.error("حدث خطأ في حذف المنتج. يرجى المحاولة مرة أخرى.");
     }
   };
 

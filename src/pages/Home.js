@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { collection, getDocs, writeBatch, doc } from "firebase/firestore";
 import { db } from "../firebase";
+import Marquee from "react-fast-marquee";
 import PromotionalBanner from "../components/PromotionalBanner";
 import ProductCard from "../components/ProductCard";
 import Navbar from "../components/Navbar";
@@ -718,53 +719,50 @@ function Home() {
                   {[...Array(6)].map((_, index) => (
                     <div key={index} className="brand-skeleton">
                       <div className="skeleton-brand-logo"></div>
-                      <div className="skeleton-brand-name"></div>
                     </div>
                   ))}
                 </div>
               </div>
-            ) : (
-              <div className="brands-grid">
+            ) : brands.length > 0 ? (
+              <Marquee
+  gradient={true}
+  gradientColor={[250, 248, 245]}
+  gradientWidth={50}
+  speed={40}
+  pauseOnHover={true}
+    direction="left"
+  style={{ direction: "ltr" }}
+  className="brands-marquee"
+>
                 {brands.map((brand) => (
-                  <div key={brand.id} className="brand-item">
-                    <div
-                      className="brand-card"
-                      onClick={() => handleBrandClick(brand.name)}
-                    >
-                      <div className="brand-logo-container">
-                        {brand.logo ? (
-                          <img
-                            src={brand.logo}
-                            alt={brand.name}
-                            className="brand-logo"
-                            onError={(e) => {
-                              e.target.style.display = "none";
-                              e.target.nextSibling.style.display = "flex";
-                            }}
-                          />
-                        ) : null}
-                        <div
-                          className="brand-logo-fallback"
-                          style={{ display: brand.logo ? "none" : "flex" }}
-                        >
-                          <span className="brand-icon">
+                  <div
+                    key={brand.id}
+                    className="brand-marquee-item"
+                    onClick={() => handleBrandClick(brand.name)}
+                  >
+                    <div className="brand-marquee-card">
+                      {brand.logo ? (
+                        <img
+                          src={brand.logo}
+                          alt={brand.name}
+                          className="brand-marquee-logo"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                            e.target.nextSibling.style.display = "flex";
+                          }}
+                        />
+                      ) : (
+                        <div className="brand-marquee-fallback">
+                          <span className="brand-marquee-icon">
                             {brand.icon || <i className="fas fa-tag"></i>}
                           </span>
                         </div>
-                      </div>
-                      <div className="brand-info">
-                        <h3 className="brand-name">{brand.name}</h3>
-                        <div className="brand-click-hint">
-                          <span>انقر لعرض المنتجات</span>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 ))}
-              </div>
-            )}
-
-            {brands.length === 0 && !loadingBrands && (
+              </Marquee>
+            ) : (
               <div className="no-brands-message">
                 <div className="no-brands-icon">
                   <i className="fas fa-tag"></i>

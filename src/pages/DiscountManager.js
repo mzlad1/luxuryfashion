@@ -13,6 +13,7 @@ import { db } from "../firebase";
 import { CacheManager, CACHE_KEYS } from "../utils/cache";
 import Navbar from "../components/Navbar";
 import "../css/DiscountManager.css";
+import toast from "react-hot-toast";
 
 function DiscountManager() {
   const [products, setProducts] = useState([]);
@@ -95,7 +96,7 @@ function DiscountManager() {
         setBrands(uniqueBrands.map(brand => ({ name: brand })));
       }
     } catch (error) {
-      alert("حدث خطأ في تحميل البيانات");
+      toast.error("حدث خطأ في تحميل البيانات");
     } finally {
       setLoading(false);
     }
@@ -115,7 +116,7 @@ function DiscountManager() {
 
   const applyDiscount = async () => {
     if (!discountValue || !discountName || selectedItems.length === 0) {
-      alert("يرجى ملء جميع الحقول واختيار العناصر");
+      toast.error("يرجى ملء جميع الحقول واختيار العناصر");
       return;
     }
 
@@ -123,7 +124,7 @@ function DiscountManager() {
       discountValue <= 0 ||
       (discountMethod === "percentage" && discountValue >= 100)
     ) {
-      alert("يرجى إدخال قيمة خصم صحيحة");
+      toast.error("يرجى إدخال قيمة خصم صحيحة");
       return;
     }
 
@@ -264,9 +265,9 @@ function DiscountManager() {
       });
       setProducts(updatedProducts);
 
-      alert(`تم تطبيق الخصم على ${affectedProducts.length} منتج`);
+      toast.success(`تم تطبيق الخصم على ${affectedProducts.length} منتج`);
     } catch (error) {
-      alert("حدث خطأ في تطبيق الخصم");
+      toast.error("حدث خطأ في تطبيق الخصم");
     } finally {
       setUpdating(false);
     }
@@ -277,7 +278,7 @@ function DiscountManager() {
     try {
       const product = products.find((p) => p.id === productId);
       if (!product.originalPrice) {
-        alert("هذا المنتج لا يحتوي على خصم");
+        toast.error("هذا المنتج لا يحتوي على خصم");
         return;
       }
 
@@ -354,9 +355,9 @@ function DiscountManager() {
       });
       setProducts(updatedProducts);
 
-      alert("تم إزالة الخصم بنجاح");
+      toast.success("تم إزالة الخصم بنجاح");
     } catch (error) {
-      alert("حدث خطأ في إزالة الخصم");
+      toast.error("حدث خطأ في إزالة الخصم");
     } finally {
       setUpdating(false);
     }
@@ -364,7 +365,7 @@ function DiscountManager() {
 
   const editDiscount = async (productId) => {
     if (!editDiscountValue || !editDiscountName) {
-      alert("يرجى ملء جميع الحقول");
+      toast.error("يرجى ملء جميع الحقول");
       return;
     }
 
@@ -373,7 +374,7 @@ function DiscountManager() {
       (editingDiscount.discountType === "percentage" &&
         editDiscountValue >= 100)
     ) {
-      alert("يرجى إدخال قيمة خصم صحيحة");
+      toast.error("يرجى إدخال قيمة خصم صحيحة");
       return;
     }
 
@@ -484,9 +485,9 @@ function DiscountManager() {
       });
       setProducts(updatedProducts);
 
-      alert("تم تحديث الخصم بنجاح");
+      toast.success("تم تحديث الخصم بنجاح");
     } catch (error) {
-      alert("حدث خطأ في تحديث الخصم");
+      toast.error("حدث خطأ في تحديث الخصم");
     } finally {
       setUpdating(false);
     }
@@ -934,9 +935,9 @@ function DiscountManager() {
       });
       setProducts(updatedProducts);
       setDiscountsPage(1);
-      alert(`تم إزالة ${discountedProducts.length} خصم بنجاح`);
+      toast.success(`تم إزالة ${discountedProducts.length} خصم بنجاح`);
     } catch (error) {
-      alert("حدث خطأ في إزالة الخصومات");
+      toast.error("حدث خطأ في إزالة الخصومات");
     } finally {
       setUpdating(false);
     }

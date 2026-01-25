@@ -10,6 +10,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage
 import { db, storage } from "../firebase";
 import Navbar from "../components/Navbar";
 import "../css/ManagePromotionalBanner.css";
+import toast from "react-hot-toast";
 
 function ManagePromotionalBanner() {
   const [loading, setLoading] = useState(true);
@@ -82,7 +83,7 @@ function ManagePromotionalBanner() {
         });
       }
     } catch (error) {
-      alert("حدث خطأ في تحميل البيانات");
+      toast.error("حدث خطأ في تحميل البيانات");
     } finally {
       setLoading(false);
     }
@@ -102,13 +103,13 @@ function ManagePromotionalBanner() {
       // Validate file type
       const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
       if (!validTypes.includes(file.type)) {
-        alert("يُسمح فقط بملفات الصور (JPG, PNG, WEBP)");
+        toast.error("يُسمح فقط بملفات الصور (JPG, PNG, WEBP)");
         return;
       }
 
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert("حجم الصورة يجب أن يكون أقل من 5 ميجابايت");
+        toast.error("حجم الصورة يجب أن يكون أقل من 5 ميجابايت");
         return;
       }
 
@@ -183,9 +184,9 @@ function ManagePromotionalBanner() {
 
       setOldImageUrl(finalImageUrl);
       setSelectedFile(null);
-      alert("تم حفظ البانر بنجاح!");
+      toast.success("تم حفظ البانر بنجاح!");
     } catch (error) {
-      alert("حدث خطأ في حفظ البانر");
+      toast.error("حدث خطأ في حفظ البانر");
     } finally {
       setSaving(false);
     }

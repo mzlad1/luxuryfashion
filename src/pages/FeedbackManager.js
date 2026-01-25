@@ -12,6 +12,7 @@ import {
 import { db } from "../firebase";
 import Navbar from "../components/Navbar";
 import "../css/FeedbackManager.css";
+import toast from "react-hot-toast";
 
 function FeedbackManager() {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -94,7 +95,7 @@ function FeedbackManager() {
         );
       }
     } catch (error) {
-      alert("حدث خطأ في تحديث حالة التقييم");
+      toast.error("حدث خطأ في تحديث حالة التقييم");
     } finally {
       setUpdating((prev) => ({ ...prev, [feedbackId]: false }));
     }
@@ -114,7 +115,7 @@ function FeedbackManager() {
         prev.filter((feedback) => feedback.id !== feedbackId),
       );
     } catch (error) {
-      alert("حدث خطأ في حذف التقييم");
+      toast.error("حدث خطأ في حذف التقييم");
     } finally {
       setUpdating((prev) => ({ ...prev, [feedbackId]: false }));
     }
@@ -136,9 +137,9 @@ function FeedbackManager() {
       setAllFeedbacks((prev) => prev.map(updateFunction));
       setFeedbacks((prev) => prev.map(updateFunction));
 
-      alert(isFeatured ? "تم تمييز التقييم بنجاح!" : "تم إلغاء تمييز التقييم");
+      toast.success(isFeatured ? "تم تمييز التقييم بنجاح!" : "تم إلغاء تمييز التقييم");
     } catch (error) {
-      alert("حدث خطأ في تحديث حالة التميز");
+      toast.error("حدث خطأ في تحديث حالة التميز");
     } finally {
       setUpdating((prev) => ({ ...prev, [feedbackId]: false }));
     }

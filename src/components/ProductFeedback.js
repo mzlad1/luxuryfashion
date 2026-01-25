@@ -10,6 +10,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../firebase";
 import "../css/ProductFeedback.css";
+import toast from "react-hot-toast";
 
 function ProductFeedback({ productId }) {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -63,7 +64,7 @@ function ProductFeedback({ productId }) {
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
     if (files.length + formData.images.length > 3) {
-      alert("يمكنك إضافة 3 صور كحد أقصى");
+      toast.error("يمكنك إضافة 3 صور كحد أقصى");
       return;
     }
     setFormData((prev) => ({
@@ -95,7 +96,7 @@ function ProductFeedback({ productId }) {
       !formData.comment.trim() ||
       formData.rating === 0
     ) {
-      alert("يرجى إدخال الاسم والتعليق والتقييم");
+      toast.error("يرجى إدخال الاسم والتعليق والتقييم");
       return;
     }
 
@@ -128,9 +129,9 @@ function ProductFeedback({ productId }) {
         images: [],
       });
       setShowForm(false);
-      alert("تم إرسال تقييمك بنجاح! سيظهر بعد مراجعة الإدارة");
+      toast.success("تم إرسال تقييمك بنجاح! سيظهر بعد مراجعة الإدارة");
     } catch (error) {
-      alert("حدث خطأ في إرسال التقييم");
+      toast.error("حدث خطأ في إرسال التقييم");
     } finally {
       setSubmitting(false);
     }

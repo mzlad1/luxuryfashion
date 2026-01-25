@@ -11,6 +11,7 @@ import {
 import { db } from "../firebase";
 import Navbar from "../components/Navbar";
 import "../css/CouponManager.css";
+import toast from "react-hot-toast";
 
 function CouponManager() {
   const [coupons, setCoupons] = useState([]);
@@ -47,7 +48,7 @@ function CouponManager() {
       });
       setCoupons(couponsList);
     } catch (error) {
-      alert("حدث خطأ في تحميل الكوبونات");
+      toast.error("حدث خطأ في تحميل الكوبونات");
     } finally {
       setLoading(false);
     }
@@ -69,7 +70,7 @@ function CouponManager() {
       // Validate code format (uppercase, no spaces)
       const code = formData.code.toUpperCase().trim();
       if (!/^[A-Z0-9]+$/.test(code)) {
-        alert("رمز الكوبون يجب أن يحتوي على حروف إنجليزية كبيرة وأرقام فقط");
+        toast.error("رمز الكوبون يجب أن يحتوي على حروف إنجليزية كبيرة وأرقام فقط");
         setSaving(false);
         return;
       }
@@ -78,7 +79,7 @@ function CouponManager() {
       if (!editingCoupon) {
         const existingCoupon = coupons.find((c) => c.code === code);
         if (existingCoupon) {
-          alert("رمز الكوبون موجود بالفعل");
+          toast.error("رمز الكوبون موجود بالفعل");
           setSaving(false);
           return;
         }
@@ -114,7 +115,7 @@ function CouponManager() {
       resetForm();
       setShowForm(false);
     } catch (error) {
-      alert("حدث خطأ في حفظ الكوبون");
+      toast.error("حدث خطأ في حفظ الكوبون");
     } finally {
       setSaving(false);
     }
@@ -146,7 +147,7 @@ function CouponManager() {
       await deleteDoc(doc(db, "coupons", id));
       await fetchCoupons();
     } catch (error) {
-      alert("حدث خطأ في حذف الكوبون");
+      toast.error("حدث خطأ في حذف الكوبون");
     }
   };
 

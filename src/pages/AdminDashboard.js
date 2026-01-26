@@ -271,29 +271,29 @@ function AdminDashboard() {
 
         <section className="admin-dash-stats-grid" aria-label="الإحصائيات">
           <div className="admin-dash-card stat">
-            <div className="stat-label">إجمالي الطلبات</div>
-            <div className="stat-value">{kpis.totalOrders}</div>
+            <div className="dash-stat-label">إجمالي الطلبات</div>
+            <div className="dash-stat-value">{kpis.totalOrders}</div>
           </div>
 
           <div className="admin-dash-card stat">
-            <div className="stat-label">المنتجات</div>
-            <div className="stat-value">{kpis.productsCount}</div>
+            <div className="dash-stat-label">المنتجات</div>
+            <div className="dash-stat-value">{kpis.productsCount}</div>
           </div>
           <div className="admin-dash-card stat warn">
-            <div className="stat-label">مخزون قليل</div>
-            <div className="stat-value">{kpis.lowStock}</div>
+            <div className="dash-stat-label">مخزون قليل</div>
+            <div className="dash-stat-value">{kpis.lowStock}</div>
           </div>
           <div className="admin-dash-card stat danger">
-            <div className="stat-label">نفدت الكمية</div>
-            <div className="stat-value">{kpis.outOfStock}</div>
+            <div className="dash-stat-label">نفدت الكمية</div>
+            <div className="dash-stat-value">{kpis.outOfStock}</div>
           </div>
           <div className="admin-dash-card stat">
-            <div className="stat-label">العلامات التجارية</div>
-            <div className="stat-value">{kpis.brandsCount}</div>
+            <div className="dash-stat-label">العلامات التجارية</div>
+            <div className="dash-stat-value">{kpis.brandsCount}</div>
           </div>
           <div className="admin-dash-card stat">
-            <div className="stat-label">الفئات</div>
-            <div className="stat-value">{kpis.categoriesCount}</div>
+            <div className="dash-stat-label">الفئات</div>
+            <div className="dash-stat-value">{kpis.categoriesCount}</div>
           </div>
         </section>
 

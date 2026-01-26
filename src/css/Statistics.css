@@ -1823,7 +1823,7 @@ body {
 }
 
 /* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   .statistics-page {
     --bg: #1f1b18;
     --surface: rgba(45, 35, 55, 0.85);
@@ -1831,4 +1831,4 @@ body {
     --text: #faf9f6;
     --muted: #9a9188;
   }
-}
+} */

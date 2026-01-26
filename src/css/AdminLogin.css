@@ -236,7 +236,7 @@
 }
 
 /* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --text-primary: #f9fafb;
     --text-secondary: #9ca3af;
@@ -257,7 +257,7 @@
   .al-form-group input:focus {
     background-color: #111827;
   }
-}
+} */
 
 /* Loading State */
 .al-login-btn:disabled {

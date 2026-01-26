@@ -584,7 +584,7 @@
 }
 
 /* Dark Mode Support (if WordPress theme supports it) */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   .pc-card {
     background-color: #1a1a1a;
     border-color: #333;
@@ -622,7 +622,7 @@
     background: linear-gradient(135deg, #5a3e2b, #a87a6f);
     border-color: rgba(255, 255, 255, 0.1);
   }
-}
+} */
 
 /* Products page grid specific fixes */
 .pr-grid .pc-card {

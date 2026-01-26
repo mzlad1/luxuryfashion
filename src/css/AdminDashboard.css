@@ -38,6 +38,8 @@
 
 /* Dashboard Container */
 .admin-dashboard {
+  color-scheme: light only;
+  -webkit-color-scheme: light;
   direction: rtl;
   min-height: calc(100vh - 80px);
   padding: 32px 40px 60px;

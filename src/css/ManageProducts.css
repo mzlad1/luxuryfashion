@@ -2293,7 +2293,7 @@
 }
 
 /* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   .mp-filters-header {
     background: rgba(30, 30, 30, 0.8);
     border-color: rgba(222, 170, 155, 0.4);
@@ -2339,7 +2339,7 @@
     border-color: rgba(222, 170, 155, 0.5);
     color: #bdc3c7;
   }
-}
+} */
 
 /* Quick Filters */
 .mp-quick-filters {
@@ -2543,7 +2543,7 @@
 }
 
 /* Dark mode support for modal */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   .mp-image-modal {
     background: #2c2c2c;
     color: white;
@@ -2552,7 +2552,7 @@
   .mp-image-modal-content {
     background: #1a1a1a;
   }
-}
+} */
 
 /* Creation Date Column Styling */
 .mp-creation-date {

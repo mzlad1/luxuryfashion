@@ -3,6 +3,8 @@
 
 /* Theme variables */
 .ft-footer {
+  color-scheme: light only;
+  -webkit-color-scheme: light;
   --bg: #faf9f6;
   --surface: rgba(255, 255, 255, 0.85) (--card-bg);
   --card: rgba(255, 255, 255, 0.7);
@@ -250,7 +252,7 @@
   }
 }
 
-/* Dark mode support */
+/* Dark mode support
 @media (prefers-color-scheme: dark) {
   .ft-footer {
     --bg: #1a1a1a;
@@ -280,7 +282,7 @@
   .ft-logo-img {
     background: #2c2c2c;
   }
-}
+} */
 
 /* Focus styles */
 .ft-instagram-logo:focus-visible {

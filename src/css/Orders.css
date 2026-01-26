@@ -1352,7 +1352,7 @@
 }
 
 /* Dark mode support (if implemented) */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   .orders-page {
     --bg: #1f1b18;
     --surface: rgba(45, 35, 55, 0.85);
@@ -1377,7 +1377,7 @@
   .orders-count {
     background: rgba(55, 45, 65, 0.8);
   }
-}
+} */
 
 /* Accessibility improvements */
 .refresh-btn:focus-visible,

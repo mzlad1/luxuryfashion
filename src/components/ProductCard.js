@@ -543,6 +543,7 @@ function ProductCard({ product }) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                window.location.href = `/products/${product.id}`;
               }}
               title="عرض سريع"
             >

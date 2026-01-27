@@ -770,7 +770,11 @@
   }
 
   .pc-price--discounted {
-    font-size: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .pc-price--original {
+    font-size: 0.7rem;
   }
 
   .pc-add-to-cart-btn {
@@ -866,6 +870,14 @@
 
   .pc-price {
     font-size: 0.9rem;
+  }
+
+  .pc-price--discounted {
+    font-size: 0.7rem;
+  }
+
+  .pc-price--original {
+    font-size: 0.6rem;
   }
 
   .pc-add-to-cart-btn {

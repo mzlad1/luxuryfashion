@@ -32,11 +32,23 @@ function Home() {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const hasMovedRef = useRef(false);
   const featuredRef = useRef(null);
   const mostOrderedRef = useRef(null);
   const categoriesRef = useRef(null);
 
   const navigate = useNavigate();
+
+  // Detect mobile/tablet for performance optimization
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 1024);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Check and remove expired discounts
   const checkExpiredDiscounts = async () => {
@@ -522,6 +534,7 @@ function Home() {
   const handleMouseDown = (e) => {
     if (!categoriesRef.current) return;
     setIsDragging(true);
+    hasMovedRef.current = false;
     setStartX(e.pageX - categoriesRef.current.offsetLeft);
     setScrollLeft(categoriesRef.current.scrollLeft);
     categoriesRef.current.style.cursor = "grabbing";
@@ -546,6 +559,12 @@ function Home() {
     e.preventDefault();
     const x = e.pageX - categoriesRef.current.offsetLeft;
     const walk = (x - startX) * 1.5; // Scroll speed multiplier
+
+    // Only set hasMoved if there's significant movement
+    if (Math.abs(walk) > 5) {
+      hasMovedRef.current = true;
+    }
+
     categoriesRef.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -830,18 +849,7 @@ function Home() {
                   onMouseMove={handleMouseMove}
                 >
                   {categories.map((category) => (
-                    <div
-                      key={category.id}
-                      className="category-card-modern"
-                      onClick={(e) => {
-                        // Prevent click when dragging
-                        if (isDragging) {
-                          e.preventDefault();
-                          return;
-                        }
-                        handleCategoryClick(category.name);
-                      }}
-                    >
+                    <div key={category.id} className="category-card-modern">
                       <div className="category-card-image">
                         {category.imageUrl ? (
                           <img
@@ -879,7 +887,10 @@ function Home() {
                           {getCategoryProductCount(category.name)} منتج
                         </span>
                         <h3 className="category-card-name">{category.name}</h3>
-                        <span className="category-card-cta">
+                        <span
+                          className="category-card-cta"
+                          onClick={() => handleCategoryClick(category.name)}
+                        >
                           تسوقي الآن <i className="fas fa-arrow-left"></i>
                         </span>
                       </div>
@@ -902,19 +913,25 @@ function Home() {
 
         {/* Featured Products Section */}
         {(loadingFeatured || featuredProducts.length > 0) && (
-          <section className="featured-products-section">
-            {/* Sparkles Background */}
-            <div className="featured-sparkles-container">
-              <SparklesCore
-                id="featured-sparkles"
-                background="transparent"
-                minSize={0.6}
-                maxSize={1.4}
-                particleDensity={100}
-                particleColor="#c2a26c"
-                speed={2}
-              />
-            </div>
+          <section
+            className={`featured-products-section ${isMobile ? "mobile-fallback" : ""}`}
+          >
+            {/* Sparkles Background - Only on Desktop */}
+            {!isMobile && (
+              <div className="featured-sparkles-container">
+                <SparklesCore
+                  id="featured-sparkles"
+                  background="transparent"
+                  minSize={0.6}
+                  maxSize={1.4}
+                  particleDensity={100}
+                  particleColor="#c2a26c"
+                  speed={2}
+                />
+              </div>
+            )}
+            {/* CSS Fallback for Mobile/Tablet */}
+            {isMobile && <div className="featured-mobile-bg"></div>}
 
             <div className="section-container">
               <div className="section-header">

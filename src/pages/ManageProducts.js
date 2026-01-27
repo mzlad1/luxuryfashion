@@ -41,6 +41,7 @@ function ManageProducts() {
     stock: "",
     isNew: false,
     onDemand: false,
+    isFeatured: false,
     hasVariants: false,
     variants: [],
     sizes: [],
@@ -632,6 +633,7 @@ function ManageProducts() {
         brand: formData.brand,
         isNew: formData.isNew || false,
         onDemand: formData.onDemand || false,
+        isFeatured: formData.isFeatured || false,
       };
 
       // Only add createdAt for new products
@@ -725,6 +727,7 @@ function ManageProducts() {
         stock: "",
         isNew: false,
         onDemand: false,
+        isFeatured: false,
         hasVariants: false,
         variants: [],
         sizes: [],
@@ -792,6 +795,7 @@ function ManageProducts() {
       stock: product.hasVariants ? "" : product.stock || 0,
       isNew: product.isNew || false,
       onDemand: product.onDemand || false,
+      isFeatured: product.isFeatured || false,
       hasVariants: product.hasVariants || false,
       variants: product.variants || [],
       sizes: product.sizes || [],
@@ -911,6 +915,7 @@ function ManageProducts() {
       stock: "",
       isNew: false,
       onDemand: false,
+      isFeatured: false,
       hasVariants: false,
       variants: [],
       sizes: [],
@@ -1891,6 +1896,27 @@ function ManageProducts() {
                         على الطلب
                       </span>
                       متوفر عند الطلب
+                    </span>
+                  </label>
+                </div>
+                <div className="mp-checkbox-group">
+                  <label className="mp-checkbox-label">
+                    <input
+                      type="checkbox"
+                      name="isFeatured"
+                      checked={formData.isFeatured}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          isFeatured: e.target.checked,
+                        }))
+                      }
+                    />
+                    <span className="mp-checkbox-text">
+                      <span className="mp-badge-preview mp-badge-preview--featured">
+                        ⭐ مميز
+                      </span>
+                      عرض في المنتجات المميزة
                     </span>
                   </label>
                 </div>

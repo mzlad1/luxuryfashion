@@ -70,11 +70,15 @@ function Navbar() {
     return () => unsubscribe();
   }, []);
 
-  // Handle scroll to make navbar sticky
+  // Handle scroll to make navbar sticky and close mobile menu
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
         setIsScrolled(true);
+        // Close mobile menu when scrolling down
+        if (isMenuOpen) {
+          setIsMenuOpen(false);
+        }
       } else {
         setIsScrolled(false);
       }
@@ -82,7 +86,7 @@ function Navbar() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isMenuOpen]);
 
   // Don't show navbar on admin pages for non-admin users
   if (location.pathname.startsWith("/admin") && !isAdmin) {

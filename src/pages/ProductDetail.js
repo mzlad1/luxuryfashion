@@ -719,6 +719,7 @@ function ProductDetail() {
                       src={mainImage}
                       alt={product.name}
                       className="pd-main-image"
+                      loading="lazy"
                       onClick={() => setShowImageModal(true)}
                     />
                     <button
@@ -742,6 +743,7 @@ function ProductDetail() {
                       className={`pd-thumb ${
                         mainImage === img ? "active" : ""
                       }`}
+                      loading="lazy"
                       onClick={() => handleImageClick(img)}
                       onError={(e) => {
                         e.target.src = "/images/placeholder.jpg";

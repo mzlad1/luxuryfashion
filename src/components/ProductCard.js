@@ -146,7 +146,7 @@ function ProductCard({ product }) {
   // Get the currently selected variant
   const getSelectedVariant = () => {
     if (!selectedSize && !selectedColor) return null;
-    
+
     return product.variants.find((v) => {
       if (product.sizes?.length > 0 && product.colors?.length > 0) {
         // Both size and color
@@ -222,36 +222,30 @@ function ProductCard({ product }) {
   // Prevent body scroll when modal is open and handle Escape key
   useEffect(() => {
     if (showVariantModal) {
-      document.body.style.overflow = 'hidden';
-      
+      document.body.style.overflow = "hidden";
+
       // Handle Escape key
       const handleEscape = (e) => {
-        if (e.key === 'Escape') {
+        if (e.key === "Escape") {
           closeVariantModal();
         }
       };
-      
-      document.addEventListener('keydown', handleEscape);
-      
+
+      document.addEventListener("keydown", handleEscape);
+
       return () => {
-        document.body.style.overflow = 'unset';
-        document.removeEventListener('keydown', handleEscape);
+        document.body.style.overflow = "unset";
+        document.removeEventListener("keydown", handleEscape);
       };
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
   }, [showVariantModal]);
 
   // Render variant modal using Portal to render at document body level
   const variantModal = showVariantModal ? (
-    <div
-      className="pc-variant-modal-overlay"
-      onClick={closeVariantModal}
-    >
-      <div
-        className="pc-variant-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="pc-variant-modal-overlay" onClick={closeVariantModal}>
+      <div className="pc-variant-modal" onClick={(e) => e.stopPropagation()}>
         <div className="pc-variant-modal-header">
           <h3>اختر المواصفات</h3>
           <button
@@ -273,14 +267,10 @@ function ProductCard({ product }) {
                   const hasStock = product.variants.some((v) => {
                     if (product.colors?.length > 0) {
                       // If colors exist, check any color with this size
-                      return (
-                        v.size === size && (parseInt(v.stock) || 0) > 0
-                      );
+                      return v.size === size && (parseInt(v.stock) || 0) > 0;
                     } else {
                       // No colors, just check size
-                      return (
-                        v.size === size && (parseInt(v.stock) || 0) > 0
-                      );
+                      return v.size === size && (parseInt(v.stock) || 0) > 0;
                     }
                   });
 
@@ -290,16 +280,12 @@ function ProductCard({ product }) {
                       className={`pc-variant-option ${
                         selectedSize === size ? "selected" : ""
                       } ${!hasStock ? "disabled" : ""}`}
-                      onClick={() =>
-                        hasStock ? setSelectedSize(size) : null
-                      }
+                      onClick={() => (hasStock ? setSelectedSize(size) : null)}
                       disabled={!hasStock}
                     >
                       {size}
                       {!hasStock && (
-                        <span className="pc-variant-out-of-stock">
-                          نفذت
-                        </span>
+                        <span className="pc-variant-out-of-stock">نفذت</span>
                       )}
                     </button>
                   );
@@ -326,15 +312,12 @@ function ProductCard({ product }) {
                         );
                       } else {
                         return (
-                          v.color === color &&
-                          (parseInt(v.stock) || 0) > 0
+                          v.color === color && (parseInt(v.stock) || 0) > 0
                         );
                       }
                     } else {
                       // No sizes, just check color
-                      return (
-                        v.color === color && (parseInt(v.stock) || 0) > 0
-                      );
+                      return v.color === color && (parseInt(v.stock) || 0) > 0;
                     }
                   });
 
@@ -351,9 +334,7 @@ function ProductCard({ product }) {
                     >
                       {color}
                       {!hasStock && (
-                        <span className="pc-variant-out-of-stock">
-                          نفذت
-                        </span>
+                        <span className="pc-variant-out-of-stock">نفذت</span>
                       )}
                     </button>
                   );
@@ -388,7 +369,9 @@ function ProductCard({ product }) {
                           {variant.price} شيكل
                         </span>
                       </div>
-                      <div className={`pc-variant-stock-section ${inStock ? 'in-stock' : 'out-of-stock'}`}>
+                      <div
+                        className={`pc-variant-stock-section ${inStock ? "in-stock" : "out-of-stock"}`}
+                      >
                         <span className="pc-variant-info-label">الحالة:</span>
                         <span className="pc-variant-stock-badge">
                           {inStock ? (
@@ -414,10 +397,7 @@ function ProductCard({ product }) {
         </div>
 
         <div className="pc-variant-modal-footer">
-          <button
-            className="pc-variant-cancel-btn"
-            onClick={closeVariantModal}
-          >
+          <button className="pc-variant-cancel-btn" onClick={closeVariantModal}>
             إلغاء
           </button>
           <button
@@ -452,7 +432,10 @@ function ProductCard({ product }) {
       {/* Render modal at document body level using Portal */}
       {variantModal && ReactDOM.createPortal(variantModal, document.body)}
 
-      <Link to={`/products/${product.id}`} className="pc-card pc-card--clickable">
+      <Link
+        to={`/products/${product.id}`}
+        className="pc-card pc-card--clickable"
+      >
         {/* Success Toast Notification */}
         {showToast && (
           <div className="pc-toast-overlay">
@@ -465,150 +448,233 @@ function ProductCard({ product }) {
           </div>
         )}
 
-      <div className="pc-image-container">
-        {/* Countdown Timer - Overlay on Image */}
-        {product.hasDiscount && timeLeft && (
-          <div className="pc-countdown-overlay">
-            <div className="pc-countdown-timer-overlay">
-              <div className="pc-timer-display-overlay">
-                {timeLeft.days > 0 && (
+        <div className="pc-image-container">
+          {/* Countdown Timer - Overlay on Image */}
+          {product.hasDiscount && timeLeft && (
+            <div className="pc-countdown-overlay">
+              <div className="pc-countdown-timer-overlay">
+                <div className="pc-timer-display-overlay">
+                  {timeLeft.days > 0 && (
+                    <span className="pc-timer-unit-overlay">
+                      <span className="pc-timer-value-overlay">
+                        {timeLeft.days}
+                      </span>
+                      <span className="pc-timer-label-small-overlay">يوم</span>
+                    </span>
+                  )}
                   <span className="pc-timer-unit-overlay">
                     <span className="pc-timer-value-overlay">
-                      {timeLeft.days}
+                      {timeLeft.hours.toString().padStart(2, "0")}
                     </span>
-                    <span className="pc-timer-label-small-overlay">يوم</span>
+                    <span className="pc-timer-label-small-overlay">ساعة</span>
                   </span>
-                )}
-                <span className="pc-timer-unit-overlay">
-                  <span className="pc-timer-value-overlay">
-                    {timeLeft.hours.toString().padStart(2, "0")}
+                  <span className="pc-timer-unit-overlay">
+                    <span className="pc-timer-value-overlay">
+                      {timeLeft.minutes.toString().padStart(2, "0")}
+                    </span>
+                    <span className="pc-timer-label-small-overlay">دقيقة</span>
                   </span>
-                  <span className="pc-timer-label-small-overlay">ساعة</span>
-                </span>
-                <span className="pc-timer-unit-overlay">
-                  <span className="pc-timer-value-overlay">
-                    {timeLeft.minutes.toString().padStart(2, "0")}
+                  <span className="pc-timer-unit-overlay">
+                    <span className="pc-timer-value-overlay">
+                      {timeLeft.seconds.toString().padStart(2, "0")}
+                    </span>
+                    <span className="pc-timer-label-small-overlay">ثانية</span>
                   </span>
-                  <span className="pc-timer-label-small-overlay">دقيقة</span>
-                </span>
-                <span className="pc-timer-unit-overlay">
-                  <span className="pc-timer-value-overlay">
-                    {timeLeft.seconds.toString().padStart(2, "0")}
-                  </span>
-                  <span className="pc-timer-label-small-overlay">ثانية</span>
-                </span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <img
-          src={
-            product.images && product.images.length > 0 ? product.images[0] : ""
-          }
-          alt={product.name}
-          className="pc-image"
-          loading="lazy"
-        />
-        {badges.length > 0 && (
-          <div className="pc-badges-container">
-            {badges.map((badge, index) => (
-              <div
-                key={badge.type}
-                className={`pc-badge pc-badge--${badge.type}`}
-                style={{ top: `${8 + index * 32}px` }}
-              >
-                {badge.text}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-      <h3 className="pc-name">{product.name}</h3>
+          {/* Product Image */}
+          <img
+            src={
+              product.images && product.images.length > 0
+                ? product.images[0]
+                : ""
+            }
+            alt={product.name}
+            className="pc-image"
+            loading="lazy"
+          />
 
-      <div className="pc-price-container">
-        {product.hasVariants ? (
-          <>
-            {product.hasDiscount ? (
+          {/* Image Overlay for hover effect */}
+          <div className="pc-image-overlay"></div>
+
+          {/* Badges */}
+          {badges.length > 0 && (
+            <div className="pc-badges-container">
+              {badges.map((badge) => (
+                <div
+                  key={badge.type}
+                  className={`pc-badge pc-badge--${badge.type}`}
+                >
+                  {badge.text}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Quick Actions (visible on hover) */}
+          <div className="pc-quick-actions">
+            <button
+              className="pc-quick-action-btn"
+              onClick={handleAddToCart}
+              disabled={
+                addingToCart ||
+                badges.some((badge) => badge.type === "sold-out") ||
+                isAdmin
+              }
+              title={
+                isAdmin
+                  ? "أنت أدمن"
+                  : addingToCart
+                    ? "جاري الإضافة..."
+                    : "أضف للسلة"
+              }
+            >
+              {addingToCart ? (
+                <i className="fas fa-spinner fa-spin"></i>
+              ) : (
+                <i className="fas fa-shopping-bag"></i>
+              )}
+            </button>
+            <button
+              className="pc-quick-action-btn"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              title="عرض سريع"
+            >
+              <i className="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        {/* Card Content */}
+        <div className="pc-content">
+          {/* Product Name */}
+          <h3 className="pc-name">{product.name}</h3>
+
+          {/* Price Container */}
+          <div className="pc-price-container">
+            {product.hasVariants ? (
+              <>
+                {product.hasDiscount ? (
+                  <div className="pc-price-wrapper">
+                    <span className="pc-price pc-price--discounted">
+                      {(() => {
+                        const prices = product.variants?.map(
+                          (v) => parseFloat(v.price) || 0,
+                        ) || [0];
+                        const minPrice = Math.min(...prices);
+                        return `${minPrice} شيكل`;
+                      })()}
+                    </span>
+                    <span className="pc-price pc-price--original">
+                      {(() => {
+                        const originalPrices = product.variants?.map(
+                          (v) => parseFloat(v.originalPrice || v.price) || 0,
+                        ) || [0];
+                        const minOriginalPrice = Math.min(...originalPrices);
+                        return `${minOriginalPrice} شيكل`;
+                      })()}
+                    </span>
+                    {(() => {
+                      const prices = product.variants?.map(
+                        (v) => parseFloat(v.price) || 0,
+                      ) || [0];
+                      const originalPrices = product.variants?.map(
+                        (v) => parseFloat(v.originalPrice || v.price) || 0,
+                      ) || [0];
+                      const minPrice = Math.min(...prices);
+                      const minOriginal = Math.min(...originalPrices);
+                      const discount = Math.round(
+                        ((minOriginal - minPrice) / minOriginal) * 100,
+                      );
+                      return discount > 0 ? (
+                        <span className="pc-discount-percent">
+                          -{discount}%
+                        </span>
+                      ) : null;
+                    })()}
+                  </div>
+                ) : (
+                  <div className="pc-price pc-price--variants">
+                    {(() => {
+                      const prices = product.variants?.map(
+                        (v) => parseFloat(v.price) || 0,
+                      ) || [0];
+                      const minPrice = Math.min(...prices);
+                      return `${minPrice} شيكل`;
+                    })()}
+                  </div>
+                )}
+              </>
+            ) : product.hasDiscount && product.originalPrice ? (
               <div className="pc-price-wrapper">
                 <span className="pc-price pc-price--discounted">
-                  {(() => {
-                    const prices = product.variants?.map(
-                      (v) => parseFloat(v.price) || 0,
-                    ) || [0];
-                    const minPrice = Math.min(...prices);
-                    return `${minPrice} شيكل`;
-                  })()}
+                  {product.price} شيكل
                 </span>
                 <span className="pc-price pc-price--original">
-                  {(() => {
-                    const originalPrices = product.variants?.map(
-                      (v) => parseFloat(v.originalPrice || v.price) || 0,
-                    ) || [0];
-                    const minOriginalPrice = Math.min(...originalPrices);
-                    return `${minOriginalPrice} شيكل`;
-                  })()}
+                  {product.originalPrice} شيكل
                 </span>
-              </div>
-            ) : (
-              <div className="pc-price pc-price--variants">
                 {(() => {
-                  const prices = product.variants?.map(
-                    (v) => parseFloat(v.price) || 0,
-                  ) || [0];
-                  const minPrice = Math.min(...prices);
-                  return `${minPrice} شيكل`;
+                  const discount = Math.round(
+                    ((product.originalPrice - product.price) /
+                      product.originalPrice) *
+                      100,
+                  );
+                  return discount > 0 ? (
+                    <span className="pc-discount-percent">-{discount}%</span>
+                  ) : null;
                 })()}
               </div>
+            ) : (
+              <p className="pc-price">{product.price} شيكل</p>
             )}
-          </>
-        ) : product.hasDiscount && product.originalPrice ? (
-          <div className="pc-price-wrapper">
-            <span className="pc-price pc-price--discounted">
-              {product.price} شيكل
-            </span>
-            <span className="pc-price pc-price--original">
-              {product.originalPrice} شيكل
-            </span>
           </div>
-        ) : (
-          <p className="pc-price">{product.price} شيكل</p>
-        )}
-      </div>
-      {/* Add to Cart Button */}
-      <button
-        className="pc-add-to-cart-btn"
-        onClick={handleAddToCart}
-        disabled={
-          addingToCart ||
-          badges.some((badge) => badge.type === "sold-out") ||
-          isAdmin
-        }
-        title={
-          isAdmin
-            ? "أنت أدمن ولا يمكنك التسوق"
-            : addingToCart
-              ? "جاري الإضافة..."
-              : "أضف للسلة"
-        }
-      >
-        {isAdmin ? (
-          <>
-            <i className="fas fa-lock"></i>
-            <span>أنت أدمن</span>
-          </>
-        ) : addingToCart ? (
-          <>
-            <i className="fas fa-hourglass-half"></i>
-            <span>جاري الإضافة...</span>
-          </>
-        ) : (
-          <>
-            <i className="fas fa-shopping-cart"></i>
-            <span>أضف للسلة</span>
-          </>
-        )}
-      </button>
+        </div>
+
+        {/* Add to Cart Button */}
+        <button
+          className="pc-add-to-cart-btn"
+          onClick={handleAddToCart}
+          disabled={
+            addingToCart ||
+            badges.some((badge) => badge.type === "sold-out") ||
+            isAdmin
+          }
+          title={
+            isAdmin
+              ? "أنت أدمن ولا يمكنك التسوق"
+              : addingToCart
+                ? "جاري الإضافة..."
+                : "أضف للسلة"
+          }
+        >
+          {isAdmin ? (
+            <>
+              <i className="fas fa-lock"></i>
+              <span>أنت أدمن</span>
+            </>
+          ) : addingToCart ? (
+            <>
+              <i className="fas fa-spinner fa-spin"></i>
+              <span>جاري الإضافة...</span>
+            </>
+          ) : badges.some((badge) => badge.type === "sold-out") ? (
+            <>
+              <i className="fas fa-times-circle"></i>
+              <span>نفذت الكمية</span>
+            </>
+          ) : (
+            <>
+              <i className="fas fa-shopping-cart"></i>
+              <span>أضف للسلة</span>
+            </>
+          )}
+        </button>
       </Link>
     </>
   );

@@ -21,7 +21,6 @@
   --nav-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
   --nav-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --nav-height: 80px;
-  --nav-height-sticky: 70px;
   --top-bar-height: 40px;
 }
 
@@ -150,7 +149,7 @@
 
 .navbar-sticky {
   top: 0;
-  height: var(--nav-height-sticky);
+  height: var(--nav-height);
   box-shadow: var(--nav-shadow-lg);
   border-bottom: 1px solid var(--nav-border);
   background: rgba(255, 255, 255, 0.98);
@@ -194,11 +193,6 @@
   filter: drop-shadow(0 2px 8px rgba(194, 162, 108, 0.3));
 }
 
-.navbar-sticky .nav-logo-img {
-  width: 44px;
-  height: 44px;
-}
-
 .nav-logo-text {
   font-family: "Cairo", sans-serif;
   font-size: 1.4rem;
@@ -209,10 +203,6 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-.navbar-sticky .nav-logo-text {
-  font-size: 1.25rem;
 }
 
 /* ========================================
@@ -524,7 +514,6 @@
 @media (max-width: 900px) {
   :root {
     --nav-height: 70px;
-    --nav-height-sticky: 60px;
     --top-bar-height: 36px;
   }
 
@@ -557,14 +546,17 @@
     transform: translateX(100%);
     opacity: 0;
     visibility: hidden;
-    transition: var(--nav-transition);
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-y: auto;
     z-index: 999;
   }
 
-  .navbar-sticky + .nav-menu,
+  /* When navbar is sticky (scrolled), adjust menu position */
   .navbar-sticky .nav-menu {
-    top: var(--nav-height-sticky);
+    top: var(--nav-height);
   }
 
   .nav-menu-active {
@@ -630,15 +622,6 @@
     font-size: 1.2rem;
   }
 
-  .navbar-sticky .nav-logo-img {
-    width: 38px;
-    height: 38px;
-  }
-
-  .navbar-sticky .nav-logo-text {
-    font-size: 1.1rem;
-  }
-
   /* Top bar */
   .top-bar-container {
     padding: 0 20px;
@@ -659,7 +642,6 @@
 @media (max-width: 768px) {
   :root {
     --nav-height: 64px;
-    --nav-height-sticky: 56px;
     --top-bar-height: 34px;
   }
 
@@ -671,18 +653,9 @@
     font-size: 1.1rem;
   }
 
-  .navbar-sticky .nav-logo-text {
-    font-size: 1rem;
-  }
-
   .nav-logo-img {
     width: 38px;
     height: 38px;
-  }
-
-  .navbar-sticky .nav-logo-img {
-    width: 34px;
-    height: 34px;
   }
 
   .nav-cart-mobile {
@@ -763,7 +736,6 @@
 @media (max-width: 480px) {
   :root {
     --nav-height: 60px;
-    --nav-height-sticky: 52px;
     --top-bar-height: 32px;
   }
 
@@ -780,17 +752,8 @@
     height: 34px;
   }
 
-  .navbar-sticky .nav-logo-img {
-    width: 30px;
-    height: 30px;
-  }
-
   .nav-logo-text {
     font-size: 1rem;
-  }
-
-  .navbar-sticky .nav-logo-text {
-    font-size: 0.9rem;
   }
 
   .nav-right {

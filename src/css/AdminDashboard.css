@@ -402,39 +402,47 @@
   z-index: 1;
 }
 
-/* Tile Icons (decorative) */
+/* Tile Icons (Font Awesome) */
+.admin-dash-tile .tile-title::before {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  margin-left: 8px;
+  font-size: 1rem;
+  color: var(--admin-primary);
+}
+
 .admin-dash-tile:nth-child(1) .tile-title::before {
-  content: "📦 ";
+  content: "\f543";
 }
 .admin-dash-tile:nth-child(2) .tile-title::before {
-  content: "🛍️ ";
+  content: "\f466";
 }
 .admin-dash-tile:nth-child(3) .tile-title::before {
-  content: "🏷️ ";
+  content: "\f02c";
 }
 .admin-dash-tile:nth-child(4) .tile-title::before {
-  content: "📁 ";
+  content: "\f5fd";
 }
 .admin-dash-tile:nth-child(5) .tile-title::before {
-  content: "⭐ ";
+  content: "\f005";
 }
 .admin-dash-tile:nth-child(6) .tile-title::before {
-  content: "💰 ";
+  content: "\f295";
 }
 .admin-dash-tile:nth-child(7) .tile-title::before {
-  content: "🎟️ ";
+  content: "\f3ff";
 }
 .admin-dash-tile:nth-child(8) .tile-title::before {
-  content: "📊 ";
+  content: "\f080";
 }
 .admin-dash-tile:nth-child(9) .tile-title::before {
-  content: "👥 ";
+  content: "\f0c0";
 }
 .admin-dash-tile:nth-child(10) .tile-title::before {
-  content: "🖼️ ";
+  content: "\f302";
 }
 .admin-dash-tile:nth-child(11) .tile-title::before {
-  content: "📢 ";
+  content: "\f0a1";
 }
 
 /* ========================================

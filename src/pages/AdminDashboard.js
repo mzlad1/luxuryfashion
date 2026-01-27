@@ -334,9 +334,7 @@ function AdminDashboard() {
             </Link>
             <Link to="/admin/statistics" className="admin-dash-tile">
               <span className="tile-title">إحصائيات الموقع</span>
-              <span className="tile-sub">
-                عرض إحصائيات شاملة عن الموقع والزوار
-              </span>
+              <span className="tile-sub">عرض إحصائيات شاملة عن الموقع</span>
             </Link>
             <Link to="/admin/visitor-statistics" className="admin-dash-tile">
               <span className="tile-title">إحصائيات الزوار</span>

@@ -1690,7 +1690,7 @@
   border-color: #ff5252;
 }
 
-.mp-no-results{
+.mp-no-results {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1883,6 +1883,10 @@
 
 .mp-badge-preview--on-demand {
   background: linear-gradient(135deg, #c2a26c, #c2a26c);
+}
+
+.mp-badge-preview--featured {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
 }
 
 .mp-info-note {
@@ -2916,7 +2920,7 @@
   margin-right: 32px;
   padding: 12px;
   background-color: rgba(191, 165, 122, 0.05);
-  border-right: 3px solid #BFA57A;
+  border-right: 3px solid #bfa57a;
 }
 
 .mp-subcategory-label {
@@ -2941,7 +2945,7 @@
 }
 
 .mp-subcategory:hover {
-  border-color: #BFA57A;
+  border-color: #bfa57a;
   background-color: rgba(191, 165, 122, 0.1);
 }
 

@@ -6,13 +6,16 @@ import PromotionalBanner from "../components/PromotionalBanner";
 import ProductCard from "../components/ProductCard";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { SparklesCore } from "../components/SparklesCore";
 import { CacheManager, CACHE_KEYS } from "../utils/cache";
 import { useNavigate } from "react-router-dom";
 import "../css/Home.css";
 
 function Home() {
   const [mostOrderedProducts, setMostOrderedProducts] = useState([]);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadingFeatured, setLoadingFeatured] = useState(true);
   const [brands, setBrands] = useState([]);
   const [loadingBrands, setLoadingBrands] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -24,6 +27,14 @@ function Home() {
   const [touchEnd, setTouchEnd] = useState(0);
   const [bannerData, setBannerData] = useState(null);
   const [loadingBanner, setLoadingBanner] = useState(true);
+  const [featuredScrollPosition, setFeaturedScrollPosition] = useState(0);
+  const [mostOrderedScrollPosition, setMostOrderedScrollPosition] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const featuredRef = useRef(null);
+  const mostOrderedRef = useRef(null);
+  const categoriesRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -157,6 +168,38 @@ function Home() {
       }
     }
     fetchCategories();
+  }, []);
+
+  // Fetch featured products
+  useEffect(() => {
+    async function fetchFeaturedProducts() {
+      setLoadingFeatured(true);
+      try {
+        const cachedProducts = CacheManager.get(CACHE_KEYS.PRODUCTS);
+        let products = cachedProducts;
+
+        if (!products) {
+          const productsSnapshot = await getDocs(collection(db, "products"));
+          products = [];
+          productsSnapshot.forEach((doc) => {
+            products.push({ id: doc.id, ...doc.data() });
+          });
+          CacheManager.set(CACHE_KEYS.PRODUCTS, products, 5 * 60 * 1000);
+        }
+
+        // Filter featured products and limit to 6
+        const featured = products
+          .filter((product) => product.isFeatured === true)
+          .slice(0, 6);
+
+        setFeaturedProducts(featured);
+      } catch (error) {
+        setFeaturedProducts([]);
+      } finally {
+        setLoadingFeatured(false);
+      }
+    }
+    fetchFeaturedProducts();
   }, []);
 
   // Fetch most ordered products based on order data
@@ -439,6 +482,129 @@ function Home() {
     setTouchEnd(0);
   };
 
+  // Featured products carousel scroll (RTL)
+  const scrollFeatured = (direction) => {
+    if (featuredRef.current) {
+      const scrollAmount = 320; // Card width + gap
+      // RTL: scrollLeft is negative, next goes more negative (left), prev goes towards 0 (right)
+      const newPosition =
+        direction === "next"
+          ? featuredScrollPosition - scrollAmount
+          : featuredScrollPosition + scrollAmount;
+
+      featuredRef.current.scrollTo({
+        left: newPosition,
+        behavior: "smooth",
+      });
+      setFeaturedScrollPosition(newPosition);
+    }
+  };
+
+  // Most ordered products carousel scroll (RTL)
+  const scrollMostOrdered = (direction) => {
+    if (mostOrderedRef.current) {
+      const scrollAmount = 320; // Card width + gap
+      // RTL: scrollLeft is negative, next goes more negative (left), prev goes towards 0 (right)
+      const newPosition =
+        direction === "next"
+          ? mostOrderedScrollPosition - scrollAmount
+          : mostOrderedScrollPosition + scrollAmount;
+
+      mostOrderedRef.current.scrollTo({
+        left: newPosition,
+        behavior: "smooth",
+      });
+      setMostOrderedScrollPosition(newPosition);
+    }
+  };
+
+  // Categories carousel drag-to-scroll handlers
+  const handleMouseDown = (e) => {
+    if (!categoriesRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - categoriesRef.current.offsetLeft);
+    setScrollLeft(categoriesRef.current.scrollLeft);
+    categoriesRef.current.style.cursor = "grabbing";
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    if (categoriesRef.current) {
+      categoriesRef.current.style.cursor = "grab";
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+    if (categoriesRef.current) {
+      categoriesRef.current.style.cursor = "grab";
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || !categoriesRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - categoriesRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // Scroll speed multiplier
+    categoriesRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  // Auto-scroll for Featured Products carousel (RTL)
+  useEffect(() => {
+    if (!featuredRef.current || featuredProducts.length === 0) return;
+
+    const autoScroll = setInterval(() => {
+      if (featuredRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = featuredRef.current;
+        const minScroll = -(scrollWidth - clientWidth); // RTL: min is negative
+
+        if (scrollLeft <= minScroll + 10) {
+          // Reset to beginning (0 in RTL)
+          featuredRef.current.scrollTo({ left: 0, behavior: "smooth" });
+          setFeaturedScrollPosition(0);
+        } else {
+          // Scroll to next (more negative in RTL)
+          const newPosition = scrollLeft - 320;
+          featuredRef.current.scrollTo({
+            left: newPosition,
+            behavior: "smooth",
+          });
+          setFeaturedScrollPosition(newPosition);
+        }
+      }
+    }, 4000); // Auto-scroll every 4 seconds
+
+    return () => clearInterval(autoScroll);
+  }, [featuredProducts.length]);
+
+  // Auto-scroll for Most Ordered Products carousel (RTL)
+  useEffect(() => {
+    if (!mostOrderedRef.current || mostOrderedProducts.length === 0) return;
+
+    const autoScroll = setInterval(() => {
+      if (mostOrderedRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = mostOrderedRef.current;
+        const minScroll = -(scrollWidth - clientWidth); // RTL: min is negative
+
+        if (scrollLeft <= minScroll + 10) {
+          // Reset to beginning (0 in RTL)
+          mostOrderedRef.current.scrollTo({ left: 0, behavior: "smooth" });
+          setMostOrderedScrollPosition(0);
+        } else {
+          // Scroll to next (more negative in RTL)
+          const newPosition = scrollLeft - 320;
+          mostOrderedRef.current.scrollTo({
+            left: newPosition,
+            behavior: "smooth",
+          });
+          setMostOrderedScrollPosition(newPosition);
+        }
+      }
+    }, 5000); // Auto-scroll every 5 seconds (offset from featured)
+
+    return () => clearInterval(autoScroll);
+  }, [mostOrderedProducts.length]);
+
   // Handle category click
   const handleCategoryClick = (categoryName) => {
     navigate(`/products?category=${encodeURIComponent(categoryName)}`);
@@ -532,14 +698,14 @@ function Home() {
                     onClick={prevSlide}
                     aria-label="Previous slide"
                   >
-                    <i className="fas fa-chevron-left"></i>
+                    <i className="fas fa-chevron-right"></i>
                   </button>
                   <button
                     className="hero-nav-btn next"
                     onClick={nextSlide}
                     aria-label="Next slide"
                   >
-                    <i className="fas fa-chevron-right"></i>
+                    <i className="fas fa-chevron-left"></i>
                   </button>
 
                   {/* Dots Navigation */}
@@ -636,34 +802,53 @@ function Home() {
         <section className="categories-section">
           <div className="section-container">
             <div className="section-header">
-              <h2 className="section-title">الفئات</h2>
+              <div className="section-header-content">
+                <h2 className="section-title">تسوقي حسب الفئة</h2>
+              </div>
+              <p className="section-subtitle">
+                اكتشفي مجموعتنا المتنوعة من المنتجات
+              </p>
             </div>
 
             {loadingCategories ? (
-              <div className="categories-loading">
-                <div className="categories-loading-grid">
-                  {[...Array(6)].map((_, index) => (
-                    <div key={index} className="category-skeleton">
-                      <div className="skeleton-category-image"></div>
-                      <div className="skeleton-category-name"></div>
-                    </div>
-                  ))}
-                </div>
+              <div className="categories-carousel-loading">
+                {[...Array(5)].map((_, index) => (
+                  <div key={index} className="category-card-skeleton">
+                    <div className="skeleton-category-image"></div>
+                    <div className="skeleton-category-overlay"></div>
+                  </div>
+                ))}
               </div>
             ) : (
-              <div className="categories-grid">
-                {categories.map((category) => (
-                  <div key={category.id} className="category-item">
+              <div className="categories-carousel-wrapper">
+                <div
+                  className={`categories-carousel ${isDragging ? "dragging" : ""}`}
+                  ref={categoriesRef}
+                  onMouseDown={handleMouseDown}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseLeave}
+                  onMouseMove={handleMouseMove}
+                >
+                  {categories.map((category) => (
                     <div
-                      className="category-card"
-                      onClick={() => handleCategoryClick(category.name)}
+                      key={category.id}
+                      className="category-card-modern"
+                      onClick={(e) => {
+                        // Prevent click when dragging
+                        if (isDragging) {
+                          e.preventDefault();
+                          return;
+                        }
+                        handleCategoryClick(category.name);
+                      }}
                     >
-                      <div className="category-image-container">
+                      <div className="category-card-image">
                         {category.imageUrl ? (
                           <img
                             src={category.imageUrl}
                             alt={category.name}
-                            className="category-image"
+                            draggable="false"
+                            loading="lazy"
                             onError={(e) => {
                               e.target.style.display = "none";
                               e.target.nextSibling.style.display = "flex";
@@ -671,31 +856,36 @@ function Home() {
                           />
                         ) : null}
                         <div
-                          className="category-image-fallback"
+                          className="category-card-fallback"
                           style={{
                             display: category.imageUrl ? "none" : "flex",
                           }}
                         >
-                          <span className="category-icon">
-                            {category.name === "الوجه" ? (
-                              <i className="fas fa-face-smile"></i>
-                            ) : category.name === "الشعر" ? (
-                              <i className="fas fa-scissors"></i>
-                            ) : category.name === "الجسم" ? (
-                              <i className="fas fa-pump-soap"></i>
-                            ) : (
-                              <i className="fas fa-tag"></i>
-                            )}
-                          </span>
+                          <i
+                            className={`fas ${
+                              category.name === "الوجه"
+                                ? "fa-face-smile"
+                                : category.name === "الشعر"
+                                  ? "fa-scissors"
+                                  : category.name === "الجسم"
+                                    ? "fa-pump-soap"
+                                    : "fa-tag"
+                            }`}
+                          ></i>
                         </div>
-                        <span className="category-count-badge">
-                          {getCategoryProductCount(category.name)}
+                      </div>
+                      <div className="category-card-overlay">
+                        <span className="category-card-count">
+                          {getCategoryProductCount(category.name)} منتج
+                        </span>
+                        <h3 className="category-card-name">{category.name}</h3>
+                        <span className="category-card-cta">
+                          تسوقي الآن <i className="fas fa-arrow-left"></i>
                         </span>
                       </div>
-                      <h3 className="category-name">{category.name}</h3>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
 
@@ -710,17 +900,104 @@ function Home() {
           </div>
         </section>
 
+        {/* Featured Products Section */}
+        {(loadingFeatured || featuredProducts.length > 0) && (
+          <section className="featured-products-section">
+            {/* Sparkles Background */}
+            <div className="featured-sparkles-container">
+              <SparklesCore
+                id="featured-sparkles"
+                background="transparent"
+                minSize={0.6}
+                maxSize={1.4}
+                particleDensity={100}
+                particleColor="#c2a26c"
+                speed={2}
+              />
+            </div>
+
+            <div className="section-container">
+              <div className="section-header">
+                <div className="section-header-content">
+                  <h2 className="section-title">المنتجات المميزة</h2>
+                </div>
+                <p className="section-subtitle">
+                  اختيارنا من أفضل المنتجات لكِ
+                </p>
+              </div>
+
+              {loadingFeatured ? (
+                <div className="products-carousel-loading">
+                  <div className="carousel-loading-grid">
+                    {[...Array(4)].map((_, index) => (
+                      <div key={index} className="product-skeleton">
+                        <div className="skeleton-image"></div>
+                        <div className="skeleton-content">
+                          <div className="skeleton-title"></div>
+                          <div className="skeleton-price"></div>
+                          <div className="skeleton-button"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="products-carousel-wrapper">
+                  <button
+                    className="carousel-nav-btn carousel-next"
+                    onClick={() => scrollFeatured("prev")}
+                    aria-label="السابق"
+                  >
+                    <i className="fas fa-chevron-right"></i>
+                  </button>
+
+                  <div className="products-carousel" ref={featuredRef}>
+                    {featuredProducts.map((product) => (
+                      <div key={product.id} className="carousel-product-item">
+                        <ProductCard product={product} />
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    className="carousel-nav-btn carousel-prev"
+                    onClick={() => scrollFeatured("next")}
+                    aria-label="التالي"
+                  >
+                    <i className="fas fa-chevron-left"></i>
+                  </button>
+                </div>
+              )}
+
+              <div className="section-cta">
+                <button
+                  className="view-all-button"
+                  onClick={() => navigate("/products")}
+                >
+                  <span className="cta-text">عرض جميع المنتجات</span>
+                  <span className="cta-arrow">←</span>
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Most Ordered Products Section */}
         <section className="popular-products-section">
           <div className="section-container">
             <div className="section-header">
-              <h2 className="section-title">المنتجات الأكثر طلباً</h2>
+              <div className="section-header-content">
+                <h2 className="section-title">الأكثر طلباً</h2>
+              </div>
+              <p className="section-subtitle">
+                المنتجات الأكثر شعبية بين عملائنا
+              </p>
             </div>
 
             {loadingProducts ? (
-              <div className="products-loading">
-                <div className="loading-grid">
-                  {[...Array(5)].map((_, index) => (
+              <div className="products-carousel-loading">
+                <div className="carousel-loading-grid">
+                  {[...Array(4)].map((_, index) => (
                     <div key={index} className="product-skeleton">
                       <div className="skeleton-image"></div>
                       <div className="skeleton-content">
@@ -734,15 +1011,33 @@ function Home() {
               </div>
             ) : (
               <>
-                <div className="popular-products-grid">
-                  {mostOrderedProducts.map((product, index) => (
-                    <div key={product.id} className="popular-product-item">
-                      <ProductCard product={product} />
-                    </div>
-                  ))}
-                </div>
+                {mostOrderedProducts.length > 0 ? (
+                  <div className="products-carousel-wrapper">
+                    <button
+                      className="carousel-nav-btn carousel-next"
+                      onClick={() => scrollMostOrdered("prev")}
+                      aria-label="السابق"
+                    >
+                      <i className="fas fa-chevron-right"></i>
+                    </button>
 
-                {mostOrderedProducts.length === 0 && (
+                    <div className="products-carousel" ref={mostOrderedRef}>
+                      {mostOrderedProducts.map((product) => (
+                        <div key={product.id} className="carousel-product-item">
+                          <ProductCard product={product} />
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      className="carousel-nav-btn carousel-prev"
+                      onClick={() => scrollMostOrdered("next")}
+                      aria-label="التالي"
+                    >
+                      <i className="fas fa-chevron-left"></i>
+                    </button>
+                  </div>
+                ) : (
                   <div className="no-orders-message">
                     <div className="no-orders-icon">
                       <i className="fas fa-box"></i>
@@ -754,7 +1049,7 @@ function Home() {
                 <div className="section-cta">
                   <button
                     className="view-all-button"
-                    onClick={() => (window.location.href = "/products")}
+                    onClick={() => navigate("/products")}
                   >
                     <span className="cta-text">عرض جميع المنتجات</span>
                     <span className="cta-arrow">←</span>

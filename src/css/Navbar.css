@@ -536,7 +536,7 @@
     top: calc(var(--nav-height) + var(--top-bar-height));
     left: 0;
     right: 0;
-    bottom: 0;
+    /* bottom: 0; */
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;

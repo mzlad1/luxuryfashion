@@ -556,9 +556,13 @@ function Home() {
     categoriesRef.current.scrollLeft = scrollLeft - walk;
   };
 
-  // Auto-scroll for Featured Products carousel (RTL)
+  // Auto-scroll for Featured Products carousel (RTL) - disabled on mobile for performance
   useEffect(() => {
     if (!featuredRef.current || featuredProducts.length === 0) return;
+
+    // Disable auto-scroll on mobile devices for better performance
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) return;
 
     const autoScroll = setInterval(() => {
       if (featuredRef.current) {
@@ -584,9 +588,13 @@ function Home() {
     return () => clearInterval(autoScroll);
   }, [featuredProducts.length]);
 
-  // Auto-scroll for Most Ordered Products carousel (RTL)
+  // Auto-scroll for Most Ordered Products carousel (RTL) - disabled on mobile for performance
   useEffect(() => {
     if (!mostOrderedRef.current || mostOrderedProducts.length === 0) return;
+
+    // Disable auto-scroll on mobile devices for better performance
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) return;
 
     const autoScroll = setInterval(() => {
       if (mostOrderedRef.current) {

@@ -697,6 +697,282 @@
 }
 
 /* ========================================
+   SUCCESS MODAL - Beautiful Order Confirmation
+   ======================================== */
+
+.ct-success-modal-overlay {
+  z-index: 2000;
+}
+
+.ct-success-modal {
+  max-width: 540px;
+  border-radius: 20px;
+  overflow: hidden;
+  animation: successModalSlide 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes successModalSlide {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.ct-success-content {
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.ct-success-icon {
+  margin-bottom: 24px;
+  animation: successIconPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+
+@keyframes successIconPop {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.ct-success-circle {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 10px 40px rgba(16, 185, 129, 0.3),
+    0 0 0 10px rgba(16, 185, 129, 0.1),
+    0 0 0 20px rgba(16, 185, 129, 0.05);
+  position: relative;
+}
+
+.ct-success-circle::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: inherit;
+  animation: successPulseRing 2s ease-out infinite;
+}
+
+@keyframes successPulseRing {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.ct-success-circle i {
+  font-size: 3rem;
+  color: white;
+  animation: successCheckmark 0.6s ease-out 0.4s both;
+}
+
+@keyframes successCheckmark {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-45deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.ct-success-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 20px 0;
+  animation: fadeInUp 0.5s ease-out 0.3s both;
+}
+
+.ct-success-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #10b981, transparent);
+  margin: 0 auto 30px;
+  border-radius: 3px;
+  animation: fadeInUp 0.5s ease-out 0.4s both;
+}
+
+.ct-order-info {
+  margin-bottom: 30px;
+  animation: fadeInUp 0.5s ease-out 0.5s both;
+}
+
+.ct-order-label {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.ct-order-code-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ct-success-modal .ct-order-code {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  color: #166534;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-family: "Courier New", monospace;
+  font-size: 1.3rem;
+  border: 2px solid #86efac;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+  letter-spacing: 1px;
+}
+
+.ct-success-modal .ct-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.ct-success-modal .ct-copy-btn:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.ct-success-modal .ct-copy-btn i {
+  font-size: 1rem;
+}
+
+.ct-success-message {
+  margin-bottom: 30px;
+  animation: fadeInUp 0.5s ease-out 0.6s both;
+}
+
+.ct-whatsapp-box {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px solid #86efac;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.ct-whatsapp-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.ct-whatsapp-icon i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.ct-whatsapp-box p {
+  margin: 0;
+  color: #166534;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: right;
+}
+
+.ct-success-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.5s ease-out 0.7s both;
+}
+
+.ct-success-btn {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: "Cairo", sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+  justify-content: center;
+}
+
+.ct-success-btn-primary {
+  background: linear-gradient(135deg, #bfa57a, #a68a5f);
+  color: white;
+  box-shadow: 0 4px 12px rgba(191, 165, 122, 0.3);
+}
+
+.ct-success-btn-primary:hover {
+  background: linear-gradient(135deg, #a68a5f, #8d7349);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(191, 165, 122, 0.4);
+}
+
+.ct-success-btn-secondary {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 2px solid #e5e7eb;
+}
+
+.ct-success-btn-secondary:hover {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
    STOCK ISSUES MODAL
    ======================================== */
 
@@ -1449,6 +1725,60 @@
 
   .ct-summary p {
     font-size: 1.1rem;
+  }
+
+  /* Success Modal Mobile */
+  .ct-success-modal {
+    margin: 10px;
+    border-radius: 16px;
+  }
+
+  .ct-success-content {
+    padding: 30px 20px;
+  }
+
+  .ct-success-circle {
+    width: 80px;
+    height: 80px;
+  }
+
+  .ct-success-circle i {
+    font-size: 2.5rem;
+  }
+
+  .ct-success-title {
+    font-size: 1.5rem;
+  }
+
+  .ct-success-modal .ct-order-code {
+    font-size: 1.1rem;
+    padding: 10px 20px;
+  }
+
+  .ct-success-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .ct-success-btn {
+    width: 100%;
+  }
+
+  .ct-whatsapp-box {
+    padding: 16px;
+  }
+
+  .ct-whatsapp-icon {
+    width: 45px;
+    height: 45px;
+  }
+
+  .ct-whatsapp-icon i {
+    font-size: 1.3rem;
+  }
+
+  .ct-whatsapp-box p {
+    font-size: 0.95rem;
   }
 
   .ct-success {

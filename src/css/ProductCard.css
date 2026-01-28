@@ -16,6 +16,9 @@
     0 4px 6px -1px rgba(0, 0, 0, 0.05),
     0 2px 4px -1px rgba(0, 0, 0, 0.03);
   height: 100%;
+  /* Performance optimizations */
+  contain: layout style paint;
+  transform: translateZ(0);
 }
 
 .pc-card:hover {
@@ -32,6 +35,8 @@
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  /* Performance optimization */
+  contain: strict;
 }
 
 .pc-image {
@@ -39,11 +44,12 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
+  transform: translateZ(0);
 }
 
 .pc-card:hover .pc-image {
-  transform: scale(1.08);
+  transform: scale(1.08) translateZ(0);
+  will-change: transform;
 }
 
 /* Image Overlay on Hover */
@@ -438,8 +444,7 @@
 
 .pc-toast {
   background: white;
-  padding: 16px 24px;
-  border-radius: 12px;
+  padding: 8px 8px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -754,8 +759,21 @@
    Responsive Design
    ========================================== */
 @media screen and (max-width: 768px) {
+  /* Disable expensive hover effects on mobile for better performance */
   .pc-card:hover {
-    transform: translateY(-4px);
+    transform: none;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.05),
+      0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  }
+
+  .pc-card:hover .pc-image {
+    transform: translateZ(0);
+    will-change: auto;
+  }
+
+  .pc-image-overlay {
+    display: none;
   }
 
   .pc-content {

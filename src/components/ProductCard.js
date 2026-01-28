@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
@@ -8,7 +8,7 @@ import "../css/ProductCard.css";
 import toast from "react-hot-toast";
 
 // مكون لعرض بطاقة المنتج في صفحة المنتجات
-function ProductCard({ product }) {
+const ProductCard = memo(({ product }) => {
   const [timeLeft, setTimeLeft] = useState(null);
   const [addingToCart, setAddingToCart] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -495,6 +495,7 @@ function ProductCard({ product }) {
             alt={product.name}
             className="pc-image"
             loading="lazy"
+            decoding="async"
           />
 
           {/* Image Overlay for hover effect */}
@@ -679,6 +680,8 @@ function ProductCard({ product }) {
       </Link>
     </>
   );
-}
+});
+
+ProductCard.displayName = "ProductCard";
 
 export default ProductCard;

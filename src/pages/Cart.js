@@ -31,6 +31,7 @@ function Cart() {
   const [address, setAddress] = useState("");
   const [orderId, setOrderId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
@@ -125,9 +126,7 @@ function Cart() {
 
       // Check minimum purchase
       if (foundCoupon.minPurchase && subtotal < foundCoupon.minPurchase) {
-        setCouponError(
-          `الحد الأدنى للشراء هو ${foundCoupon.minPurchase} شيكل`
-        );
+        setCouponError(`الحد الأدنى للشراء هو ${foundCoupon.minPurchase} شيكل`);
         setCouponLoading(false);
         return;
       }
@@ -267,14 +266,17 @@ function Cart() {
   }, 0);
 
   const subtotal = totalPrice;
-  
+
   // Calculate coupon discount
   let couponDiscount = 0;
   if (appliedCoupon) {
     if (appliedCoupon.discountType === "percentage") {
       couponDiscount = (subtotal * appliedCoupon.discountValue) / 100;
       // Apply max discount limit if set
-      if (appliedCoupon.maxDiscount && couponDiscount > appliedCoupon.maxDiscount) {
+      if (
+        appliedCoupon.maxDiscount &&
+        couponDiscount > appliedCoupon.maxDiscount
+      ) {
         couponDiscount = appliedCoupon.maxDiscount;
       }
     } else {
@@ -284,7 +286,7 @@ function Cart() {
     // Ensure discount doesn't exceed subtotal
     couponDiscount = Math.min(couponDiscount, subtotal);
   }
-  
+
   const finalTotal = subtotal - couponDiscount + deliveryFee;
 
   // Check stock availability before checkout
@@ -418,11 +420,11 @@ function Cart() {
   };
 
   const validatePhone = (phoneValue) => {
-  const phoneRegex = /^(?:\+970|\+972)\d{9}$/;
-  const isValid = phoneRegex.test(phoneValue.trim());
-  setPhoneValid(isValid);
-  return isValid;
-};
+    const phoneRegex = /^(?:\+970|\+972)\d{9}$/;
+    const isValid = phoneRegex.test(phoneValue.trim());
+    setPhoneValid(isValid);
+    return isValid;
+  };
 
   // التعامل مع إرسال الطلب وتحديث المخزون
   const handleSubmit = async (e) => {
@@ -431,7 +433,9 @@ function Cart() {
 
     // Validate phone format
     if (!validatePhone(phone)) {
-      setError("يرجى إدخال رقم واتساب صحيح بالصيغة: +970XXXXXXXXX أو +972XXXXXXXXX");
+      setError(
+        "يرجى إدخال رقم واتساب صحيح بالصيغة: +970XXXXXXXXX أو +972XXXXXXXXX",
+      );
       return;
     }
 
@@ -557,6 +561,7 @@ function Cart() {
       setOrderId(result.id);
       setShowCheckout(false);
       setSelectedDelivery(""); // Reset delivery selection
+      setShowSuccessModal(true); // Show success modal
 
       clearCart();
       setName("");
@@ -899,24 +904,87 @@ function Cart() {
           </button>
         </div>
 
-        {/* Success message */}
-        {orderId && (
-          <div className="ct-success">
-            <p>
-              تم إرسال طلبك بنجاح! رقم الطلب:
-              <span className="ct-order-code">#{orderId}</span>
+        {/* Success Modal */}
+        {showSuccessModal && orderId && (
+          <div
+            className="ct-modal-overlay ct-success-modal-overlay"
+            onClick={(e) => {
+              if (e.target.classList.contains("ct-modal-overlay")) {
+                setShowSuccessModal(false);
+              }
+            }}
+          >
+            <div
+              className="ct-modal ct-success-modal"
+              role="dialog"
+              aria-modal="true"
+            >
               <button
-                type="button"
-                className="ct-copy-btn"
-                onClick={handleCopyOrderId}
-                aria-label="نسخ رقم الطلب"
+                className="ct-modal-close"
+                onClick={() => setShowSuccessModal(false)}
+                aria-label="إغلاق"
               >
-                {copied ? "تم النسخ" : "نسخ"}
+                ×
               </button>
-            </p>
-            <p className="ct-whatsapp-confirmation">
-              <i className="fas fa-phone"></i> سنتواصل معك عبر الواتساب لتأكيد الطلب
-            </p>
+
+              <div className="ct-success-content">
+                <div className="ct-success-icon">
+                  <div className="ct-success-circle">
+                    <i className="fas fa-check"></i>
+                  </div>
+                </div>
+
+                <h2 className="ct-success-title">تم إرسال طلبك بنجاح!</h2>
+
+                <div className="ct-success-divider"></div>
+
+                <div className="ct-order-info">
+                  <p className="ct-order-label">رقم الطلب</p>
+                  <div className="ct-order-code-box">
+                    <span className="ct-order-code">#{orderId}</span>
+                    <button
+                      type="button"
+                      className="ct-copy-btn"
+                      onClick={handleCopyOrderId}
+                      aria-label="نسخ رقم الطلب"
+                    >
+                      <i
+                        className={copied ? "fas fa-check" : "fas fa-copy"}
+                      ></i>
+                      <span>{copied ? "تم النسخ" : "نسخ"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="ct-success-message">
+                  <div className="ct-whatsapp-box">
+                    <div className="ct-whatsapp-icon">
+                      <i className="fab fa-whatsapp"></i>
+                    </div>
+                    <p>سنتواصل معك عبر الواتساب لتأكيد الطلب</p>
+                  </div>
+                </div>
+
+                <div className="ct-success-actions">
+                  <button
+                    className="ct-success-btn ct-success-btn-primary"
+                    onClick={() => {
+                      setShowSuccessModal(false);
+                      navigate("/products");
+                    }}
+                  >
+                    <i className="fas fa-shopping-bag"></i>
+                    <span>متابعة التسوق</span>
+                  </button>
+                  <button
+                    className="ct-success-btn ct-success-btn-secondary"
+                    onClick={() => setShowSuccessModal(false)}
+                  >
+                    <span>إغلاق</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -1062,7 +1130,9 @@ function Cart() {
                       <input
                         type="text"
                         value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        onChange={(e) =>
+                          setCouponCode(e.target.value.toUpperCase())
+                        }
                         placeholder="أدخل رمز الكوبون"
                         className="ct-coupon-input"
                         disabled={couponLoading}
@@ -1097,7 +1167,8 @@ function Cart() {
                   )}
                   {couponError && (
                     <p className="ct-coupon-error">
-                      <i className="fas fa-exclamation-triangle"></i> {couponError}
+                      <i className="fas fa-exclamation-triangle"></i>{" "}
+                      {couponError}
                     </p>
                   )}
                 </div>
@@ -1230,19 +1301,17 @@ function Cart() {
                       setPhone(e.target.value);
                       validatePhone(e.target.value);
                     }}
-                    className={
-                      phone && !phoneValid
-                        ? "ct-input-invalid"
-                        : ""
-                    }
+                    className={phone && !phoneValid ? "ct-input-invalid" : ""}
                     dir="ltr"
                   />
                   <small className="ct-phone-note">
-                    <i className="fas fa-phone"></i> يرجى إدخال رقم الواتساب بالصيغة التالية: +970XXXXXXXXX أو +972XXXXXXXXX
+                    <i className="fas fa-phone"></i> يرجى إدخال رقم الواتساب
+                    بالصيغة التالية: +970XXXXXXXXX أو +972XXXXXXXXX
                   </small>
                   {phone && !phoneValid && (
                     <small className="ct-phone-error-note">
-                      <i className="fas fa-exclamation-triangle"></i> يرجى إدخال رقم واتساب صحيح يبدأ بـ +970 أو +972 متبوعاً بـ 9 أرقام
+                      <i className="fas fa-exclamation-triangle"></i> يرجى إدخال
+                      رقم واتساب صحيح يبدأ بـ +970 أو +972 متبوعاً بـ 9 أرقام
                     </small>
                   )}
                 </div>
@@ -1259,9 +1328,7 @@ function Cart() {
                   type="submit"
                   className="ct-checkout-btn"
                   disabled={
-                    loading ||
-                    cartItems.length === 0 ||
-                    (phone && !phoneValid)
+                    loading || cartItems.length === 0 || (phone && !phoneValid)
                   }
                 >
                   {loading ? "... جاري الإرسال" : "إرسال الطلب"}

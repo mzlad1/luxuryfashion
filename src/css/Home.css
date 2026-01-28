@@ -993,6 +993,10 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   direction: rtl;
+  /* Performance optimizations for mobile */
+  contain: layout style paint;
+  will-change: scroll-position;
+  -webkit-overflow-scrolling: touch;
 }
 
 .products-carousel::-webkit-scrollbar {
@@ -1005,6 +1009,9 @@
   min-width: 280px;
   transition: transform 0.3s ease;
   direction: rtl;
+  /* Performance optimizations */
+  contain: layout style paint;
+  transform: translateZ(0);
 }
 
 .carousel-product-item:hover {

@@ -236,19 +236,10 @@ class NotificationService {
     }
 
     return onMessage(messaging, (payload) => {
-      // Show notification manually for foreground
-      if (Notification.permission === "granted") {
-        const { title, body } = payload.notification || {};
-        new Notification(title || "طلبية جديدة!", {
-          body: body || "لديك طلبية جديدة في المتجر",
-          icon: "/images/logo.ico",
-          badge: "/images/logo.ico",
-          tag: "new-order",
-          renotify: true,
-          requireInteraction: true,
-        });
-      }
-
+      log('Foreground message received:', payload);
+      // Don't show notification here - FCM webpush already handles it
+      // This prevents duplicate notifications
+      // Just call the callback for any UI updates
       if (callback) {
         callback(payload);
       }

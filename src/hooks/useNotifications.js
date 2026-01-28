@@ -3,8 +3,9 @@ import notificationService from "../utils/NotificationService";
 
 // Debug logger
 const DEBUG = true;
-const log = (...args) => DEBUG && console.log('[useNotifications]', ...args);
-const logError = (...args) => DEBUG && console.error('[useNotifications ERROR]', ...args);
+const log = (...args) => DEBUG && console.log("[useNotifications]", ...args);
+const logError = (...args) =>
+  DEBUG && console.error("[useNotifications ERROR]", ...args);
 
 /**
  * Custom hook for managing push notifications
@@ -21,40 +22,46 @@ export function useNotifications() {
 
   // Initialize on mount
   useEffect(() => {
-    log('Hook mounted, checking support...');
+    log("Hook mounted, checking support...");
     const supported = notificationService.isSupported();
-    log('Supported:', supported);
+    log("Supported:", supported);
     setIsSupported(supported);
     setIsIOS(notificationService.isIOS());
     setIsPWA(notificationService.isPWA());
-    log('isIOS:', notificationService.isIOS(), 'isPWA:', notificationService.isPWA());
+    log(
+      "isIOS:",
+      notificationService.isIOS(),
+      "isPWA:",
+      notificationService.isPWA(),
+    );
 
     if (supported) {
       const permission = notificationService.getPermissionStatus();
-      log('Current permission:', permission);
+      log("Current permission:", permission);
       setPermissionStatus(permission);
 
       // Check if already enabled and initialize
       if (permission === "granted") {
-        log('Permission granted, initializing and refreshing token...');
+        log("Permission granted, initializing and refreshing token...");
         // Initialize messaging first, then get token and set enabled
         notificationService.initialize().then(async (success) => {
-          log('Initialize result:', success);
+          log("Initialize result:", success);
           if (success) {
             // Also get and save the token (important for returning users!)
-            log('Getting FCM token for returning user...');
-            const result = await notificationService.requestPermissionAndGetToken();
-            log('Token result:', result.success ? 'SUCCESS' : result.error);
-            
+            log("Getting FCM token for returning user...");
+            const result =
+              await notificationService.requestPermissionAndGetToken();
+            log("Token result:", result.success ? "SUCCESS" : result.error);
+
             if (result.success) {
               // Save/refresh token in Firestore
-              log('Saving token to Firestore...');
+              log("Saving token to Firestore...");
               const saved = await notificationService.saveTokenToFirestore();
-              log('Token saved:', saved);
+              log("Token saved:", saved);
             }
-            
+
             setIsEnabled(true);
-            log('Notifications enabled!');
+            log("Notifications enabled!");
           }
         });
       }
@@ -94,18 +101,18 @@ export function useNotifications() {
 
   // Enable notifications
   const enableNotifications = useCallback(async () => {
-    log('enableNotifications() called');
+    log("enableNotifications() called");
     setIsLoading(true);
     setError(null);
 
     try {
       // Request permission and get token
-      log('Requesting permission and token...');
+      log("Requesting permission and token...");
       const result = await notificationService.requestPermissionAndGetToken();
-      log('requestPermissionAndGetToken result:', result);
+      log("requestPermissionAndGetToken result:", result);
 
       if (!result.success) {
-        logError('Failed to get token:', result.error);
+        logError("Failed to get token:", result.error);
         if (result.error === "permission_denied") {
           setError("تم رفض إذن الإشعارات. يرجى تفعيلها من إعدادات المتصفح.");
         } else {
@@ -116,19 +123,19 @@ export function useNotifications() {
       }
 
       // Save token to Firestore
-      log('Saving token to Firestore...');
+      log("Saving token to Firestore...");
       const saved = await notificationService.saveTokenToFirestore();
-      log('saveTokenToFirestore result:', saved);
+      log("saveTokenToFirestore result:", saved);
 
       if (!saved) {
-        logError('Failed to save token to Firestore');
+        logError("Failed to save token to Firestore");
         setError("تم تفعيل الإشعارات لكن فشل حفظ الجهاز. حاول مرة أخرى.");
         return false;
       }
 
       setIsEnabled(true);
       setPermissionStatus("granted");
-      log('Notifications fully enabled!');
+      log("Notifications fully enabled!");
       return true;
     } catch (err) {
       console.error("Error enabling notifications:", err);

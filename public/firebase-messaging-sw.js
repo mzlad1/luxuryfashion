@@ -9,33 +9,40 @@ importScripts(
   "https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js",
 );
 
-// Firebase config is fetched from the main app via message
-let firebaseConfig = null;
+// Firebase config - hardcoded for service worker to work when browser is closed
+// This is safe as Firebase config is not secret (it's in your HTML anyway)
+const firebaseConfig = {
+  apiKey: "AIzaSyAVhrfvLQlMSLciJogsKFo82BswvhbRvR0",
+  authDomain: "luxuryfashion-76ce1.firebaseapp.com",
+  projectId: "luxuryfashion-76ce1",
+  storageBucket: "luxuryfashion-76ce1.firebasestorage.app",
+  messagingSenderId: "181559034525",
+  appId: "1:181559034525:web:77acfe9afe9ff000d50a74",
+};
+
 let isInitialized = false;
 
 console.log("[SW] Service Worker loaded");
 
-// Listen for config from main app
+// Listen for config from main app (for backwards compatibility)
 self.addEventListener("message", (event) => {
   console.log("[SW] Message received:", event.data?.type);
   if (event.data && event.data.type === "FIREBASE_CONFIG") {
-    console.log(
-      "[SW] Firebase config received, projectId:",
-      event.data.config?.projectId,
-    );
-    firebaseConfig = event.data.config;
+    console.log("[SW] Firebase config received from app");
+    // Initialize if not already done
     initializeFirebase();
   }
 });
 
+// Initialize Firebase immediately on service worker load
+initializeFirebase();
+
 function initializeFirebase() {
   console.log(
-    "[SW] initializeFirebase called, hasConfig:",
-    !!firebaseConfig,
-    "isInitialized:",
+    "[SW] initializeFirebase called, isInitialized:",
     isInitialized,
   );
-  if (!firebaseConfig || isInitialized) return;
+  if (isInitialized) return;
 
   try {
     console.log("[SW] Initializing Firebase app...");

@@ -1,0 +1,32 @@
+{
+  "name": "Luxury Fashion",
+  "short_name": "Luxury",
+  "description": "متجر إلكتروني متخصص في الملابس الفاخرة للنساء",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "orientation": "portrait-primary",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "/images/logo.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/images/logo.ico",
+      "type": "image/x-icon",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/logo.ico",
+      "type": "image/x-icon",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "permissions": ["notifications"]
+}

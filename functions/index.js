@@ -58,9 +58,9 @@ exports.onNewOrder = onDocumentCreated("orders/{orderId}", async (event) => {
     console.log(`Sending notification to ${tokens.length} devices`);
 
     // Prepare notification message
-    const customerName = orderData.name || "عميل";
+    const customerName = orderData.customerName || "عميل";
     const orderTotal = orderData.total ? `${orderData.total} شيكل` : "";
-    const itemsCount = orderData.products?.length || 0;
+    const itemsCount = orderData.items?.length || 0;
 
     const message = {
       notification: {
@@ -179,7 +179,7 @@ exports.onNewOrder = onDocumentCreated("orders/{orderId}", async (event) => {
  */
 exports.cleanupInactiveTokens =
   require("firebase-functions/v2/scheduler").onSchedule(
-    "every 7 days",
+    "0 0 * * 0",
     async (event) => {
       try {
         const thirtyDaysAgo = new Date();

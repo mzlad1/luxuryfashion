@@ -510,6 +510,8 @@ function Cart() {
           stockChecks.push({
             ref: productRef,
             updateData: stockUpdateData,
+            quantity: item.quantity,
+            currentSalesCount: productData.salesCount || 0,
           });
         }
 
@@ -540,10 +542,15 @@ function Cart() {
         const orderRef = doc(collection(db, "orders"));
         transaction.set(orderRef, orderData);
 
-        // Update stock for all products
-        stockChecks.forEach(({ ref, updateData }) => {
-          transaction.update(ref, updateData);
-        });
+        // Update stock and increment salesCount for all products
+        stockChecks.forEach(
+          ({ ref, updateData, quantity, currentSalesCount }) => {
+            transaction.update(ref, {
+              ...updateData,
+              salesCount: currentSalesCount + quantity,
+            });
+          },
+        );
 
         // Update coupon usage count
         if (appliedCoupon) {

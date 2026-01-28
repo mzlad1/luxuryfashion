@@ -1,0 +1,91 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check if user is authenticated (admin)
+    function isAdmin() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if file is an image
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    
+    // Helper function to check file size (max 5MB)
+    function isValidSize() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+    
+    // =====================
+    // PRODUCTS IMAGES
+    // =====================
+    
+    // Product images - Public can read, Admin can write
+    match /products/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin() && isImage() && isValidSize();
+    }
+    
+    // =====================
+    // FEEDBACK IMAGES
+    // =====================
+    
+    // Feedback images - Public can read and write (for customer reviews)
+    match /feedbacks/{allPaths=**} {
+      allow read: if true;
+      // Anyone can upload feedback images (limited to images, max 5MB)
+      allow write: if isImage() && isValidSize();
+    }
+    
+    // =====================
+    // HERO SLIDES IMAGES
+    // =====================
+    
+    // Hero slides - Public can read, Admin can write
+    match /heroSlides/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin() && isImage() && isValidSize();
+    }
+    
+    // =====================
+    // CATEGORIES IMAGES
+    // =====================
+    
+    // Category images - Public can read, Admin can write
+    match /categories/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin() && isImage() && isValidSize();
+    }
+    
+    // =====================
+    // BRANDS IMAGES
+    // =====================
+    
+    // Brand images - Public can read, Admin can write
+    match /brands/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin() && isImage() && isValidSize();
+    }
+    
+    // =====================
+    // PROMOTIONAL BANNER IMAGES
+    // =====================
+    
+    // Promotional banner - Public can read, Admin can write
+    match /promotionalBanner/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin() && isImage() && isValidSize();
+    }
+    
+    // =====================
+    // DEFAULT DENY
+    // =====================
+    
+    // Deny access to any other paths not explicitly defined
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -207,23 +207,12 @@ function Home() {
     async function fetchMostOrderedProducts() {
       setLoadingProducts(true);
       try {
-        // Get cached data first
-        const cachedOrders = CacheManager.get(CACHE_KEYS.ORDERS);
+        // Get cached products data
         const cachedProducts = CacheManager.get(CACHE_KEYS.PRODUCTS);
 
-        let orders = cachedOrders;
         let products = cachedProducts;
 
         // Fetch from Firebase if not cached
-        if (!orders) {
-          const ordersSnapshot = await getDocs(collection(db, "orders"));
-          orders = [];
-          ordersSnapshot.forEach((doc) => {
-            orders.push({ id: doc.id, ...doc.data() });
-          });
-          CacheManager.set(CACHE_KEYS.ORDERS, orders, 30 * 1000);
-        }
-
         if (!products) {
           const productsSnapshot = await getDocs(collection(db, "products"));
           products = [];
@@ -233,28 +222,10 @@ function Home() {
           CacheManager.set(CACHE_KEYS.PRODUCTS, products, 5 * 60 * 1000);
         }
 
-        // Calculate product order frequency
-        const productOrderCount = {};
-
-        orders.forEach((order) => {
-          if (order.items && Array.isArray(order.items)) {
-            order.items.forEach((item) => {
-              if (item.id) {
-                productOrderCount[item.id] =
-                  (productOrderCount[item.id] || 0) + (item.quantity || 1);
-              }
-            });
-          }
-        });
-
-        // Sort products by order count and get top 5
+        // Sort products by salesCount and get top 5
         const sortedProducts = products
-          .map((product) => ({
-            ...product,
-            orderCount: productOrderCount[product.id] || 0,
-          }))
-          .filter((product) => product.orderCount > 0) // Only include products that have been ordered
-          .sort((a, b) => b.orderCount - a.orderCount)
+          .filter((product) => (product.salesCount || 0) > 0) // Only include products that have been ordered
+          .sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0))
           .slice(0, 5); // Get top 5
 
         setMostOrderedProducts(sortedProducts);

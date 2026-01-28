@@ -846,6 +846,21 @@ function Orders() {
                           <tr key={index}>
                             <td>
                               <div className="ord-item-details">
+                                {/* Product Image */}
+                                {item.images && item.images.length > 0 && (
+                                  <img
+                                    src={item.images[0]}
+                                    alt={item.name}
+                                    className="ord-item-image"
+                                    style={{
+                                      width: "50px",
+                                      height: "50px",
+                                      objectFit: "cover",
+                                      borderRadius: "8px",
+                                      marginLeft: "10px",
+                                    }}
+                                  />
+                                )}
                                 {item.id ? (
                                   <Link
                                     to={`/products/${item.id}`}

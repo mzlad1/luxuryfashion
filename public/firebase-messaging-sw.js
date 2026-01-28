@@ -51,11 +51,15 @@ function initializeFirebase() {
 
     messaging.onBackgroundMessage((payload) => {
       console.log("[SW] Background message received:", payload);
-      
+
       // Get notification content from data payload
-      const notificationTitle = payload.data?.title || payload.notification?.title || "طلبية جديدة!";
-      const notificationBody = payload.data?.body || payload.notification?.body || "لديك طلبية جديدة في المتجر";
-      
+      const notificationTitle =
+        payload.data?.title || payload.notification?.title || "طلبية جديدة!";
+      const notificationBody =
+        payload.data?.body ||
+        payload.notification?.body ||
+        "لديك طلبية جديدة في المتجر";
+
       const notificationOptions = {
         body: notificationBody,
         icon: "/images/logo.ico",

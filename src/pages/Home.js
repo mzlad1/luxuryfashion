@@ -6,7 +6,6 @@ import PromotionalBanner from "../components/PromotionalBanner";
 import ProductCard from "../components/ProductCard";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { SparklesCore } from "../components/SparklesCore";
 import { CacheManager, CACHE_KEYS } from "../utils/cache";
 import { useNavigate } from "react-router-dom";
 import "../css/Home.css";
@@ -32,23 +31,12 @@ function Home() {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
   const hasMovedRef = useRef(false);
   const featuredRef = useRef(null);
   const mostOrderedRef = useRef(null);
   const categoriesRef = useRef(null);
 
   const navigate = useNavigate();
-
-  // Detect mobile/tablet for performance optimization
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 1024);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
 
   // Check and remove expired discounts
   const checkExpiredDiscounts = async () => {
@@ -913,26 +901,7 @@ function Home() {
 
         {/* Featured Products Section */}
         {(loadingFeatured || featuredProducts.length > 0) && (
-          <section
-            className={`featured-products-section ${isMobile ? "mobile-fallback" : ""}`}
-          >
-            {/* Sparkles Background - Only on Desktop */}
-            {!isMobile && (
-              <div className="featured-sparkles-container">
-                <SparklesCore
-                  id="featured-sparkles"
-                  background="transparent"
-                  minSize={0.6}
-                  maxSize={1.4}
-                  particleDensity={100}
-                  particleColor="#c2a26c"
-                  speed={2}
-                />
-              </div>
-            )}
-            {/* CSS Fallback for Mobile/Tablet */}
-            {isMobile && <div className="featured-mobile-bg"></div>}
-
+          <section className="featured-products-section">
             <div className="section-container">
               <div className="section-header">
                 <div className="section-header-content">

@@ -13,23 +13,32 @@ importScripts(
 let firebaseConfig = null;
 let isInitialized = false;
 
+console.log('[SW] Service Worker loaded');
+
 // Listen for config from main app
 self.addEventListener("message", (event) => {
+  console.log('[SW] Message received:', event.data?.type);
   if (event.data && event.data.type === "FIREBASE_CONFIG") {
+    console.log('[SW] Firebase config received, projectId:', event.data.config?.projectId);
     firebaseConfig = event.data.config;
     initializeFirebase();
   }
 });
 
 function initializeFirebase() {
+  console.log('[SW] initializeFirebase called, hasConfig:', !!firebaseConfig, 'isInitialized:', isInitialized);
   if (!firebaseConfig || isInitialized) return;
 
   try {
+    console.log('[SW] Initializing Firebase app...');
     firebase.initializeApp(firebaseConfig);
+    console.log('[SW] Firebase app initialized');
     const messaging = firebase.messaging();
+    console.log('[SW] Messaging instance created');
     isInitialized = true;
 
     messaging.onBackgroundMessage((payload) => {
+      console.log('[SW] Background message received:', payload);
       const notificationTitle = payload.notification?.title || "طلبية جديدة!";
       const notificationOptions = {
         body: payload.notification?.body || "لديك طلبية جديدة في المتجر",
@@ -48,18 +57,21 @@ function initializeFirebase() {
           { action: "dismiss", title: "إغلاق" },
         ],
       };
+      console.log('[SW] Showing notification:', notificationTitle);
       return self.registration.showNotification(
         notificationTitle,
         notificationOptions,
       );
     });
+    console.log('[SW] Background message handler registered');
   } catch (e) {
-    // Already initialized
+    console.error('[SW] Error initializing:', e.message);
   }
 }
 
 // Handle notification click
 self.addEventListener("notificationclick", (event) => {
+  console.log('[SW] Notification clicked:', event.action);
   event.notification.close();
   if (event.action === "dismiss") return;
 

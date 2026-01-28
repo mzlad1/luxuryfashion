@@ -803,87 +803,9 @@
    ========================================== */
 .featured-products-section {
   padding: 4rem 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #0d1b2a 50%, #1b263b 100%);
   position: relative;
   overflow: hidden;
-}
-
-/* Sparkles Background Container */
-.featured-sparkles-container {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* Mobile/Tablet CSS Fallback - Shimmer Effect */
-.featured-mobile-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.featured-mobile-bg::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(194, 162, 108, 0.15) 0%,
-    transparent 50%
-  );
-  animation: mobileGlow 8s ease-in-out infinite;
-}
-
-.featured-mobile-bg::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(194, 162, 108, 0.08),
-    transparent
-  );
-  animation: mobileShimmer 6s ease-in-out infinite;
-}
-
-@keyframes mobileGlow {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.5;
-  }
-  25% {
-    transform: translate(10%, 5%) scale(1.1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translate(-5%, 10%) scale(1);
-    opacity: 0.5;
-  }
-  75% {
-    transform: translate(-10%, -5%) scale(1.05);
-    opacity: 0.6;
-  }
-}
-
-@keyframes mobileShimmer {
-  0% {
-    left: -100%;
-  }
-  50%,
-  100% {
-    left: 200%;
-  }
 }
 
 .featured-products-section .section-container {

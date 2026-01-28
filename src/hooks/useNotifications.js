@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import notificationService from "../utils/NotificationService";
 
+// Debug logger
+const DEBUG = true;
+const log = (...args) => DEBUG && console.log('[useNotifications]', ...args);
+const logError = (...args) => DEBUG && console.error('[useNotifications ERROR]', ...args);
+
 /**
  * Custom hook for managing push notifications
  * Handles permission requests, token management, and foreground messages
@@ -16,21 +21,28 @@ export function useNotifications() {
 
   // Initialize on mount
   useEffect(() => {
+    log('Hook mounted, checking support...');
     const supported = notificationService.isSupported();
+    log('Supported:', supported);
     setIsSupported(supported);
     setIsIOS(notificationService.isIOS());
     setIsPWA(notificationService.isPWA());
+    log('isIOS:', notificationService.isIOS(), 'isPWA:', notificationService.isPWA());
 
     if (supported) {
       const permission = notificationService.getPermissionStatus();
+      log('Current permission:', permission);
       setPermissionStatus(permission);
 
       // Check if already enabled and initialize
       if (permission === "granted") {
+        log('Permission granted, initializing...');
         // Initialize messaging first, then set enabled
         notificationService.initialize().then((success) => {
+          log('Initialize result:', success);
           if (success) {
             setIsEnabled(true);
+            log('Notifications enabled!');
           }
         });
       }
@@ -70,14 +82,18 @@ export function useNotifications() {
 
   // Enable notifications
   const enableNotifications = useCallback(async () => {
+    log('enableNotifications() called');
     setIsLoading(true);
     setError(null);
 
     try {
       // Request permission and get token
+      log('Requesting permission and token...');
       const result = await notificationService.requestPermissionAndGetToken();
+      log('requestPermissionAndGetToken result:', result);
 
       if (!result.success) {
+        logError('Failed to get token:', result.error);
         if (result.error === "permission_denied") {
           setError("تم رفض إذن الإشعارات. يرجى تفعيلها من إعدادات المتصفح.");
         } else {
@@ -88,15 +104,19 @@ export function useNotifications() {
       }
 
       // Save token to Firestore
+      log('Saving token to Firestore...');
       const saved = await notificationService.saveTokenToFirestore();
+      log('saveTokenToFirestore result:', saved);
 
       if (!saved) {
+        logError('Failed to save token to Firestore');
         setError("تم تفعيل الإشعارات لكن فشل حفظ الجهاز. حاول مرة أخرى.");
         return false;
       }
 
       setIsEnabled(true);
       setPermissionStatus("granted");
+      log('Notifications fully enabled!');
       return true;
     } catch (err) {
       console.error("Error enabling notifications:", err);

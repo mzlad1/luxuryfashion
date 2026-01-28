@@ -638,7 +638,7 @@ function ProductCard({ product }) {
         </div>
 
         {/* Add to Cart Button */}
-        <button
+        {/* <button
           className="pc-add-to-cart-btn"
           onClick={handleAddToCart}
           disabled={
@@ -675,7 +675,7 @@ function ProductCard({ product }) {
               <span>أضف للسلة</span>
             </>
           )}
-        </button>
+        </button> */}
       </Link>
     </>
   );

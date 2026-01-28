@@ -7,6 +7,7 @@ import { CacheManager, CACHE_KEYS } from "../utils/cache";
 import { useNavigate, Link } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
+import useNotifications from "../hooks/useNotifications";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -19,6 +20,19 @@ function AdminDashboard() {
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
+
+  // Notifications hook
+  const {
+    isSupported: notificationsSupported,
+    isEnabled: notificationsEnabled,
+    isLoading: notificationsLoading,
+    error: notificationsError,
+    needsPWAForIOS,
+    isIOS,
+    enableNotifications,
+    disableNotifications,
+    sendTestNotification,
+  } = useNotifications();
 
   const statuses = useMemo(
     () => ["قيد الانتظار", "قيد التنفيذ", "قيد التوصيل", "منجز", "مرفوض"],
@@ -268,6 +282,105 @@ function AdminDashboard() {
           <span className="admin-dash-status-dot" />
           {refreshing ? "جاري التحديث..." : "البيانات محدثة"}
         </div>
+
+        {/* Notifications Panel */}
+        <section
+          className="admin-dash-notifications-panel"
+          aria-label="إعدادات الإشعارات"
+        >
+          <div className="notifications-panel-header">
+            <div className="notifications-panel-icon">
+              <i className="fas fa-bell"></i>
+            </div>
+            <div className="notifications-panel-info">
+              <h3>إشعارات الطلبيات</h3>
+              <p>استلم إشعارات فورية عند وصول طلبية جديدة</p>
+            </div>
+          </div>
+
+          {!notificationsSupported ? (
+            <div className="notifications-panel-status unsupported">
+              <i className="fas fa-exclamation-circle"></i>
+              <span>المتصفح لا يدعم الإشعارات</span>
+            </div>
+          ) : needsPWAForIOS ? (
+            <div className="notifications-panel-ios-guide">
+              <div className="ios-guide-icon">
+                <i className="fas fa-mobile-alt"></i>
+              </div>
+              <div className="ios-guide-content">
+                <h4>لتفعيل الإشعارات على iPhone</h4>
+                <ol>
+                  <li>
+                    اضغط على <i className="fas fa-share-square"></i> (مشاركة)
+                    أسفل الشاشة
+                  </li>
+                  <li>
+                    اختر "إضافة إلى الشاشة الرئيسية"{" "}
+                    <i className="fas fa-plus-square"></i>
+                  </li>
+                  <li>افتح التطبيق من الشاشة الرئيسية</li>
+                  <li>ثم فعّل الإشعارات من هنا</li>
+                </ol>
+              </div>
+            </div>
+          ) : (
+            <div className="notifications-panel-controls">
+              {notificationsEnabled ? (
+                <>
+                  <div className="notifications-panel-status enabled">
+                    <i className="fas fa-check-circle"></i>
+                    <span>الإشعارات مفعّلة على هذا الجهاز</span>
+                  </div>
+                  <div className="notifications-panel-buttons">
+                    <button
+                      className="notifications-btn test"
+                      onClick={sendTestNotification}
+                      disabled={notificationsLoading}
+                    >
+                      <i className="fas fa-paper-plane"></i>
+                      اختبار الإشعارات
+                    </button>
+                    <button
+                      className="notifications-btn disable"
+                      onClick={disableNotifications}
+                      disabled={notificationsLoading}
+                    >
+                      <i className="fas fa-bell-slash"></i>
+                      إلغاء التفعيل
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {notificationsError && (
+                    <div className="notifications-panel-error">
+                      <i className="fas fa-exclamation-triangle"></i>
+                      <span>{notificationsError}</span>
+                    </div>
+                  )}
+                  <button
+                    className="notifications-btn enable"
+                    onClick={enableNotifications}
+                    disabled={notificationsLoading}
+                  >
+                    {notificationsLoading ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin"></i>
+                        جاري التفعيل...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-bell"></i>
+                        تفعيل الإشعارات
+                      </>
+                    )}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </section>
 
         <section className="admin-dash-stats-grid" aria-label="الإحصائيات">
           <div className="admin-dash-card stat">

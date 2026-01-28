@@ -176,7 +176,6 @@
 .pc-badge--discount {
   background: linear-gradient(135deg, #f59e0b, #d97706);
   color: white;
-  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
 }
 
 /* Countdown Timer Overlay */
@@ -271,6 +270,8 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 10px;
   flex: 1;
 }

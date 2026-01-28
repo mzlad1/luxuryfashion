@@ -36,11 +36,23 @@ export function useNotifications() {
 
       // Check if already enabled and initialize
       if (permission === "granted") {
-        log('Permission granted, initializing...');
-        // Initialize messaging first, then set enabled
-        notificationService.initialize().then((success) => {
+        log('Permission granted, initializing and refreshing token...');
+        // Initialize messaging first, then get token and set enabled
+        notificationService.initialize().then(async (success) => {
           log('Initialize result:', success);
           if (success) {
+            // Also get and save the token (important for returning users!)
+            log('Getting FCM token for returning user...');
+            const result = await notificationService.requestPermissionAndGetToken();
+            log('Token result:', result.success ? 'SUCCESS' : result.error);
+            
+            if (result.success) {
+              // Save/refresh token in Firestore
+              log('Saving token to Firestore...');
+              const saved = await notificationService.saveTokenToFirestore();
+              log('Token saved:', saved);
+            }
+            
             setIsEnabled(true);
             log('Notifications enabled!');
           }

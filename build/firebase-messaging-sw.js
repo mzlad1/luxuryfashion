@@ -38,10 +38,7 @@ self.addEventListener("message", (event) => {
 initializeFirebase();
 
 function initializeFirebase() {
-  console.log(
-    "[SW] initializeFirebase called, isInitialized:",
-    isInitialized,
-  );
+  console.log("[SW] initializeFirebase called, isInitialized:", isInitialized);
   if (isInitialized) return;
 
   try {
@@ -54,13 +51,17 @@ function initializeFirebase() {
 
     messaging.onBackgroundMessage((payload) => {
       console.log("[SW] Background message received:", payload);
-      const notificationTitle = payload.notification?.title || "طلبية جديدة!";
+      
+      // Get notification content from data payload
+      const notificationTitle = payload.data?.title || payload.notification?.title || "طلبية جديدة!";
+      const notificationBody = payload.data?.body || payload.notification?.body || "لديك طلبية جديدة في المتجر";
+      
       const notificationOptions = {
-        body: payload.notification?.body || "لديك طلبية جديدة في المتجر",
+        body: notificationBody,
         icon: "/images/logo.ico",
         badge: "/images/logo.ico",
-        tag: "new-order",
-        renotify: true,
+        tag: `new-order-${payload.data?.orderId || Date.now()}`,
+        renotify: false,
         requireInteraction: true,
         vibrate: [200, 100, 200],
         data: {

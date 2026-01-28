@@ -62,11 +62,13 @@ exports.onNewOrder = onDocumentCreated("orders/{orderId}", async (event) => {
     const orderTotal = orderData.total ? `${orderData.total} شيكل` : "";
     const itemsCount = orderData.items?.length || 0;
 
+    // Build notification title and body
+    const notificationTitle = "🛒 طلبية جديدة!";
+    const notificationBody = `طلبية جديدة من ${customerName}${orderTotal ? ` - ${orderTotal}` : ""}${itemsCount ? ` (${itemsCount} منتج)` : ""}`;
+
     const message = {
-      notification: {
-        title: "🛒 طلبية جديدة!",
-        body: `طلبية جديدة من ${customerName}${orderTotal ? ` - ${orderTotal}` : ""}${itemsCount ? ` (${itemsCount} منتج)` : ""}`,
-      },
+      // Data-only message - let service worker handle notification display
+      // This prevents duplicate notifications
       data: {
         type: "new_order",
         orderId: orderId,
@@ -74,35 +76,18 @@ exports.onNewOrder = onDocumentCreated("orders/{orderId}", async (event) => {
         total: String(orderData.total || 0),
         url: "/admin/orders",
         timestamp: String(Date.now()),
+        // Include notification content in data for service worker
+        title: notificationTitle,
+        body: notificationBody,
       },
-      // Android specific
+      // Android specific - use data message with high priority
       android: {
         priority: "high",
-        notification: {
-          icon: "ic_notification",
-          color: "#c2a26c",
-          sound: "default",
-          channelId: "new_orders",
-          clickAction: "FLUTTER_NOTIFICATION_CLICK",
-        },
       },
-      // Web push specific
+      // Web push specific - no notification field, let SW handle it
       webpush: {
-        notification: {
-          icon: "/images/logo.ico",
-          badge: "/images/logo.ico",
-          vibrate: [200, 100, 200],
-          requireInteraction: true,
-          actions: [
-            {
-              action: "view",
-              title: "عرض الطلبية",
-            },
-            {
-              action: "dismiss",
-              title: "إغلاق",
-            },
-          ],
+        headers: {
+          Urgency: "high",
         },
         fcmOptions: {
           link: "/admin/orders",
@@ -112,14 +97,12 @@ exports.onNewOrder = onDocumentCreated("orders/{orderId}", async (event) => {
       apns: {
         payload: {
           aps: {
-            alert: {
-              title: "🛒 طلبية جديدة!",
-              body: `طلبية جديدة من ${customerName}${orderTotal ? ` - ${orderTotal}` : ""}`,
-            },
-            sound: "default",
-            badge: 1,
             "content-available": 1,
+            sound: "default",
           },
+        },
+        headers: {
+          "apns-priority": "10",
         },
       },
     };

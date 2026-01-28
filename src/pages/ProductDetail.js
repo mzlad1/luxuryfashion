@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { useCart } from "../contexts/CartContext";
@@ -7,6 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ProductFeedback from "../components/ProductFeedback";
+import ProductCard from "../components/ProductCard";
 import "../css/ProductDetail.css";
 
 // Countdown Timer Component
@@ -98,6 +99,8 @@ function ProductDetail() {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
   const [activeTab, setActiveTab] = useState("description");
+  const [similarProducts, setSimilarProducts] = useState([]);
+  const [loadingSimilar, setLoadingSimilar] = useState(false);
   const { addToCart, cartItems, getProductTotalQuantity } = useCart();
 
   // Toast message function
@@ -254,6 +257,90 @@ function ProductDetail() {
     fetchProduct();
   }, [id]);
 
+  // Fetch similar products based on category and brand
+  useEffect(() => {
+    async function fetchSimilarProducts() {
+      if (!product) return;
+
+      setLoadingSimilar(true);
+      try {
+        const productsSnapshot = await getDocs(collection(db, "products"));
+        const allProducts = [];
+        productsSnapshot.forEach((doc) => {
+          if (doc.id !== product.id) {
+            allProducts.push({ id: doc.id, ...doc.data() });
+          }
+        });
+
+        // Score products based on similarity
+        const scoredProducts = allProducts.map((p) => {
+          let score = 0;
+
+          // Same brand = +3 points
+          if (p.brand && product.brand && p.brand === product.brand) {
+            score += 3;
+          }
+
+          // Same category (new format - categoryIds) = +2 points per matching category
+          if (
+            product.categoryIds &&
+            product.categoryIds.length > 0 &&
+            p.categoryIds
+          ) {
+            const matchingCategories = product.categoryIds.filter((catId) =>
+              p.categoryIds.includes(catId),
+            );
+            score += matchingCategories.length * 2;
+          }
+
+          // Same category (old format - categories) = +2 points per matching category
+          if (
+            product.categories &&
+            product.categories.length > 0 &&
+            p.categories
+          ) {
+            const matchingCategories = product.categories.filter((cat) =>
+              p.categories.includes(cat),
+            );
+            score += matchingCategories.length * 2;
+          }
+
+          // Similar price range (+/- 30%) = +1 point
+          const priceDiff = Math.abs(p.price - product.price) / product.price;
+          if (priceDiff <= 0.3) {
+            score += 1;
+          }
+
+          return { ...p, similarityScore: score };
+        });
+
+        // Filter products with at least some similarity and sort by score
+        const similar = scoredProducts
+          .filter((p) => p.similarityScore > 0)
+          .sort((a, b) => b.similarityScore - a.similarityScore)
+          .slice(0, 4); // Get top 4 similar products
+
+        // If we don't have enough similar products, add some random ones
+        if (similar.length < 4) {
+          const remaining = allProducts
+            .filter((p) => !similar.find((s) => s.id === p.id))
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 4 - similar.length);
+          similar.push(...remaining);
+        }
+
+        setSimilarProducts(similar);
+      } catch (error) {
+        console.error("Error fetching similar products:", error);
+        setSimilarProducts([]);
+      } finally {
+        setLoadingSimilar(false);
+      }
+    }
+
+    fetchSimilarProducts();
+  }, [product]);
+
   const handleAddToCart = async () => {
     if (!product || isAdmin) return;
 
@@ -308,7 +395,7 @@ function ProductDetail() {
           }${selectedVariant.color ? selectedVariant.color : ""})`
         : "";
       showToastMessage(
-        `تم إضافة ${qtyToAdd} قطعة${
+        `تم إضافة ${qtyToAdd} قطع${
           qtyToAdd > 1 ? "ات" : "ة"
         } إلى السلة${variantInfo}`,
         "success",
@@ -1232,6 +1319,39 @@ function ProductDetail() {
               )}
             </div>
           </div>
+
+          {/* Similar Products Section */}
+          {similarProducts.length > 0 && (
+            <section className="pd-similar-section">
+              <div className="pd-similar-header">
+                <h2 className="pd-similar-title">
+                  <span className="pd-similar-icon">
+                    <i className="fas fa-sparkles"></i>
+                  </span>
+                  منتجات مشابهة
+                </h2>
+                <p className="pd-similar-subtitle">قد يعجبك أيضاً</p>
+              </div>
+
+              <div className="pd-similar-grid">
+                {similarProducts.map((similarProduct) => (
+                  <div key={similarProduct.id} className="pd-similar-item">
+                    <ProductCard product={similarProduct} />
+                  </div>
+                ))}
+              </div>
+
+              <div className="pd-similar-cta">
+                <button
+                  className="pd-view-all-btn"
+                  onClick={() => navigate("/products")}
+                >
+                  <span>عرض جميع المنتجات</span>
+                  <i className="fas fa-arrow-left"></i>
+                </button>
+              </div>
+            </section>
+          )}
         </div>
 
         {/* Image Modal */}

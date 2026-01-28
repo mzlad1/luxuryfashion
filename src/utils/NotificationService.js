@@ -11,6 +11,11 @@ import { db, initializeMessaging, getMessagingInstance } from "../firebase";
 
 const VAPID_KEY = process.env.REACT_APP_FIREBASE_VAPID_KEY;
 
+// Debug logger
+const DEBUG = true;
+const log = (...args) => DEBUG && console.log('[NotificationService]', ...args);
+const logError = (...args) => DEBUG && console.error('[NotificationService ERROR]', ...args);
+
 class NotificationService {
   constructor() {
     this.messaging = null;
